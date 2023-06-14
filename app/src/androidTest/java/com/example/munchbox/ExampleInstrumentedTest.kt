@@ -1,4 +1,4 @@
-package com.example.greetingcard
+package com.example.munchbox
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,4 +1,4 @@
-package com.example.greetingcard.ui.theme
+package com.example.munchbox.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

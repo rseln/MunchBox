@@ -1,4 +1,4 @@
-package com.example.greetingcard
+package com.example.munchbox
 
 import org.junit.Test
 
