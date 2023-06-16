@@ -1,14 +1,15 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
-    namespace 'com.example.greetingcard'
+    namespace 'com.example.munchbox'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.greetingcard"
+        applicationId "com.example.munchbox"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -47,7 +48,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
@@ -64,4 +64,7 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    implementation platform('com.google.firebase:firebase-bom:32.1.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
