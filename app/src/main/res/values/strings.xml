@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MunchBox</string>
+    <string name="summary">Summary</string>
+    <string name="back_button">Back</string>
 </resources>
