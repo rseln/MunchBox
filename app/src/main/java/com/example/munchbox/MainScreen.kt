@@ -1,6 +1,7 @@
 package com.example.munchbox
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.data.DataSource
+import com.example.munchbox.ui.MealReviewScreen
+import com.example.munchbox.ui.NumberOfMealsScreen
+import com.example.munchbox.ui.MealSelectionScreen
+
 
 
 
@@ -35,8 +41,8 @@ import com.example.munchbox.ui.OrderViewModel
  */
 enum class OrderScreen(@StringRes val title: Int) {
     NumberOfMeals(title = R.string.app_name),
-    MealSelect(title = R.string.summary),
-    MealReview(title = R.string.summary),
+    MealSelect(title = R.string.meal_select),
+    MealReview(title = R.string.meal_review),
 }
 
 /**
@@ -100,14 +106,37 @@ fun MunchBoxApp(
         ) {
             composable(route = OrderScreen.NumberOfMeals.name) {
                 NumberOfMealsScreen(
-//                    quantityOptions = DataSource.quantityOptions,
-//                    onNextButtonClicked = {
-//                        viewModel.setQuantity(it)
-//                        navController.navigate(OrderScreen.MealSelect.name)
-//                    },
+                    quantityOptions = DataSource.quantityOptions,
+                    onNextButtonClicked = {
+                        viewModel.setQuantity(it)
+                        navController.navigate(OrderScreen.MealSelect.name)
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium))
+                )
+            }
+            composable(route = OrderScreen.MealSelect.name) {
+                MealSelectionScreen(
+//                    quantityOptions = DataSource.quantityOptions,
+                    onNextButtonClicked = {
+                        navController.navigate(OrderScreen.MealReview.name)
+                    },
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                )
+            }
+            composable(route = OrderScreen.MealReview.name) {
+                MealReviewScreen(
+                    orderUiState = uiState,
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    modifier = Modifier.fillMaxHeight()
                 )
             }
         }

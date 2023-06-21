@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
 //            MealCardContainer()
 //            NumberOfMealsScreen()
+            MunchBoxApp()
         }
     }
 }

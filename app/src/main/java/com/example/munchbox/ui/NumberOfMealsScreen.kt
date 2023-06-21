@@ -36,6 +36,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.munchbox.R
+import com.example.munchbox.data.DataSource
+
 /**
  * Composable that allows the user to select the desired cupcake quantity and expects
  * [onNextButtonClicked] lambda that expects the selected quantity and triggers the navigation to
@@ -43,6 +45,8 @@ import com.example.munchbox.R
  */
 @Composable
 fun NumberOfMealsScreen(
+    quantityOptions: List<Pair<Int, Int>>,
+    onNextButtonClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -65,10 +69,16 @@ fun NumberOfMealsScreen(
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    dimensionResource(id = R.dimen.padding_medium)
-                )
+//                verticalArrangement = Arrangement.spacedBy(
+//                    dimensionResource(id = R.dimen.padding_medium)
+//                )
             ) {
+                quantityOptions.forEach { item ->
+                    SelectQuantityButton(
+                        labelResourceId = item.first,
+                        onClick = { onNextButtonClicked(item.second) }
+                    )
+                }
             }
         }
     }
@@ -96,6 +106,8 @@ fun SelectQuantityButton(
 @Composable
 fun StartOrderPreview(){
     NumberOfMealsScreen(
+        quantityOptions = DataSource.quantityOptions,
+        onNextButtonClicked = {},
         modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.padding_medium))
     )
 }
