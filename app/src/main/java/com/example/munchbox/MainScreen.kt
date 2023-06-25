@@ -1,5 +1,6 @@
 package com.example.munchbox
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,8 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.data.DataSource
+import com.example.munchbox.ui.MealPaymentScreen
 import com.example.munchbox.ui.MealReviewScreen
-import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.MealSelectionScreen
 
 
@@ -43,6 +44,7 @@ enum class OrderScreen(@StringRes val title: Int) {
     NumberOfMeals(title = R.string.app_name),
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
+    MealPayment(title = R.string.meal_payment),
 }
 
 /**
@@ -75,6 +77,7 @@ fun MunchBoxAppBar(
     )
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MunchBoxApp(
@@ -107,8 +110,8 @@ fun MunchBoxApp(
             composable(route = OrderScreen.NumberOfMeals.name) {
                 NumberOfMealsScreen(
                     quantityOptions = DataSource.quantityOptions,
-                    onNextButtonClicked = {
-                        viewModel.setQuantity(it)
+                    onNextButtonClicked = { numMeals, price ->
+                        viewModel.setQuantity(numMeals, price)
                         navController.navigate(OrderScreen.MealSelect.name)
                     },
                     modifier = Modifier
@@ -133,10 +136,23 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealReview.name) {
                 MealReviewScreen(
                     orderUiState = uiState,
+                    onNextButtonClicked = {
+                        navController.navigate(OrderScreen.MealPayment.name)
+                    },
                     onCancelButtonClicked = {
                         cancelOrderAndNavigateToStart(viewModel, navController)
                     },
                     modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(route = OrderScreen.MealPayment.name) {
+                MealPaymentScreen(
+                    viewModel.uiState.value.quantity,
+                    viewModel.uiState.value.price,
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    onPayButtonClicked = { } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
                 )
             }
         }

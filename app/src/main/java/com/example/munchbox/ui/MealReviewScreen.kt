@@ -27,6 +27,7 @@ import com.example.munchbox.data.OrderUiState
 fun MealReviewScreen(
     orderUiState: OrderUiState,
     onCancelButtonClicked: () -> Unit = {},
+    onNextButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -38,7 +39,7 @@ fun MealReviewScreen(
         ) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {  }
+                onClick = onNextButtonClicked
             ) {
                 Text(stringResource(R.string.send))
             }

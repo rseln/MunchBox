@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "126924448294",
+    "project_id": "munchbox-88842",
+    "storage_bucket": "munchbox-88842.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126924448294:android:f0f29a94bb6a43d10f7ce7",
+        "android_client_info": {
+          "package_name": "com.example.munchbox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126924448294-4j3oguuact8kmi0kv720omvt4hqilbqj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.munchbox",
+            "certificate_hash": "1e8b075ca0647756e8fc17ea588c10c2efe6132b"
+          }
+        },
+        {
+          "client_id": "126924448294-cu736dqfndqcvnocc33rjttc04osb8m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvQoJv1_F5Q4u835YWc5-C-NfODu14R-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126924448294-cu736dqfndqcvnocc33rjttc04osb8m3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

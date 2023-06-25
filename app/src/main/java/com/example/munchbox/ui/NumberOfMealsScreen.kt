@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -45,13 +47,13 @@ import com.example.munchbox.data.DataSource
  */
 @Composable
 fun NumberOfMealsScreen(
-    quantityOptions: List<Pair<Int, Int>>,
-    onNextButtonClicked: (Int) -> Unit,
+    quantityOptions: List<Triple<Int, Int, Int>>,
+    onNextButtonClicked: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+//        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -60,23 +62,24 @@ fun NumberOfMealsScreen(
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
             Text(
-                text = "Yo",
+                text = "Choose your plan for the week",
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
         }
+
         Row(modifier = Modifier.weight(1f, false)) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().align(CenterVertically).fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.spacedBy(
-//                    dimensionResource(id = R.dimen.padding_medium)
-//                )
+                verticalArrangement = Arrangement.Center
             ) {
                 quantityOptions.forEach { item ->
                     SelectQuantityButton(
                         labelResourceId = item.first,
-                        onClick = { onNextButtonClicked(item.second) }
+                        onClick = {
+                            onNextButtonClicked(item.second, item.third)
+                        }
                     )
                 }
             }
@@ -107,7 +110,7 @@ fun SelectQuantityButton(
 fun StartOrderPreview(){
     NumberOfMealsScreen(
         quantityOptions = DataSource.quantityOptions,
-        onNextButtonClicked = {},
+        onNextButtonClicked = { _, _ -> },
         modifier = Modifier.fillMaxSize().padding(dimensionResource(R.dimen.padding_medium))
     )
 }
