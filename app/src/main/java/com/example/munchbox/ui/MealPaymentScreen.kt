@@ -55,7 +55,7 @@ fun MealPaymentScreen(
     ) {
 
         Text(
-            text = "Cart: $numMeals meals - $price",
+            text = "Cart: $numMeals meal(s) - $price",
             style = MaterialTheme.typography.headlineSmall
         )
 
