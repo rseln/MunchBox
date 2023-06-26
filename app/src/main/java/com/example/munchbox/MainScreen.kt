@@ -92,7 +92,7 @@ fun MunchBoxApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentScreen = OrderScreen.valueOf(
-        backStackEntry?.destination?.route ?: OrderScreen.NumberOfMeals.name
+        backStackEntry?.destination?.route ?: OrderScreen.Login.name
     )
 
     Scaffold(
@@ -116,7 +116,11 @@ fun MunchBoxApp(
                     onLoginButtonClicked = {
                         // Need to write a function to do actual verification later!!!
                         // Just nav to next page for now
-                        navController.navigate(OrderScreen.NumberOfMeals.name)
+                        navController.navigate(OrderScreen.NumberOfMeals.name) {
+                            popUpTo(OrderScreen.Login.name) {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }
