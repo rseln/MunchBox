@@ -26,12 +26,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.munchbox.ui.NumberOfMealsScreen
-import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.controller.DayOfWeek
+import com.example.munchbox.controller.DietaryOption
+import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.ui.MealReviewScreen
-import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.MealSelectionScreen
+import com.example.munchbox.ui.NumberOfMealsScreen
+import com.example.munchbox.ui.OrderViewModel
 
 
 
@@ -88,6 +91,12 @@ fun MunchBoxApp(
         backStackEntry?.destination?.route ?: OrderScreen.NumberOfMeals.name
     )
 
+    var restaurant = Restaurant("Lazeez", setOf())
+    val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(
+        DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val allMeals = setOf<Meal>(vegeMeal, meatMeal)
+    restaurant.addMeals(allMeals)
     Scaffold(
         topBar = {
             MunchBoxAppBar(
@@ -118,6 +127,7 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
+                    restaurants = setOf(restaurant),
 //                    quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.MealReview.name)
