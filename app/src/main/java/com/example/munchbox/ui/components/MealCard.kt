@@ -48,17 +48,19 @@ import com.example.munchbox.ui.theme.Typography
 )
 @Composable
 fun MealCardContainer() {
-    val restaurant = Restaurant("Lazeez")
+
+    val restaurant = Restaurant("Lazeez", setOf())
     val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val allMeals = setOf<Meal>(vegeMeal, meatMeal)
+    val allMeals = setOf(vegeMeal, meatMeal)
+    restaurant.addMeals(allMeals)
 
-    var added by remember { mutableStateOf(false) }
+    var added by remember { mutableStateOf(setOf<DietaryOption>()) }
+    var selectedMeals : Set<Meal> = setOf()
 
-    fun onAddCallback(meal: Meal?) {
-        if (meal != null) {
-            added = !added
-        }
+    fun onAddCallback(meal: Meal) {
+        added = meal.options
+        selectedMeals = selectedMeals.plus(meal)
     }
 
     Column (verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
@@ -67,7 +69,7 @@ fun MealCardContainer() {
         MealCard(
             restaurant = restaurant,
             allMeals = allMeals,
-            onAdd = { meal: Meal? -> onAddCallback(meal) },
+            onAdd = { meal: Meal -> onAddCallback(meal) },
             added = added,
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,7 +78,7 @@ fun MealCardContainer() {
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit, added: Boolean, modifier: Modifier = Modifier) {
+fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal) -> Unit, added: Set<DietaryOption>, modifier: Modifier = Modifier) {
 
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
@@ -89,8 +91,9 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit
     }
 
     fun getAvailableOptions(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<DietaryOption> {
-        val availableMeals: Set<Meal> = getAvailableMeals(meals, selectedOptions)
-        var availableOptions: Set<DietaryOption> = setOf<DietaryOption>()
+        // Get the available meals based on the added and selected options
+        val availableMeals: Set<Meal> = getAvailableMeals(meals, selectedOptions.plus(added))
+        var availableOptions: Set<DietaryOption> = setOf()
 
         for (meal in availableMeals.iterator()) {
             availableOptions = availableOptions.plus(meal.options)
@@ -98,12 +101,8 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit
         return availableOptions
     }
 
-    fun getSelectedMeal(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Meal? {
+    fun getSelectedMeal(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Meal {
         val availableMeals: Set<Meal> = getAvailableMeals(meals, selectedOptions)
-
-        if (availableMeals.isEmpty()) {
-            return null
-        }
 
         return availableMeals.elementAt(0)
     }
@@ -111,7 +110,7 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit
     /**
      * State variables
      */
-    var selectedOptions by remember { mutableStateOf(setOf<DietaryOption>()) }
+    var selectedOptions by remember { mutableStateOf(added) }
     var availableOptions by remember {
         mutableStateOf( getAvailableOptions(
             allMeals,
@@ -123,11 +122,10 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit
      * CALLBACKS
      */
     fun onSelectCallback (option : DietaryOption) {
-        if (!selectedOptions.contains(option)) {
-            selectedOptions = selectedOptions.plus(option)
-        }
-        else {
-            selectedOptions = selectedOptions.minus(option)
+        selectedOptions = if (!selectedOptions.contains(option)) {
+            selectedOptions.plus(option)
+        } else {
+            selectedOptions.minus(option)
         }
 
         availableOptions = getAvailableOptions(allMeals, selectedOptions)
@@ -166,7 +164,7 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit
                     FilterChip(
                         selected = selectedOptions.contains(option),
                         onClick = {
-                            if (!added) {
+                            if (added.isEmpty()) {
                                 onSelectCallback(option)
                             }
                         },
@@ -193,7 +191,7 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal?) -> Unit
                     onAdd(getSelectedMeal(allMeals, selectedOptions))
                 },
             ) {
-                if (!added) {
+                if (added.isEmpty()) {
                     Text("Add Meal")
                 }
                 else {
