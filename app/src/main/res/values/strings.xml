@@ -3,11 +3,13 @@
     <string name="login">Login</string>
     <string name="meal_select">Meal Select</string>
     <string name="meal_review">Meal Review</string>
+    <string name="meal_payment">Meal Payment</string>
     <string name="back_button">Back</string>
     <string name="next">Next</string>
     <string name="send">Send</string>
+    <string name="pay">Pay</string>
     <string name="cancel">Cancel</string>
-    <string name="meals_1">1 Meal</string>
-    <string name="meals_3">3 Meals</string>
-    <string name="meals_5">5 Meals</string>
+    <string name="meals_1">1 Meal - $10</string>
+    <string name="meals_3">3 Meals - $27</string>
+    <string name="meals_5">5 Meals - $42</string>
 </resources>
