@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.theme.GreetingCardTheme
@@ -21,8 +22,8 @@ class MainActivity : ComponentActivity() {
         setContent {
 //            MealCardContainer()
 //            NumberOfMealsScreen()
-            OrderSummaryCard(OrderUiState(restaurant = Restaurant("Lazeez")))
-//            MunchBoxApp()
+//            MealOrderSummaryScreen()
+            MunchBoxApp()
         }
     }
 }

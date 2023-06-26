@@ -16,6 +16,7 @@
 package com.example.munchbox.ui
 
 import androidx.lifecycle.ViewModel
+import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.data.OrderUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,7 @@ class OrderViewModel : ViewModel() {
     /**
      * Cupcake state for this order
      */
-    private val _uiState = MutableStateFlow(OrderUiState(pickupOptions = pickupOptions()))
+    private val _uiState = MutableStateFlow(OrderUiState())
     val uiState: StateFlow<OrderUiState> = _uiState.asStateFlow()
 
     /**
@@ -51,7 +52,7 @@ class OrderViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 quantity = numberCupcakes,
-                price = calculatePrice(quantity = numberCupcakes)
+//                price = calculatePrice(quantity = numberCupcakes)
             )
         }
     }
@@ -63,7 +64,7 @@ class OrderViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 date = pickupDate,
-                price = calculatePrice(pickupDate = pickupDate)
+//                price = calculatePrice(pickupDate = pickupDate)
             )
         }
     }
@@ -72,37 +73,37 @@ class OrderViewModel : ViewModel() {
      * Reset the order state
      */
     fun resetOrder() {
-        _uiState.value = OrderUiState(pickupOptions = pickupOptions())
+//        _uiState.value = OrderUiState(pickupOptions = pickupOptions())
     }
 
     /**
      * Returns the calculated price based on the order details.
      */
-    private fun calculatePrice(
-        quantity: Int = _uiState.value.quantity,
-        pickupDate: String = _uiState.value.date
-    ): String {
-        var calculatedPrice = quantity * PRICE_PER_CUPCAKE
-        // If the user selected the first option (today) for pickup, add the surcharge
-        if (pickupOptions()[0] == pickupDate) {
-            calculatedPrice += PRICE_FOR_SAME_DAY_PICKUP
-        }
-        val formattedPrice = NumberFormat.getCurrencyInstance().format(calculatedPrice)
-        return formattedPrice
-    }
+//    private fun calculatePrice(
+//        quantity: Int = _uiState.value.quantity,
+//        pickupDate: String = _uiState.value.date
+//    ): String {
+//        var calculatedPrice = quantity * PRICE_PER_CUPCAKE
+//        // If the user selected the first option (today) for pickup, add the surcharge
+//        if (pickupOptions()[0] == pickupDate) {
+//            calculatedPrice += PRICE_FOR_SAME_DAY_PICKUP
+//        }
+//        val formattedPrice = NumberFormat.getCurrencyInstance().format(calculatedPrice)
+//        return formattedPrice
+//    }
 
     /**
      * Returns a list of date options starting with the current date and the following 3 dates.
      */
-    private fun pickupOptions(): List<String> {
-        val dateOptions = mutableListOf<String>()
-        val formatter = SimpleDateFormat("E MMM d", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        // add current date and the following 3 dates.
-        repeat(4) {
-            dateOptions.add(formatter.format(calendar.time))
-            calendar.add(Calendar.DATE, 1)
-        }
-        return dateOptions
-    }
+//    private fun pickupOptions(): Set<DayOfWeek> {
+//        val dateOptions = mutableListOf<String>()
+//        val formatter = SimpleDateFormat("E MMM d", Locale.getDefault())
+//        val calendar = Calendar.getInstance()
+//        // add current date and the following 3 dates.
+//        repeat(4) {
+//            dateOptions.add(formatter.format(calendar.time))
+//            calendar.add(Calendar.DATE, 1)
+//        }
+//        return dateOptions
+//    }
 }

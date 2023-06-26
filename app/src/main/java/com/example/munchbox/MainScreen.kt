@@ -29,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.data.DataSource
+import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.MealSelectionScreen
@@ -40,6 +41,7 @@ import com.example.munchbox.ui.MealSelectionScreen
  * enum values that represent the screens in the app
  */
 enum class OrderScreen(@StringRes val title: Int) {
+    MealOrderSummary(title = R.string.app_name),
     NumberOfMeals(title = R.string.app_name),
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
@@ -101,9 +103,19 @@ fun MunchBoxApp(
 
         NavHost(
             navController = navController,
-            startDestination = OrderScreen.NumberOfMeals.name,
+            startDestination = OrderScreen.MealOrderSummary.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(route = OrderScreen.MealOrderSummary.name) {
+                MealOrderSummaryScreen(
+                    onNextButtonClicked = {
+                        navController.navigate(OrderScreen.NumberOfMeals.name)
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                )
+            }
             composable(route = OrderScreen.NumberOfMeals.name) {
                 NumberOfMealsScreen(
                     quantityOptions = DataSource.quantityOptions,
@@ -118,7 +130,6 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
-//                    quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.MealReview.name)
                     },

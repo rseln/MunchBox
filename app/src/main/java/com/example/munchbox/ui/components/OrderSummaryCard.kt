@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.munchbox.R
+import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.ui.theme.Typography
@@ -30,14 +32,14 @@ import com.example.munchbox.ui.theme.Typography
 
 
 @Composable
-fun OrderSummaryCard(order: OrderUiState){
+fun OrderSummaryCard(meal: Meal){
 
     Card(
         shape = MaterialTheme.shapes.medium,
-
+        modifier = Modifier.padding(start=16.dp, end=16.dp, bottom = 16.dp),
     ){
         Image(
-            painter = painterResource(id = R.drawable.lazeez),
+            painter = painterResource(id = meal.restaurant.imageID!!),
             contentDescription = "Contact profile picture",
             modifier = Modifier
                 .height(175.dp)
@@ -46,9 +48,10 @@ fun OrderSummaryCard(order: OrderUiState){
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = order.restaurant.name,
-            style = Typography.headlineMedium,
+            text = meal.restaurant.name,
+            style = Typography.headlineSmall,
             modifier = Modifier.padding(start = 16.dp),
+            fontWeight = FontWeight.SemiBold,
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -59,7 +62,7 @@ fun OrderSummaryCard(order: OrderUiState){
 @Composable
 fun PreviewOrderSummaryCard(){
     val lazeez = Restaurant("Lazeez")
-    OrderSummaryCard(OrderUiState(restaurant = lazeez))
+    OrderSummaryCard(meal = Meal(options = setOf(), days = setOf(), restaurant = lazeez ))
 }
 
 
