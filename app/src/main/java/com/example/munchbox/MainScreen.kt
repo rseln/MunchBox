@@ -29,8 +29,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.data.DataSource
+import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealReviewScreen
-import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.MealSelectionScreen
 
 
@@ -39,7 +39,10 @@ import com.example.munchbox.ui.MealSelectionScreen
 /**
  * enum values that represent the screens in the app
  */
+
+// note: Maybe we should rename to "Pages" to be more inclusive of login (low priority tho)
 enum class OrderScreen(@StringRes val title: Int) {
+    Login(title = R.string.login),
     NumberOfMeals(title = R.string.app_name),
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
@@ -101,9 +104,18 @@ fun MunchBoxApp(
 
         NavHost(
             navController = navController,
-            startDestination = OrderScreen.NumberOfMeals.name,
+            startDestination = OrderScreen.Login.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(route = OrderScreen.Login.name) {
+                LoginScreen(
+                    onLoginButtonClicked = {
+                        // Need to write a function to do actual verification later!!!
+                        // Just nav to next page for now
+                        navController.navigate(OrderScreen.NumberOfMeals.name)
+                    }
+                )
+            }
             composable(route = OrderScreen.NumberOfMeals.name) {
                 NumberOfMealsScreen(
                     quantityOptions = DataSource.quantityOptions,
