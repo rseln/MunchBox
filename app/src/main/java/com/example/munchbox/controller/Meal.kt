@@ -6,13 +6,13 @@ import com.example.munchbox.controller.Restaurant
  * ENUM DEFINITIONS
  */
 enum class DayOfWeek(val id: Int, val str: String) {
-    SATURDAY (0, "Saturday"),
-    SUNDAY  (1, "Sunday"),
-    MONDAY (2, "Monday"),
-    TUESDAY (3, "Tuesday"),
-    WEDNESDAY (4, "Wednesday"),
-    THURSDAY (5, "Thursday"),
-    FRIDAY (6, "Friday")
+    MONDAY (0, "Monday"),
+    TUESDAY (1, "Tuesday"),
+    WEDNESDAY (2, "Wednesday"),
+    THURSDAY (3, "Thursday"),
+    FRIDAY (4, "Friday"),
+    SATURDAY (5, "Saturday"),
+    SUNDAY  (6, "Sunday"),
 }
 
 enum class DietaryOption(val id: Int, val str : String) {

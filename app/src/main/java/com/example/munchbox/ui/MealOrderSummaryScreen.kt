@@ -5,79 +5,124 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.munchbox.R
-import com.example.munchbox.controller.Restaurant
-import com.example.munchbox.ui.components.MealCard
+import androidx.compose.ui.unit.sp
+import com.example.munchbox.controller.DayOfWeek
+import com.example.munchbox.controller.Meal
+import com.example.munchbox.data.DataSource.currentDay
+import com.example.munchbox.data.DataSource.fakeOrders
+import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.ui.components.OrderSummaryCard
-
-
-data class Order(val restaurant: Restaurant)
-
-@Composable
-fun OrdersAvaialable(orders:List<Order>){
-
-}
-
-@Composable
-fun OrderSummaries(){
-
-}
+import com.example.munchbox.ui.theme.Typography
 
 @Composable
 fun MealOrderSummaryScreen(
+    modifier: Modifier = Modifier,
     onCancelButtonClicked: () -> Unit = {},
     onNextButtonClicked: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
-    var selectedValue by rememberSaveable { mutableStateOf("") }
-    Column() {
-        Button(
-            onClick= onNextButtonClicked
-        ) {
-            Text("Order for next week")
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+        .verticalScroll(scrollState),
+    ){
+        Spacer(modifier = Modifier.height(32.dp))
+        Row(modifier = Modifier.align( Alignment.CenterHorizontally)){
+            Button(
+                onClick= onNextButtonClicked,
+            ) {
+                Text("Order for next week")
+            }
         }
+        Spacer(modifier = Modifier.height(32.dp))
+        OrdersAvailable(fakeOrders)
+        OrderSummaries(fakeOrders)
+    }
+}
 
-        Text("Orders Available for Pickup")
-
-
-        Text("Order Summaries")
+@Composable
+fun OrdersAvailable(orders:List<OrderUiState>){
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = "Orders Available for Pickup",
+            fontWeight = FontWeight.Bold,
+            fontSize = 21.sp,
+            style = Typography.headlineSmall,
+            textAlign = TextAlign.Center,
+        )
+    }
+    for (order in orders){
+        if (order.pickupOptions.isEmpty()){
+            continue
+        }
+        for(pickupDate in order.pickupOptions){
+            if (currentDay == pickupDate){
+                for(meal in order.meals){
+                    OrderSummaryCard(meal = meal)
+                }
+            }
+        }
     }
 
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(dimensionResource(R.dimen.padding_medium)),
-//        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-//        verticalAlignment = Alignment.Bottom
-//    ){
-//        OutlinedButton(modifier = Modifier.weight(1f), onClick = onCancelButtonClicked) {
-//            Text(stringResource(R.string.cancel))
-//        }
-//        Button(
-//            modifier = Modifier.weight(1f),
-//            // the button is enabled when the user makes a selection
-////            enabled = selectedValue.isNotEmpty(),
-//            onClick = onNextButtonClicked
-//        ) {
-//            Text(stringResource(R.string.next))
-//        }
-//    }
+}
+
+@Composable
+fun OrderSummaries(orders: List<OrderUiState>){
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = "Order Summaries",
+            fontWeight = FontWeight.Bold,
+            fontSize = 21.sp,
+            style = Typography.headlineSmall,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    /** Map of days in the week to a set of meals **/
+    /** {MONDAY: {MEAL1, MEAL2}}**/
+    val dayFilterMap = mutableMapOf<DayOfWeek,MutableSet<Meal>>()
+    for(order in orders){
+        for(meal in order.meals){
+            for(day in meal.days){
+                dayFilterMap[day] = dayFilterMap.getOrDefault(day, mutableSetOf())
+                dayFilterMap[day]!!.add(meal)
+            }
+        }
+    }
+    /** Filter our in order list of days with the days with meals on the map**/
+    val daysWithOrders = DayOfWeek.values().filter{
+        dayFilterMap.contains(it)
+    }
+    for (day in daysWithOrders) {
+        Text(
+            text = day.str,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(start=16.dp),
+        )
+        for(meal in dayFilterMap[day]!!){
+            OrderSummaryCard(meal = meal)
+        }
+
+    }
 }
 
 

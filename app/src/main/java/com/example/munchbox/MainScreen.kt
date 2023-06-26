@@ -38,6 +38,7 @@ import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.ui.MealOrderSummaryScreen
 
 
 
@@ -49,6 +50,7 @@ import com.example.munchbox.ui.OrderViewModel
 // note: Maybe we should rename to "Pages" to be more inclusive of login (low priority tho)
 enum class OrderScreen(@StringRes val title: Int) {
     Login(title = R.string.login),
+    MealOrderSummary(title = R.string.app_name),
     NumberOfMeals(title = R.string.app_name),
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
@@ -132,6 +134,16 @@ fun MunchBoxApp(
                             }
                         }
                     }
+                )
+            }
+            composable(route = OrderScreen.MealOrderSummary.name) {
+                MealOrderSummaryScreen(
+                    onNextButtonClicked = {
+                        navController.navigate(OrderScreen.NumberOfMeals.name)
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
                 )
             }
             composable(route = OrderScreen.NumberOfMeals.name) {
