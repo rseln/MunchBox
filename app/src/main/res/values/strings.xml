@@ -6,6 +6,7 @@
     <string name="meal_payment">Meal Payment</string>
     <string name="back_button">Back</string>
     <string name="next">Next</string>
+    <string name="checkout">Checkout</string>
     <string name="send">Send</string>
     <string name="pay">Pay</string>
     <string name="cancel">Cancel</string>

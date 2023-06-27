@@ -36,6 +36,7 @@ import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.ui.components.OrderSummaries
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.theme.Typography
 
@@ -69,7 +70,7 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
     Row{
         Box(
             modifier = Modifier
-                .background(color = Color(118, 97, 173))
+                .background(color = colorResource(R.color.button_purple))
                 .padding(16.dp)
                 .fillMaxWidth()
         ){
@@ -92,53 +93,6 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
                 for(meal in order.meals){
                     OrderSummaryCard(meal = meal)
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun OrderSummaries(order: OrderUiState, modifier: Modifier = Modifier){
-    Row{
-        Box(
-            modifier = Modifier
-                .background(color = Color(118, 97, 173) )
-                .padding(16.dp)
-                .fillMaxWidth(),
-        ) {
-            Text(
-                text = "Order Summaries",
-                fontWeight = FontWeight.Bold,
-                fontSize = 21.sp,
-                style = Typography.headlineSmall,
-                textAlign = TextAlign.Center,
-                color = Color.White,
-            )
-        }
-    }
-    /** Map of days in the week to a set of meals **/
-    /** {MONDAY: {MEAL1, MEAL2}}**/
-    val dayFilterMap = mutableMapOf<DayOfWeek,MutableSet<Meal>>()
-    for(meal in order.meals){
-        for(day in meal.days){
-            dayFilterMap[day] = dayFilterMap.getOrDefault(day, mutableSetOf())
-            dayFilterMap[day]!!.add(meal)
-        }
-    }
-    /** Filter our in order list of days with the days with meals on the map**/
-    val daysWithOrders = DayOfWeek.values().filter{
-        dayFilterMap.contains(it)
-    }
-    for (day in daysWithOrders) {
-        Column(modifier = modifier) {
-            Text(
-                text = day.str,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start=16.dp),
-            )
-            for(meal in dayFilterMap[day]!!){
-                OrderSummaryCard(meal = meal)
             }
         }
     }
