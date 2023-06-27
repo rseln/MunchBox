@@ -16,9 +16,9 @@ object DataSource {
     )
 
     /** Fake Restaurants to use for now.**/
-    val lazeez = Restaurant(name ="Lazeez", imageID = R.drawable.lazeez )
-    val campusPizza = Restaurant(name="Campus Pizza", imageID = R.drawable.campuspizza)
-    val shawaramaPlus = Restaurant(name="Shawarama Plus", imageID = R.drawable.shawarmaplus)
+    val lazeez = Restaurant(name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
+    val campusPizza = Restaurant(name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
+    val shawaramaPlus = Restaurant(name="Shawarama Plus", setOf(), imageID = R.drawable.shawarmaplus)
 
     val lazeezMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), lazeez, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val campusPizzaMeal =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), campusPizza, setOf(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY))

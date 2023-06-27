@@ -32,14 +32,14 @@ import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource
-import com.example.munchbox.ui.MealPaymentScreen
+import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.ui.LoginScreen
+import com.example.munchbox.ui.MealOrderSummaryScreen
+import com.example.munchbox.ui.MealPaymentScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
-import com.example.munchbox.data.DataSource.pickUpOptions
-import com.example.munchbox.ui.MealOrderSummaryScreen
 
 
 
@@ -129,7 +129,7 @@ fun MunchBoxApp(
                     onLoginButtonClicked = {
                         // Need to write a function to do actual verification later!!!
                         // Just nav to next page for now
-                        navController.navigate(OrderScreen.NumberOfMeals.name) {
+                        navController.navigate(OrderScreen.MealOrderSummary.name) {
                             popUpTo(OrderScreen.Login.name) {
                                 inclusive = true
                             }
