@@ -38,6 +38,7 @@ import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.ui.MealOrderSummaryScreen
 
 
@@ -137,7 +138,15 @@ fun MunchBoxApp(
                 )
             }
             composable(route = OrderScreen.MealOrderSummary.name) {
+                /**
+                 * the view models meals can be set in meal selection for now it is pointing to a fake dataset
+                 * same with the pickup options
+                 * **/
+
+                viewModel.setMeals(meals = allMeals)
+                viewModel.setPickupOptions(pickupOptions = pickUpOptions)
                 MealOrderSummaryScreen(
+                    orderUiState = uiState,
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.NumberOfMeals.name)
                     },

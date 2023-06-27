@@ -17,6 +17,7 @@ package com.example.munchbox.ui
 
 import androidx.lifecycle.ViewModel
 import com.example.munchbox.controller.DayOfWeek
+import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.OrderUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,15 +28,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-/** Price for a single cupcake */
-private const val PRICE_PER_CUPCAKE = 2.00
-
-/** Additional cost for same day pickup of an order */
-private const val PRICE_FOR_SAME_DAY_PICKUP = 3.00
 
 /**
- * [OrderViewModel] holds information about a cupcake order in terms of quantity, flavor, and
- * pickup date. It also knows how to calculate the total price based on these order details.
+ * [OrderViewModel] holds information about a meal plan order
  */
 class OrderViewModel : ViewModel() {
 
@@ -56,6 +51,26 @@ class OrderViewModel : ViewModel() {
             )
         }
     }
+    /**
+     * Set the pickup options for the meals
+     */
+    fun setPickupOptions(pickupOptions:Set<DayOfWeek>){
+        _uiState.update { currentState ->
+            currentState.copy(
+                pickupOptions = pickupOptions,
+            )
+        }
+    }
+    /**
+     * Set the meals for the order being made
+     */
+    fun setMeals(meals:Set<Meal>){
+        _uiState.update { currentState ->
+            currentState.copy(
+                meals = meals,
+            )
+        }
+    }
 
     /**
      * Set the [pickupDate] for this order's state and update the price
@@ -64,7 +79,6 @@ class OrderViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 date = pickupDate,
-//                price = calculatePrice(pickupDate = pickupDate)
             )
         }
     }
@@ -95,15 +109,4 @@ class OrderViewModel : ViewModel() {
     /**
      * Returns a list of date options starting with the current date and the following 3 dates.
      */
-//    private fun pickupOptions(): Set<DayOfWeek> {
-//        val dateOptions = mutableListOf<String>()
-//        val formatter = SimpleDateFormat("E MMM d", Locale.getDefault())
-//        val calendar = Calendar.getInstance()
-//        // add current date and the following 3 dates.
-//        repeat(4) {
-//            dateOptions.add(formatter.format(calendar.time))
-//            calendar.add(Calendar.DATE, 1)
-//        }
-//        return dateOptions
-//    }
 }
