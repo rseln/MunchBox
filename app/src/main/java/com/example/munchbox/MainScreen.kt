@@ -18,6 +18,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -27,12 +30,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.munchbox.controller.DayOfWeek
-import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource
+import com.example.munchbox.data.DataSource.campusPizza
+import com.example.munchbox.data.DataSource.campusPizzaMeal
+import com.example.munchbox.data.DataSource.lazeez
+import com.example.munchbox.data.DataSource.lazeezMeal
 import com.example.munchbox.data.DataSource.pickUpOptions
+import com.example.munchbox.data.DataSource.shawaramaPlus
+import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealPaymentScreen
@@ -102,12 +108,16 @@ fun MunchBoxApp(
         backStackEntry?.destination?.route ?: OrderScreen.Login.name
     )
 
-    var restaurant = Restaurant("Lazeez", setOf())
-    val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(
-        DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val allMeals = setOf<Meal>(vegeMeal, meatMeal)
-    restaurant.addMeals(allMeals)
+    /**
+     * State variables for order summaries etc.
+     */
+    var orderedMeals by remember { mutableStateOf(listOf<Meal>()) }
+
+    lazeez.addMeals(setOf(lazeezMeal))
+    shawaramaPlus.addMeals(setOf(shawarmaPlusMeal))
+    campusPizza.addMeals(setOf(campusPizzaMeal))
+
+
     Scaffold(
         topBar = {
             MunchBoxAppBar(
@@ -143,7 +153,7 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
 
-                viewModel.setMeals(meals = allMeals)
+                viewModel.setMeals(meals = uiState.meals.toList())
                 viewModel.setPickupOptions(pickupOptions = pickUpOptions)
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
@@ -169,13 +179,24 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
-                    restaurants = setOf(restaurant),
+                    restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
+                    numMealsRequired = uiState.quantity,
 //                    quantityOptions = DataSource.quantityOptions,
-                    onNextButtonClicked = {
-                        navController.navigate(OrderScreen.MealReview.name)
-                    },
                     onCancelButtonClicked = {
+                        orderedMeals = listOf()
+                        viewModel.setMeals(listOf())
                         cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    onSubmit = { newOrderedMeals : Array<Meal?> ->
+                        orderedMeals = listOf()
+                        for (meal in newOrderedMeals) {
+                            if (meal == null)
+                                continue
+                            orderedMeals = orderedMeals.plus(meal)
+                        }
+
+                        viewModel.setMeals(orderedMeals)
+                        navController.navigate(OrderScreen.MealReview.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -189,6 +210,8 @@ fun MunchBoxApp(
                         navController.navigate(OrderScreen.MealPayment.name)
                     },
                     onCancelButtonClicked = {
+                        orderedMeals = listOf()
+                        viewModel.setMeals(listOf())
                         cancelOrderAndNavigateToStart(viewModel, navController)
                     },
                     modifier = Modifier.fillMaxHeight()
@@ -199,9 +222,13 @@ fun MunchBoxApp(
                     viewModel.uiState.value.quantity,
                     viewModel.uiState.value.price,
                     onCancelButtonClicked = {
+                        orderedMeals = listOf()
+                        viewModel.setMeals(listOf())
                         cancelOrderAndNavigateToStart(viewModel, navController)
                     },
-                    onPayButtonClicked = { } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
+                    onPayButtonClicked = {
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
                 )
             }
         }
@@ -216,6 +243,6 @@ private fun cancelOrderAndNavigateToStart(
     navController: NavHostController
 ) {
     viewModel.resetOrder()
-    navController.popBackStack(OrderScreen.NumberOfMeals.name, inclusive = false)
+    navController.popBackStack(OrderScreen.MealOrderSummary.name, inclusive = false)
 }
 

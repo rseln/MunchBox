@@ -16,13 +16,13 @@ object DataSource {
     )
 
     /** Fake Restaurants to use for now.**/
-    val lazeez = Restaurant(name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
-    val campusPizza = Restaurant(name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
-    val shawaramaPlus = Restaurant(name="Shawarama Plus", setOf(), imageID = R.drawable.shawarmaplus)
+    var lazeez = Restaurant(name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
+    var campusPizza = Restaurant(name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
+    var shawaramaPlus = Restaurant(name="Shawarma Plus", setOf(), imageID = R.drawable.shawarmaplus)
 
-    val lazeezMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), lazeez, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val campusPizzaMeal =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), campusPizza, setOf(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY))
-    val shawarmaPlusMeal =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), shawaramaPlus, setOf(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY))
+    val lazeezMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), lazeez, setOf(DayOfWeek.SUNDAY))
+    val campusPizzaMeal =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), campusPizza, setOf(DayOfWeek.TUESDAY))
+    val shawarmaPlusMeal =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), shawaramaPlus, setOf(DayOfWeek.WEDNESDAY))
 
     val allMeals = setOf(lazeezMeal, campusPizzaMeal, shawarmaPlusMeal)
     val pickUpOptions = setOf(DayOfWeek.TUESDAY)

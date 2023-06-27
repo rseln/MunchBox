@@ -3,9 +3,14 @@ package com.example.munchbox.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,8 +34,9 @@ import com.example.munchbox.ui.components.MealCard
 @Composable
 fun MealSelectionScreen(
     restaurants: Set<Restaurant>,
+    numMealsRequired: Int,
     onCancelButtonClicked: () -> Unit = {},
-    onNextButtonClicked: () -> Unit = {},
+    onSubmit: (Array<Meal?>) -> Unit,
     modifier: Modifier = Modifier
 ) {
     /**
@@ -51,6 +57,7 @@ fun MealSelectionScreen(
 
     var availableRestaurants by remember { mutableStateOf(getAvailableRestaurants(restaurants = restaurants)) }
     var orderedMeals by remember { mutableStateOf(Array<Meal?>(7) { null }) }
+    var numOrderedMeals by remember { mutableStateOf(0) }
 
     /**
      * Callback functions
@@ -72,9 +79,11 @@ fun MealSelectionScreen(
     fun recordMealAddition(meal : Meal) {
         if (orderedMeals[selectedDay.id] == meal) {
             orderedMeals[selectedDay.id] = null
+            numOrderedMeals--
         }
         else {
             orderedMeals[selectedDay.id] = meal
+            numOrderedMeals++
         }
     }
 
@@ -89,11 +98,20 @@ fun MealSelectionScreen(
     /**
      * Composables
      */
-    Column(modifier = modifier) {
+    val scrollState = rememberScrollState()
+    Column(modifier = modifier.verticalScroll(scrollState)) {
         DayTabs(days = DayOfWeek.values(), selectedTabIndex = selectedDay.id) { num ->
             onDaySelectorClick(
                 num
             )
+        }
+        if (availableRestaurants.isEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Oops! No meals today",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
         availableRestaurants.forEach {
 
@@ -124,8 +142,8 @@ fun MealSelectionScreen(
             Button(
                 modifier = Modifier.weight(1f),
                 // the button is enabled when the user makes a selection
-    //            enabled = selectedValue.isNotEmpty(),
-                onClick = onNextButtonClicked
+                enabled = numOrderedMeals == numMealsRequired,
+                onClick = { onSubmit(orderedMeals) }
             ) {
                 Text(stringResource(R.string.next))
             }
