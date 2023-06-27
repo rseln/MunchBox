@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.ui.MealOrderSummaryScreen
+import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.theme.GreetingCardTheme

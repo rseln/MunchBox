@@ -10,9 +10,9 @@ object DataSource {
     val currentDay = DayOfWeek.TUESDAY
 
     val quantityOptions = listOf(
-        Pair(R.string.meals_1, 1),
-        Pair(R.string.meals_3, 3),
-        Pair(R.string.meals_5, 5)
+        Triple(R.string.meals_1, 1, 10),
+        Triple(R.string.meals_3, 3, 27),
+        Triple(R.string.meals_5, 5, 42)
     )
 
     /** Fake Restaurants to use for now.**/

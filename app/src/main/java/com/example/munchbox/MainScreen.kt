@@ -1,5 +1,6 @@
 package com.example.munchbox
 
+import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,8 +33,9 @@ import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.ui.MealOrderSummaryScreen
+import com.example.munchbox.ui.MealPaymentScreen
+import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealReviewScreen
-import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.MealSelectionScreen
 
 
@@ -42,11 +44,15 @@ import com.example.munchbox.ui.MealSelectionScreen
 /**
  * enum values that represent the screens in the app
  */
+
+// note: Maybe we should rename to "Pages" to be more inclusive of login (low priority tho)
 enum class OrderScreen(@StringRes val title: Int) {
     MealOrderSummary(title = R.string.app_name),
+    Login(title = R.string.login),
     NumberOfMeals(title = R.string.app_name),
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
+    MealPayment(title = R.string.meal_payment),
 }
 
 /**
@@ -79,6 +85,7 @@ fun MunchBoxAppBar(
     )
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MunchBoxApp(
@@ -89,7 +96,7 @@ fun MunchBoxApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentScreen = OrderScreen.valueOf(
-        backStackEntry?.destination?.route ?: OrderScreen.NumberOfMeals.name
+        backStackEntry?.destination?.route ?: OrderScreen.Login.name
     )
 
     Scaffold(
@@ -105,9 +112,22 @@ fun MunchBoxApp(
 
         NavHost(
             navController = navController,
-            startDestination = OrderScreen.MealOrderSummary.name,
+            startDestination = OrderScreen.Login.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(route = OrderScreen.Login.name) {
+                LoginScreen(
+                    onLoginButtonClicked = {
+                        // Need to write a function to do actual verification later!!!
+                        // Just nav to next page for now
+                        navController.navigate(OrderScreen.MealOrderSummary.name) {
+                            popUpTo(OrderScreen.Login.name) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
+            }
             composable(route = OrderScreen.MealOrderSummary.name) {
                 /**
                  * the view models meals can be set in meal selection for now it is pointing to a fake dataset
@@ -129,8 +149,8 @@ fun MunchBoxApp(
             composable(route = OrderScreen.NumberOfMeals.name) {
                 NumberOfMealsScreen(
                     quantityOptions = DataSource.quantityOptions,
-                    onNextButtonClicked = {
-                        viewModel.setQuantity(it)
+                    onNextButtonClicked = { numMeals, price ->
+                        viewModel.setQuantity(numMeals, price)
                         navController.navigate(OrderScreen.MealSelect.name)
                     },
                     modifier = Modifier
@@ -140,6 +160,7 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
+//                    quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.MealReview.name)
                     },
@@ -154,10 +175,23 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealReview.name) {
                 MealReviewScreen(
                     orderUiState = uiState,
+                    onNextButtonClicked = {
+                        navController.navigate(OrderScreen.MealPayment.name)
+                    },
                     onCancelButtonClicked = {
                         cancelOrderAndNavigateToStart(viewModel, navController)
                     },
                     modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(route = OrderScreen.MealPayment.name) {
+                MealPaymentScreen(
+                    viewModel.uiState.value.quantity,
+                    viewModel.uiState.value.price,
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    onPayButtonClicked = { } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
                 )
             }
         }
