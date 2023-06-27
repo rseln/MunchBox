@@ -50,7 +50,7 @@ While viewing in the "Android" view in Android Studio
 
 ## Firebase
 
-After downloading the `google-services.json` add it to your **(app-level)** root directory. This file is basically our API key for using Firebase services.  
+After downloading the `google-services.json`. On the top left dropdown that says **'Android'**. Change the project view to **'Project Files'** add it to your **(app-level)** root directory. This file is basically our API key for using Firebase services.  
 **Example:**  
 >     Munchbox/...
 > 
