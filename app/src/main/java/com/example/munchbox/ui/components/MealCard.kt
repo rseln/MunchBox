@@ -31,7 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.munchbox.controller.DayOfWeek
@@ -78,7 +79,7 @@ fun MealCardContainer() {
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal) -> Unit, added: Set<DietaryOption>, modifier: Modifier = Modifier) {
+fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal) -> Unit, added: Set<DietaryOption>, disabled: Boolean = false, modifier: Modifier = Modifier) {
 
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
@@ -138,14 +139,17 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal) -> Unit,
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
-        Image(
-            painter = ColorPainter(MaterialTheme.colorScheme.background),
-            contentDescription = "Test",
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.large)
-                .fillMaxWidth()
-                .aspectRatio(3f / 2f)
-        )
+        restaurant.imageID?.let { painterResource(id = it) }?.let {
+            Image(
+                painter = it,
+                contentDescription = "Contact profile picture",
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.large)
+                    .fillMaxWidth()
+                    .aspectRatio(3f / 2f),
+                contentScale = ContentScale.FillBounds
+            )
+        }
         Column( modifier = modifier) {
             Text(
                 text = restaurant.name,
@@ -186,23 +190,24 @@ fun MealCard(restaurant: Restaurant, allMeals: Set<Meal>, onAdd: (Meal) -> Unit,
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            ElevatedButton(
-                onClick = {
-                    onAdd(getSelectedMeal(allMeals, selectedOptions))
-                },
-            ) {
-                if (added.isEmpty()) {
-                    Text("Add Meal")
+            if (!disabled) {
+                ElevatedButton(
+                    onClick = {
+                        onAdd(getSelectedMeal(allMeals, selectedOptions))
+                    },
+                ) {
+                    if (added.isEmpty()) {
+                        Text("Add Meal")
+                    }
+                    else {
+                        Icon(
+                            imageVector = Icons.Filled.Done,
+                            contentDescription = "Localized Description",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                        Text("Meal Added")
+                    }
                 }
-                else {
-                    Icon(
-                        imageVector = Icons.Filled.Done,
-                        contentDescription = "Localized Description",
-                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                    )
-                    Text("Meal Added")
-                }
-
             }
         }
 
