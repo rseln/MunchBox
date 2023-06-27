@@ -33,40 +33,51 @@ fun MealSelectionScreen(
     onNextButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    /**
-     * State Variables
-     */
-    var selectedDay by remember { mutableStateOf(DayOfWeek.SATURDAY) }
 
-    fun getAvailableRestaurants(restaurants : Set<Restaurant>) : Set<Restaurant> {
+    fun getAvailableRestaurants(restaurants : Set<Restaurant>, day : DayOfWeek) : Set<Restaurant> {
         var availableRestaurants : Set<Restaurant> = setOf()
 
         for (restaurant in restaurants) {
-            if (restaurant.meals.filter { meal: Meal -> meal.days.contains(selectedDay) }.isNotEmpty()) {
+            if (restaurant.meals.filter { meal: Meal -> meal.days.contains(day) }.isNotEmpty()) {
                 availableRestaurants = availableRestaurants.plus(restaurant)
             }
         }
         return availableRestaurants
     }
 
-    var availableRestaurants by remember { mutableStateOf(getAvailableRestaurants(restaurants = restaurants)) }
+    fun getRestaurantMeals(restaurant : Restaurant, day : DayOfWeek) : Set<Meal> {
+        var todaysMeals : Set<Meal> = setOf()
+        // Add all meals that are offered by this restaurant on this day
+        todaysMeals = todaysMeals.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) })
+        return todaysMeals
+    }
+
+    fun getAddedOptions(restaurant: Restaurant, todaysMeal : Meal?) : Set<DietaryOption> {
+        if (todaysMeal == null || todaysMeal.restaurant != restaurant) {
+            return setOf()
+        }
+
+        return todaysMeal.options
+    }
+
+    /**
+     * State Variables
+     */
+    var selectedDay by remember { mutableStateOf(DayOfWeek.SATURDAY) }
+    var availableRestaurants by remember { mutableStateOf(getAvailableRestaurants(restaurants = restaurants, day = selectedDay)) }
     var orderedMeals by remember { mutableStateOf(Array<Meal?>(7) { null }) }
+    // A set of pairs of restaurants and the selected dietary options
+    var selectedOptionsSet by remember { mutableStateOf( mapOf<Restaurant, Set<DietaryOption>>()) }
+
 
     /**
      * Callback functions
      */
-
-
     fun onDaySelectorClick(day: DayOfWeek) {
         selectedDay = day
-        availableRestaurants = getAvailableRestaurants(restaurants)
-    }
-
-    fun getRestaurantMeals(restaurant : Restaurant, day : DayOfWeek) : Set<Meal> {
-        var mealsToday : Set<Meal> = setOf()
-        // Add all meals that are offered by this restaurant on this day
-        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) })
-        return mealsToday
+        availableRestaurants = getAvailableRestaurants(restaurants, day)
+        // Reset all the selected options
+        selectedOptionsSet = mapOf<Restaurant, Set<DietaryOption>>()
     }
 
     fun recordMealAddition(meal : Meal) {
@@ -78,34 +89,41 @@ fun MealSelectionScreen(
         }
     }
 
-
-    fun getAddedOptions(restaurant: Restaurant, todaysMeal : Meal?) : Set<DietaryOption> {
-        if (todaysMeal == null || todaysMeal.restaurant != restaurant) {
-            return setOf()
+    fun onSelectCallback (option : DietaryOption, it : Restaurant) {
+        // Get the corresponding restaurant/selected options pair
+        var selectedOptions = selectedOptionsSet[it]
+        if (selectedOptions == null) {
+            selectedOptions = setOf(option)
         }
-
-        return todaysMeal.options
+        else if (selectedOptions.contains(option)) {
+            selectedOptions = selectedOptions.minus(option)
+        }
+        else {
+            selectedOptions = selectedOptions.plus(option)
+        }
+        selectedOptionsSet = selectedOptionsSet.minus(it)
+        selectedOptionsSet = selectedOptionsSet.plus(Pair(it, selectedOptions))
     }
+
     /**
      * Composables
      */
-    Column(modifier = modifier) {
-        DayTabs(days = DayOfWeek.values(), selectedTabIndex = selectedDay.id) { num ->
-            onDaySelectorClick(
-                num
-            )
-        }
-        availableRestaurants.forEach {
+    Column {
+        DayTabs(days = DayOfWeek.values(), selectedTabIndex = selectedDay.id) { num -> onDaySelectorClick(num) }
 
-            var addedOptions by remember { mutableStateOf(getAddedOptions(it, orderedMeals[selectedDay.id])) }
+        availableRestaurants.forEach {
+            var added by remember { mutableStateOf(it.meals.contains(orderedMeals[selectedDay.id])) }
+
+            selectedOptionsSet = selectedOptionsSet.plus(Pair(it, setOf()))
+
             MealCard(
                 restaurant = it,
                 allMeals = getRestaurantMeals(it, selectedDay),
-                onAdd = { meal ->
-                    recordMealAddition(meal)
-                    addedOptions = getAddedOptions(it, orderedMeals[selectedDay.id])
-                        },
-                added = addedOptions,
+                onAddCallback = { meal -> recordMealAddition(meal)
+                    added = !added },
+                onSelectCallback = { option : DietaryOption -> onSelectCallback(option, it) },
+                selectedOptions = selectedOptionsSet.get(it)!!,
+                added = added && it.meals.contains(orderedMeals[selectedDay.id]),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(25.dp)
