@@ -55,6 +55,28 @@ fun MealSelectionScreen(
         return availableRestaurants
     }
 
+
+    fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
+        var availableMeals = setOf<Meal>()
+        for (meal in meals.asIterable()) {
+            if (meal.options.containsAll(selectedOptions)) {
+                availableMeals = availableMeals.plus(meal)
+            }
+        }
+        return availableMeals
+    }
+
+    fun getAvailableOptions(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<DietaryOption> {
+        // Get the available meals based on the added and selected options
+        val availableMeals: Set<Meal> = getAvailableMeals(meals, selectedOptions)
+        var availableOptions: Set<DietaryOption> = setOf()
+
+        for (meal in availableMeals.iterator()) {
+            availableOptions = availableOptions.plus(meal.options)
+        }
+        return availableOptions
+    }
+
     var availableRestaurants by remember { mutableStateOf(getAvailableRestaurants(restaurants = restaurants)) }
     var orderedMeals by remember { mutableStateOf(Array<Meal?>(7) { null }) }
     var numOrderedMeals by remember { mutableStateOf(0) }
@@ -63,6 +85,15 @@ fun MealSelectionScreen(
      * Callback functions
      */
 
+    fun onSelectCallback (selectedOptions : Set<DietaryOption>, option : DietaryOption) : Set<DietaryOption> {
+        val ret = if (!selectedOptions.contains(option)) {
+            selectedOptions.plus(option)
+        } else {
+            selectedOptions.minus(option)
+        }
+
+        return ret
+    }
 
     fun onDaySelectorClick(day: DayOfWeek) {
         selectedDay = day
@@ -87,7 +118,6 @@ fun MealSelectionScreen(
         }
     }
 
-
     fun getAddedOptions(restaurant: Restaurant, todaysMeal : Meal?) : Set<DietaryOption> {
         if (todaysMeal == null || todaysMeal.restaurant != restaurant) {
             return setOf()
@@ -98,6 +128,7 @@ fun MealSelectionScreen(
     /**
      * Composables
      */
+
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
         DayTabs(days = DayOfWeek.values(), selectedTabIndex = selectedDay.id) { num ->
@@ -113,22 +144,43 @@ fun MealSelectionScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
-        availableRestaurants.forEach {
 
-            var addedOptions by remember { mutableStateOf(getAddedOptions(it, orderedMeals[selectedDay.id])) }
-            MealCard(
+        availableRestaurants.forEach {
+            var initSelect : Set<DietaryOption> = setOf()
+            if (it.meals.contains(orderedMeals[selectedDay.id])) {
+                initSelect = initSelect.plus(orderedMeals[selectedDay.id]!!.options)
+            }
+
+            var added by remember(selectedDay) { mutableStateOf(it.meals.contains(orderedMeals[selectedDay.id])) }
+            var allMeals by remember(selectedDay) { mutableStateOf(it.meals.filter { meal : Meal -> meal.days.contains(selectedDay) }.toSet()) }
+            var selectedOptions by remember(selectedDay) { mutableStateOf(initSelect) }
+            var availableOptions by remember(selectedDay) { mutableStateOf(getAvailableOptions(allMeals, selectedOptions))}
+
+            MealCard (
                 restaurant = it,
-                allMeals = getRestaurantMeals(it, selectedDay),
+                allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
-                    addedOptions = getAddedOptions(it, orderedMeals[selectedDay.id])
-                        },
-                added = addedOptions,
+                    added = !added
+                    if (!added) {
+                        selectedOptions = setOf()
+                        availableOptions = getAvailableOptions(allMeals, selectedOptions)
+                    }
+                },
+                onSelectOption = { option : DietaryOption ->
+                    selectedOptions = onSelectCallback(selectedOptions, option)
+                    availableOptions = getAvailableOptions(allMeals, selectedOptions)
+                },
+                selectedOptions = selectedOptions,
+                availableOptions = availableOptions,
+                added = added,
+                disabled = !added && (orderedMeals[selectedDay.id] != null || numOrderedMeals >= numMealsRequired),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(25.dp)
             )
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
