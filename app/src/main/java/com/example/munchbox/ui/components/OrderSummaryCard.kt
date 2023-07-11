@@ -21,11 +21,15 @@ fun OrderSummaryCard(meal: Meal){
         restaurant = meal.restaurant,
         allMeals = setOf(meal),
         onAdd = { null },
-        added = meal.options,
+        onSelectOption = { null },
+        selectedOptions = meal.options,
+        availableOptions = meal.options,
+        added = true,
         disabled = true,
         modifier = Modifier
             .fillMaxWidth()
             .padding(25.dp)
+
     )
 }
 @Preview

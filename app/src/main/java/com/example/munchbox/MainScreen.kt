@@ -34,11 +34,14 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.DataSource.campusPizza
 import com.example.munchbox.data.DataSource.campusPizzaMeal
+import com.example.munchbox.data.DataSource.campusPizzaMeal2
 import com.example.munchbox.data.DataSource.lazeez
 import com.example.munchbox.data.DataSource.lazeezMeal
+import com.example.munchbox.data.DataSource.lazeezMeal2
 import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
+import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
 import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealPaymentScreen
@@ -113,9 +116,9 @@ fun MunchBoxApp(
      */
     var orderedMeals by remember { mutableStateOf(listOf<Meal>()) }
 
-    lazeez.addMeals(setOf(lazeezMeal))
-    shawaramaPlus.addMeals(setOf(shawarmaPlusMeal))
-    campusPizza.addMeals(setOf(campusPizzaMeal))
+    lazeez.addMeals(setOf(lazeezMeal, lazeezMeal2))
+    shawaramaPlus.addMeals(setOf(shawarmaPlusMeal, shawarmaPlusMeal2))
+    campusPizza.addMeals(setOf(campusPizzaMeal, campusPizzaMeal2))
 
 
     Scaffold(
