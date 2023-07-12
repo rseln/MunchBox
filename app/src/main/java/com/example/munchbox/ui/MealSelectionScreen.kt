@@ -156,6 +156,7 @@ fun MealSelectionScreen(
             var selectedOptions by remember(selectedDay) { mutableStateOf(initSelect) }
             var availableOptions by remember(selectedDay) { mutableStateOf(getAvailableOptions(allMeals, selectedOptions))}
 
+            Spacer(modifier = Modifier.height(13.dp))
             MealCard (
                 restaurant = it,
                 allMeals = allMeals,
@@ -177,8 +178,8 @@ fun MealSelectionScreen(
                 disabled = !added && (orderedMeals[selectedDay.id] != null || numOrderedMeals >= numMealsRequired),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(25.dp)
             )
+            Spacer(modifier = Modifier.height(13.dp))
         }
 
         Row(

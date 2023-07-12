@@ -2,8 +2,8 @@ package com.example.munchbox
 
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -165,7 +166,8 @@ fun MunchBoxApp(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .fillMaxWidth()
+                        .padding(25.dp)
                 )
             }
             composable(route = OrderScreen.NumberOfMeals.name) {
@@ -203,7 +205,8 @@ fun MunchBoxApp(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .fillMaxWidth()
+                        .padding(25.dp)
                 )
             }
             composable(route = OrderScreen.MealReview.name) {
@@ -217,7 +220,10 @@ fun MunchBoxApp(
                         viewModel.setMeals(listOf())
                         cancelOrderAndNavigateToStart(viewModel, navController)
                     },
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .padding(25.dp)
                 )
             }
             composable(route = OrderScreen.MealPayment.name) {
