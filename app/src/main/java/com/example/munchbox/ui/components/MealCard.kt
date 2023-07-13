@@ -44,7 +44,7 @@ import com.example.munchbox.ui.theme.Typography
 @Composable
 fun MealCardContainer() {
 
-    val restaurant = Restaurant("Lazeez", setOf())
+    val restaurant = Restaurant("1", "Lazeez", setOf())
     val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
