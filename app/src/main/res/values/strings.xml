@@ -13,4 +13,5 @@
     <string name="meals_1">1 Meal - $10</string>
     <string name="meals_3">3 Meals - $27</string>
     <string name="meals_5">5 Meals - $42</string>
+    <string name="title_activity_payment">Payment</string>
 </resources>
