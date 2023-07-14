@@ -1,6 +1,11 @@
 package com.example.munchbox
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,15 +48,14 @@ import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
+import com.example.munchbox.payment.PaymentActivity
+import com.example.munchbox.ui.AfterPaymentScreen
 import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
-import com.example.munchbox.ui.MealPaymentScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
-
-
 
 
 /**
@@ -64,7 +69,7 @@ enum class OrderScreen(@StringRes val title: Int) {
     NumberOfMeals(title = R.string.app_name),
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
-    MealPayment(title = R.string.meal_payment),
+    AfterPayment(title = R.string.after_payment),
 }
 
 /**
@@ -104,6 +109,24 @@ fun MunchBoxApp(
     viewModel: OrderViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+    val context = LocalContext.current
+    var intent = Intent(context, PaymentActivity::class.java)
+
+    var isPaymentSuccess: Boolean? = null
+
+    // make an activity launcher that has a callback for when the activity
+    // has a result ready
+    val stripeLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ){  result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            isPaymentSuccess = true
+        }
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            isPaymentSuccess = false
+        }
+    }
+
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
@@ -158,6 +181,10 @@ fun MunchBoxApp(
 
                 viewModel.setMeals(meals = uiState.meals.toList())
                 viewModel.setPickupOptions(pickupOptions = pickUpOptions)
+
+                if (isPaymentSuccess != true) {
+                    viewModel.resetOrder()
+                }
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
                     onNextButtonClicked = {
@@ -210,7 +237,9 @@ fun MunchBoxApp(
                 MealReviewScreen(
                     orderUiState = uiState,
                     onNextButtonClicked = {
-                        navController.navigate(OrderScreen.MealPayment.name)
+                        intent.putExtra("amount", uiState.price)
+                        stripeLauncher.launch(intent)
+                        navController.popBackStack(OrderScreen.MealOrderSummary.name, inclusive = false)
                     },
                     onCancelButtonClicked = {
                         orderedMeals = listOf()
@@ -220,18 +249,17 @@ fun MunchBoxApp(
                     modifier = Modifier.fillMaxHeight()
                 )
             }
-            composable(route = OrderScreen.MealPayment.name) {
-                MealPaymentScreen(
-                    viewModel.uiState.value.quantity,
-                    viewModel.uiState.value.price,
-                    onCancelButtonClicked = {
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+            composable(route = OrderScreen.AfterPayment.name) {
+                AfterPaymentScreen(
+                    isPaymentSuccess = isPaymentSuccess,
+                    onConfirmButtonClicked = {
+                        if (isPaymentSuccess == true) {
+                            navController.navigate(OrderScreen.MealOrderSummary.name)
+                        } else {
+                            cancelOrderAndNavigateToStart(viewModel, navController)
+                        }
                     },
-                    onPayButtonClicked = {
-                        navController.navigate(OrderScreen.MealOrderSummary.name)
-                    } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
+                    modifier = Modifier.fillMaxHeight()
                 )
             }
         }

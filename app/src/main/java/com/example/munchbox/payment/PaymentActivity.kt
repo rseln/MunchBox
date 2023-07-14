@@ -1,11 +1,16 @@
 package com.example.munchbox.payment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.munchbox.MunchBoxApp
 import com.example.munchbox.R
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
@@ -14,7 +19,6 @@ import org.json.JSONObject
 
 var PUBLISH_KEY = "pk_test_51NT9kzHFo5HGXVWfSvxwHGG8TUNzxzp8E9Q8VsuhrW3VOL3xAJ2miba5gERq2YPImMHt3ONb3I0Izf4H2y3TLkZG00JfF8NlnR"
 var SECRET_KEY = "sk_test_51NT9kzHFo5HGXVWft1sGRJIvoIJ1ZKRxR2oBFF1pImKy32e6uE9V9tGTOtGTLWqlkEJkU2w9IKpssGn6nVi6slBZ00Pc6JOdn7"
-var amount = "1000" + "00"
 var customerId = ""
 var ephemeralKey = ""
 var paymentIntentClientSecret = ""
@@ -22,25 +26,39 @@ var paymentIntentClientSecret = ""
 class PaymentActivity : ComponentActivity() {
     lateinit var paymentSheet: PaymentSheet
     lateinit var customerConfig: PaymentSheet.CustomerConfiguration
-    lateinit var button: Button
+    lateinit var returnIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.payment)
-        button =findViewById(R.id.btn)
 
+//        val b = intent.extras
+//        val amount_print = b?.getString("amount")
+////        Toast.makeText(this, amount_print, Toast.LENGTH_LONG).show()
+        val amount = "1000"
+        val numMeals = 1
         // send requests
-        createCustomer()
+        createCustomer(amount)
         PaymentConfiguration.init(this, PUBLISH_KEY)
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
 
-        button.setOnClickListener {
-            paymentFlow()
+        returnIntent = Intent()
+
+        setContent {
+            MealPaymentScreen(
+                numMeals = numMeals,
+                price = "$" + amount,
+                onPayButtonClicked = {
+                    paymentFlow()
+                },
+                onCancelButtonClicked = {
+                    setResult(RESULT_CANCELED, returnIntent);
+                    finish()
+                }
+            )
         }
 
     }
-
-    private fun createCustomer() {
+    private fun createCustomer(amount: String) {
         val url = "https://api.stripe.com/v1/customers"
 
         val stringRequest = object: StringRequest(
@@ -48,7 +66,7 @@ class PaymentActivity : ComponentActivity() {
             Response.Listener { response ->
                 val obj = JSONObject(response)
                 customerId = obj.getString("id")
-                createEphemeralKey(customerId)
+                createEphemeralKey(customerId, amount)
             },
             Response.ErrorListener {  })
         {
@@ -62,7 +80,7 @@ class PaymentActivity : ComponentActivity() {
         queue.add(stringRequest)
     }
 
-    private fun createEphemeralKey(customerId: String) {
+    private fun createEphemeralKey(customerId: String, amount: String) {
         val url = "https://api.stripe.com/v1/ephemeral_keys"
 
         val stringRequest = object: StringRequest(
@@ -98,7 +116,6 @@ class PaymentActivity : ComponentActivity() {
             Response.Listener { response ->
                 val obj = JSONObject(response)
                 paymentIntentClientSecret = obj.getString("client_secret")
-                paymentFlow()
             },
             Response.ErrorListener {  })
         {
@@ -143,8 +160,9 @@ class PaymentActivity : ComponentActivity() {
                 print("Error: ${paymentSheetResult.error}")
             }
             is PaymentSheetResult.Completed -> {
-                // Display for example, an order confirmation screen
+                setResult(RESULT_OK, returnIntent);
                 print("Completed")
+                finish()
             }
         }
     }
