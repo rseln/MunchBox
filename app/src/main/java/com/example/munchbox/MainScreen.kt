@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,14 +50,17 @@ import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
+import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
+import com.example.munchbox.ui.ChooseFighterScreen
 import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.ui.RestaurantHubScreen
 
 
 /**
@@ -71,6 +75,9 @@ enum class OrderScreen(@StringRes val title: Int) {
     MealSelect(title = R.string.meal_select),
     MealReview(title = R.string.meal_review),
     AfterPayment(title = R.string.after_payment),
+    MealPayment(title = R.string.meal_payment),
+    RestaurantHub(title = R.string.restaurant_hub),
+    ChooseFighter(title = R.string.choose_fighter),
 }
 
 /**
@@ -169,12 +176,26 @@ fun MunchBoxApp(
                     onLoginButtonClicked = {
                         // Need to write a function to do actual verification later!!!
                         // Just nav to next page for now
-                        navController.navigate(OrderScreen.MealOrderSummary.name) {
+                        navController.navigate(OrderScreen.ChooseFighter.name) {
                             popUpTo(OrderScreen.Login.name) {
                                 inclusive = true
                             }
                         }
                     }
+                )
+            }
+            composable(route = OrderScreen.ChooseFighter.name) {
+                ChooseFighterScreen(
+                    onMunchButtonClick = {
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    },
+                    onRestaurantButtonClick = {
+                        navController.navigate(OrderScreen.RestaurantHub.name)
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .padding(25.dp)
                 )
             }
             composable(route = OrderScreen.MealOrderSummary.name) {
@@ -266,6 +287,28 @@ fun MunchBoxApp(
                     },
                     modifier = Modifier.fillMaxHeight()
                 )
+            }
+            composable(route = OrderScreen.MealPayment.name) {
+                MealPaymentScreen(
+                    viewModel.uiState.value.quantity,
+                    viewModel.uiState.value.price,
+                    onCancelButtonClicked = {
+                        orderedMeals = listOf()
+                        viewModel.setMeals(listOf())
+                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    onPayButtonClicked = {
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
+                )
+            }
+            composable(route = OrderScreen.RestaurantHub.name) {
+                RestaurantHubScreen(orderUiState = viewModel.uiState.value,
+                    restaurant = lazeez,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .padding(25.dp))
             }
         }
     }

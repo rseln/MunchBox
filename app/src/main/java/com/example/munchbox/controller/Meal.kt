@@ -1,7 +1,5 @@
 package com.example.munchbox.controller
 
-import com.example.munchbox.controller.Restaurant
-
 /**
  * ENUM DEFINITIONS
  */
@@ -35,8 +33,17 @@ enum class DietaryOption(val id: Int, val str : String) {
  * @member restaurant - Restaurant
  * @member - Day availability
  */
-class Meal(val options : Set<DietaryOption>, val restaurant : Restaurant, val days : Set<DayOfWeek>) {
-
+class Meal(val options : Set<DietaryOption>,
+           val restaurant : Restaurant,
+           val days : Set<DayOfWeek>,
+           val orders : Map<DayOfWeek, Int> = mapOf()) {
+    fun totalOrderCount() : Int {
+        var sum : Int = 0;
+        for (order in orders) {
+            sum += order.value
+        }
+        return sum
+    }
     fun optionToStr(option : DietaryOption): String {
         return option.str
     }

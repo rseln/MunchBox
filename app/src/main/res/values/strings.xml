@@ -4,6 +4,9 @@
     <string name="meal_select">Meal Select</string>
     <string name="meal_review">Meal Review</string>
     <string name="after_payment">Payment</string>
+    <string name="restaurant_hub">Restaurant Hub</string>
+    <string name="choose_fighter">Choose Your Fighter</string>
+    <string name="meal_payment">Meal Payment</string>
     <string name="back_button">Back</string>
     <string name="next">Next</string>
     <string name="checkout">Checkout</string>

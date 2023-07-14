@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -87,7 +87,7 @@ fun MealCard(restaurant: Restaurant,
     /**
      * UI Components
      */
-    Card(
+    ElevatedCard(
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
@@ -102,7 +102,7 @@ fun MealCard(restaurant: Restaurant,
                 contentScale = ContentScale.FillBounds
             )
         }
-        Column( modifier = modifier.padding(25.dp)) {
+        Column( modifier = modifier.padding(24.dp)) {
             Text(
                 text = restaurant.name,
                 style = Typography.headlineMedium,
