@@ -110,22 +110,6 @@ fun MunchBoxApp(
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
-    var intent = Intent(context, PaymentActivity::class.java)
-
-    var isPaymentSuccess: Boolean? = null
-
-    // make an activity launcher that has a callback for when the activity
-    // has a result ready
-    val stripeLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ){  result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            isPaymentSuccess = true
-        }
-        if (result.resultCode == Activity.RESULT_CANCELED) {
-            isPaymentSuccess = false
-        }
-    }
 
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -142,6 +126,25 @@ fun MunchBoxApp(
     lazeez.addMeals(setOf(lazeezMeal, lazeezMeal2))
     shawaramaPlus.addMeals(setOf(shawarmaPlusMeal, shawarmaPlusMeal2))
     campusPizza.addMeals(setOf(campusPizzaMeal, campusPizzaMeal2))
+
+    /**
+     * Logic to navigate to and from payment activity
+     */
+
+    val intent = Intent(context, PaymentActivity::class.java)
+
+    val stripeLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            navController.navigate(OrderScreen.AfterPayment.name)
+        }
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            orderedMeals = listOf()
+            viewModel.setMeals(listOf())
+            cancelOrderAndNavigateToStart(viewModel, navController)
+        }
+    }
 
 
     Scaffold(
@@ -182,9 +185,6 @@ fun MunchBoxApp(
                 viewModel.setMeals(meals = uiState.meals.toList())
                 viewModel.setPickupOptions(pickupOptions = pickUpOptions)
 
-                if (isPaymentSuccess != true) {
-                    viewModel.resetOrder()
-                }
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
                     onNextButtonClicked = {
@@ -238,10 +238,14 @@ fun MunchBoxApp(
                     orderUiState = uiState,
                     onNextButtonClicked = {
                         intent.putExtra("amount", uiState.price)
+                        intent.putExtra("numMeals", uiState.quantity)
                         stripeLauncher.launch(intent)
-                        navController.popBackStack(OrderScreen.MealOrderSummary.name, inclusive = false)
                     },
                     onCancelButtonClicked = {
+                        /**
+                         * TODO: BUG - previous orders will be deleted on cancel need to adjust this logic everywhere this is used.
+                         * Might need to be fixed once we have a database and store data properly
+                        **/
                         orderedMeals = listOf()
                         viewModel.setMeals(listOf())
                         cancelOrderAndNavigateToStart(viewModel, navController)
@@ -251,13 +255,8 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.AfterPayment.name) {
                 AfterPaymentScreen(
-                    isPaymentSuccess = isPaymentSuccess,
                     onConfirmButtonClicked = {
-                        if (isPaymentSuccess == true) {
-                            navController.navigate(OrderScreen.MealOrderSummary.name)
-                        } else {
-                            cancelOrderAndNavigateToStart(viewModel, navController)
-                        }
+                        navController.popBackStack(OrderScreen.MealOrderSummary.name, inclusive = false)
                     },
                     modifier = Modifier.fillMaxHeight()
                 )

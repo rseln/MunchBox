@@ -1,17 +1,12 @@
 package com.example.munchbox.payment
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.munchbox.MunchBoxApp
-import com.example.munchbox.R
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -31,11 +26,10 @@ class PaymentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val b = intent.extras
-//        val amount_print = b?.getString("amount")
-////        Toast.makeText(this, amount_print, Toast.LENGTH_LONG).show()
-        val amount = "1000"
-        val numMeals = 1
+        val b = intent.extras
+        val amount = b?.getString("amount")?.substring(1) + "00"
+        val numMeals = b?.getInt("numMeals")
+
         // send requests
         createCustomer(amount)
         PaymentConfiguration.init(this, PUBLISH_KEY)
@@ -44,17 +38,19 @@ class PaymentActivity : ComponentActivity() {
         returnIntent = Intent()
 
         setContent {
-            MealPaymentScreen(
-                numMeals = numMeals,
-                price = "$" + amount,
-                onPayButtonClicked = {
-                    paymentFlow()
-                },
-                onCancelButtonClicked = {
-                    setResult(RESULT_CANCELED, returnIntent);
-                    finish()
-                }
-            )
+            if (numMeals != null) {
+                MealPaymentScreen(
+                    numMeals = numMeals,
+                    price = amount,
+                    onPayButtonClicked = {
+                        paymentFlow()
+                    },
+                    onCancelButtonClicked = {
+                        setResult(RESULT_CANCELED, returnIntent)
+                        finish()
+                    }
+                )
+            }
         }
 
     }
@@ -160,7 +156,7 @@ class PaymentActivity : ComponentActivity() {
                 print("Error: ${paymentSheetResult.error}")
             }
             is PaymentSheetResult.Completed -> {
-                setResult(RESULT_OK, returnIntent);
+                setResult(RESULT_OK, returnIntent)
                 print("Completed")
                 finish()
             }
