@@ -53,6 +53,7 @@ import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
 import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
+import com.example.munchbox.ui.ChooseFighterScreen
 import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
@@ -76,6 +77,7 @@ enum class OrderScreen(@StringRes val title: Int) {
     AfterPayment(title = R.string.after_payment),
     MealPayment(title = R.string.meal_payment),
     RestaurantHub(title = R.string.restaurant_hub),
+    ChooseFighter(title = R.string.choose_fighter),
 }
 
 /**
@@ -174,12 +176,26 @@ fun MunchBoxApp(
                     onLoginButtonClicked = {
                         // Need to write a function to do actual verification later!!!
                         // Just nav to next page for now
-                        navController.navigate(OrderScreen.MealOrderSummary.name) {
+                        navController.navigate(OrderScreen.ChooseFighter.name) {
                             popUpTo(OrderScreen.Login.name) {
                                 inclusive = true
                             }
                         }
                     }
+                )
+            }
+            composable(route = OrderScreen.ChooseFighter.name) {
+                ChooseFighterScreen(
+                    onMunchButtonClick = {
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    },
+                    onRestaurantButtonClick = {
+                        navController.navigate(OrderScreen.RestaurantHub.name)
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .padding(25.dp)
                 )
             }
             composable(route = OrderScreen.MealOrderSummary.name) {
@@ -288,6 +304,7 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.RestaurantHub.name) {
                 RestaurantHubScreen(orderUiState = viewModel.uiState.value,
+                    restaurant = lazeez,
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()

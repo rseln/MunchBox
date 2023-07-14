@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,13 +30,13 @@ fun SelectCard(headerText: String,
                buttonText: String,
                onClick : () -> Unit,
                modifier: Modifier = Modifier) {
-    Card(
+    ElevatedCard(
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
         Column( modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),) {
+            .padding(24.dp),) {
             Text(
                 text = headerText,
                 style = MaterialTheme.typography.headlineMedium,
