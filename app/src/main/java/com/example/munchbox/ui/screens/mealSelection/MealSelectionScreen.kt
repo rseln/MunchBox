@@ -1,4 +1,4 @@
-package com.example.munchbox.ui
+package com.example.munchbox.ui.screens.mealSelection
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

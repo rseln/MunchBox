@@ -1,4 +1,4 @@
-package com.example.munchbox.ui
+package com.example.munchbox.ui.screens.mealOrderSummary
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +23,7 @@ import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.components.OrderSummaries
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.components.SelectCard
@@ -86,7 +87,7 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
 @Preview
 fun PreviewMealsAvailableScreen(){
     /** To show the cards go into interactive mode **/
-    val viewModel:OrderViewModel = viewModel()
+    val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setMeals(meals = allMeals.toList())
     viewModel.setPickupOptions(pickupOptions = pickUpOptions)

@@ -1,4 +1,4 @@
-package com.example.munchbox.ui
+package com.example.munchbox.ui.screens.login
 
 /*
  * Copyright (C) 2023 The Android Open Source Project
@@ -57,6 +57,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.munchbox.R
+import com.example.munchbox.data.RestaurantStorageService
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * Composable for the login page.
@@ -64,8 +66,13 @@ import com.example.munchbox.R
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onLoginButtonClicked: () -> Unit = {}) {
+fun LoginScreen(
+    onLoginButtonClicked: () -> Unit = {},
+) {
     val context = LocalContext.current
+    val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
+    val restId = storageService.createDBRestaurant("Anees House")
+    val rest = launchCatching {storageService.getRestaurantByID("anees_house17e8157d-8581-45f9-94aa-cf1a3152d9ce")}
 
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(

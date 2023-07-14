@@ -1,4 +1,4 @@
-package com.example.munchbox.ui
+package com.example.munchbox.ui.screens.mealReview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.R
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.components.OrderSummaries
 
 @Composable
@@ -63,7 +64,7 @@ fun MealReviewScreen(
 @Composable
 @Preview
 fun PreviewMealReviewScreen() {
-    val viewModel:OrderViewModel = viewModel()
+    val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setMeals(meals = DataSource.allMeals.toList())
     viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
