@@ -45,12 +45,9 @@ fun RestaurantCreationScreen() {
     val mMinuteStart = mCalendarStart[Calendar.MINUTE]
     val mHourEnd = mCalendarEnd[Calendar.HOUR_OF_DAY]
     val mMinuteEnd = mCalendarEnd[Calendar.MINUTE]
-
     // Value for storing time as a string
     val mTimeStart = remember { mutableStateOf("") }
     val mTimeEnd = remember { mutableStateOf("") }
-
-
     // Creating a TimePicker dialod
     val mTimePickerDialogStart = TimePickerDialog(
         mContext,
@@ -58,7 +55,6 @@ fun RestaurantCreationScreen() {
             mTimeStart.value = "$mHourStart:$mMinuteStart"
         }, mHourStart, mMinuteStart, false
     )
-    // Creating a TimePicker dialod
     val mTimePickerDialogEnd = TimePickerDialog(
         mContext,
         {_, mHour : Int, mMinute: Int ->
@@ -67,9 +63,7 @@ fun RestaurantCreationScreen() {
     )
 
     val restaurantPhoneNumber = remember {mutableStateOf(TextFieldValue())}
-
-
-
+    val restaurantEmail = remember {mutableStateOf(TextFieldValue())}
 
     Column(
         //horizontalAlignment = Alignment.CenterHorizontally
@@ -123,7 +117,7 @@ fun RestaurantCreationScreen() {
 
         // EMAIL
         Text(text = "Business Email")
-
+        TextField(value = restaurantEmail.value, onValueChange = {restaurantEmail.value = it}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
         Spacer(modifier = Modifier.padding(20.dp))
 
         // PAYMENT
