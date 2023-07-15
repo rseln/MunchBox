@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
-
+// TODO: replace all List<Meal> with List<String> once meal IDs are implemented
 class RestaurantStorageService
 @Inject
 constructor(private val firestore: FirebaseFirestore){
