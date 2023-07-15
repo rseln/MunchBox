@@ -7,6 +7,7 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +21,7 @@ class RestaurantStorageService
 @Inject
 constructor(private val firestore: FirebaseFirestore){
     fun createDBRestaurant(name : String, imageID: Int? = null): String {
-        val restaurantID:String = name.lowercase().replace(" ", "_") + UUID.randomUUID().toString()
-        val firestore = Firebase.firestore
-
+        val restaurantID:String = "restaurant_" + UUID.randomUUID().toString()
         val meals : List<Meal> = listOf()
         val data = hashMapOf(
             "restaurantID" to restaurantID,
@@ -33,8 +32,6 @@ constructor(private val firestore: FirebaseFirestore){
 
         firestore.collection("Restaurants").document(restaurantID)
             .set(data)
-            .addOnSuccessListener { }
-            .addOnFailureListener { }
 
         return restaurantID
     }
@@ -88,5 +85,38 @@ constructor(private val firestore: FirebaseFirestore){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
         return@withContext null
+    }
+
+    fun updateRestaurantByID(restaurantID: String, name : String? = null, meals: Set<Meal>? = null, imageID: Int? = null): String {
+        val data:MutableMap<String, Any?> = mutableMapOf()
+
+        if(name != null) {
+            data["name"] = name
+        }
+
+        if(meals != null) {
+            val listMeals : List<Meal> = meals.toList()
+            data["meals"] = meals
+        }
+
+        if(imageID != null) {
+            data["imageID"] = imageID
+        }
+
+        firestore.collection("Restaurants").document(restaurantID)
+            .set(data, SetOptions.merge())
+
+        return restaurantID
+    }
+
+    fun deleteRestaurantByID(restaurantID: String): Boolean {
+        try {
+            firestore.collection("Restaurants").document(restaurantID).delete()
+            return true
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+
+        return false
     }
 }

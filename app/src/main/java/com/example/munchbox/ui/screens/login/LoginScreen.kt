@@ -77,33 +77,34 @@ fun LoginScreen(
     onLoginButtonClicked: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    var restaurant by remember() {
-        mutableStateOf<Restaurant?>(null)
-    }
-    var restaurants by remember() {
-        mutableStateOf<List<Restaurant>?>(null)
-    }
-    val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
-
-    LaunchedEffect(Unit){
-        val restID = storageService.createDBRestaurant("Anees House")
-        val fetchedRestaurant = storageService.getRestaurantByID(restID)
-        val allRestaurants = storageService.getAllRestaurants()
-        restaurant = fetchedRestaurant
-        restaurants = allRestaurants
-    }
-
-    if (restaurant != null) {
-        // Use the restaurantName variable in your UI or business logic
-        Log.d("IM SHITTING", restaurant!!.name)
-    }
-
-    if (restaurants != null) {
-        // Use the restaurantName variable in your UI or business logic
-        for(r in restaurants!!) {
-            Log.d("IM SHITTING2", r!!.name)
-        }
-    }
+//    var restaurant by remember() {
+//        mutableStateOf<Restaurant?>(null)
+//    }
+//    var restaurants by remember() {
+//        mutableStateOf<List<Restaurant>?>(null)
+//    }
+//    val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
+//
+//    LaunchedEffect(Unit){
+//        val restID = storageService.createDBRestaurant("Anees House")
+//        val fetchedRestaurant = storageService.getRestaurantByID(restID)
+//        val allRestaurants = storageService.getAllRestaurants()
+//        restaurant = fetchedRestaurant
+//        restaurants = allRestaurants
+//        storageService.deleteRestaurantByID("lazeez")
+//    }
+//
+//    if (restaurant != null) {
+//        // Use the restaurantName variable in your UI or business logic
+//        Log.d("IM SHITTING", restaurant!!.name)
+//    }
+//
+//    if (restaurants != null) {
+//        // Use the restaurantName variable in your UI or business logic
+//        for(r in restaurants!!) {
+//            Log.d("IM SHITTING2", r!!.name)
+//        }
+//    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
