@@ -77,18 +77,32 @@ fun LoginScreen(
     onLoginButtonClicked: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    var restaurant by remember("anees_house17e8157d-8581-45f9-94aa-cf1a3152d9ce") {
+    var restaurant by remember() {
         mutableStateOf<Restaurant?>(null)
     }
+    var restaurants by remember() {
+        mutableStateOf<List<Restaurant>?>(null)
+    }
     val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
-    LaunchedEffect("anees_house17e8157d-8581-45f9-94aa-cf1a3152d9ce"){
-       val fetchedRestaurant = storageService.getRestaurantByID("anees_house17e8157d-8581-45f9-94aa-cf1a3152d9ce")
+
+    LaunchedEffect(Unit){
+        val restID = storageService.createDBRestaurant("Anees House")
+        val fetchedRestaurant = storageService.getRestaurantByID(restID)
+        val allRestaurants = storageService.getAllRestaurants()
         restaurant = fetchedRestaurant
+        restaurants = allRestaurants
     }
 
     if (restaurant != null) {
         // Use the restaurantName variable in your UI or business logic
         Log.d("IM SHITTING", restaurant!!.name)
+    }
+
+    if (restaurants != null) {
+        // Use the restaurantName variable in your UI or business logic
+        for(r in restaurants!!) {
+            Log.d("IM SHITTING2", r!!.name)
+        }
     }
 
 
