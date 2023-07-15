@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -59,8 +61,16 @@ val dietaryOptions = setOf(
 fun RestaurantCreationScreen() {
     val mContext = LocalContext.current
 
+    // VALUES TO SEND
     val restaurantName = remember { mutableStateOf(TextFieldValue()) }
     val restaurantAddress = remember { mutableStateOf(TextFieldValue()) }
+    val mTimeStart = remember { mutableStateOf("") }
+    val mTimeEnd = remember { mutableStateOf("") }
+    val restaurantCuisine = remember { mutableStateOf(TextFieldValue()) }
+    var selectedOptions by remember { mutableStateOf(setOf<Pair<Int, String>>()) }
+    val restaurantPhoneNumber = remember {mutableStateOf(TextFieldValue())}
+    val restaurantEmail = remember {mutableStateOf(TextFieldValue())}
+
 
     // Declaring and initializing a calendar
     val mCalendarStart = Calendar.getInstance()
@@ -69,10 +79,8 @@ fun RestaurantCreationScreen() {
     val mMinuteStart = mCalendarStart[Calendar.MINUTE]
     val mHourEnd = mCalendarEnd[Calendar.HOUR_OF_DAY]
     val mMinuteEnd = mCalendarEnd[Calendar.MINUTE]
-    // Value for storing time as a string
-    val mTimeStart = remember { mutableStateOf("") }
-    val mTimeEnd = remember { mutableStateOf("") }
-    // Creating a TimePicker dialod
+
+    // Creating TimePickerDialogs for RestaurantHours
     val mTimePickerDialogStart = TimePickerDialog(
         mContext,
         {_, mHour : Int, mMinute: Int ->
@@ -86,24 +94,21 @@ fun RestaurantCreationScreen() {
         }, mHourEnd, mMinuteEnd, false
     )
 
-    val restaurantPhoneNumber = remember {mutableStateOf(TextFieldValue())}
-    val restaurantEmail = remember {mutableStateOf(TextFieldValue())}
 
     Column(
         //horizontalAlignment = Alignment.CenterHorizontally
+    modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
         // RESTAURANT NAME - done
         Text("Restaurant Name",
             //modifier = Modifier.align(Alignment.Start)
         )
         TextField(value = restaurantName.value, onValueChange = {restaurantName.value = it})
-
         Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT ADDRESS - done
         Text(text = "Address")
         TextField(value = restaurantAddress.value, onValueChange = {restaurantAddress.value = it})
-
         Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT HOURS
@@ -112,26 +117,19 @@ fun RestaurantCreationScreen() {
             Text(text = "Select Opening Time", color = Color.White)
         }
         Text(text = "Selected Start Time: ${mTimeStart.value}")
-
         Button(onClick = { mTimePickerDialogEnd.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
             Text(text = "Select Closing Time", color = Color.White)
         }
         Text(text = "Selected End Time: ${mTimeEnd.value}")
-
         Spacer(modifier = Modifier.padding(20.dp))
 
         // CUISINE
         Text(text = "Cuisine")
-
-
-
+        TextField(value = restaurantCuisine.value, onValueChange = {restaurantCuisine.value = it})
         Spacer(modifier = Modifier.padding(20.dp))
 
         // DIETARY OPTIONS
         Text(text = "Dietary Offerings")
-
-        var selectedOptions by remember { mutableStateOf(setOf<Pair<Int, String>>()) }
-
         FlowRow(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -160,7 +158,6 @@ fun RestaurantCreationScreen() {
                 Spacer(modifier = Modifier.size(4.dp, 4.dp))
             }
         }
-
         Spacer(modifier = Modifier.padding(20.dp))
 
         // PHONE NUMBER
