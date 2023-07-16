@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.example.munchbox.R
+import java.util.regex.Pattern
 
 val dietaryOptions = setOf(
     Pair(0, "Halal"),
@@ -74,6 +75,10 @@ fun RestaurantCreationScreen() {
     val restaurantPhoneNumber = remember {mutableStateOf(TextFieldValue())}
     val restaurantEmail = remember {mutableStateOf(TextFieldValue())}
 
+    // helper state vars
+    var emailError by remember { mutableStateOf((false))}
+    var phoneError by remember { mutableStateOf((false))}
+
 
     // Declaring and initializing a calendar
     val mCalendarStart = Calendar.getInstance()
@@ -96,24 +101,27 @@ fun RestaurantCreationScreen() {
             mTimeEnd.value = "$mHour:$mMinute"
         }, mHourEnd, mMinuteEnd, false
     )
-
-
     Column(
         //horizontalAlignment = Alignment.CenterHorizontally
     modifier = Modifier
         .verticalScroll(rememberScrollState())
         .padding(dimensionResource(R.dimen.padding_medium))
     ) {
+        Text(text = stringResource(R.string.app_name), fontSize = 30.sp)
+        Text(text = stringResource(R.string.signup_restaurant_title), fontSize = 20.sp)
+        Spacer(modifier = Modifier.padding(10.dp))
+
+
         // RESTAURANT NAME - done
         Text(stringResource(R.string.signup_restaurant_name),
             //modifier = Modifier.align(Alignment.Start)
         )
-        TextField(value = restaurantName.value, onValueChange = {restaurantName.value = it})
+        TextField(value = restaurantName.value, onValueChange = {restaurantName.value = it}, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT ADDRESS - done
         Text(stringResource(R.string.signup_restaurant_address))
-        TextField(value = restaurantAddress.value, onValueChange = {restaurantAddress.value = it})
+        TextField(value = restaurantAddress.value, onValueChange = {restaurantAddress.value = it}, Modifier.fillMaxWidth(),)
         Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT HOURS
@@ -130,7 +138,7 @@ fun RestaurantCreationScreen() {
 
         // CUISINE
         Text(text = stringResource(R.string.signup_restaurant_cuisine))
-        TextField(value = restaurantCuisine.value, onValueChange = {restaurantCuisine.value = it})
+        TextField(value = restaurantCuisine.value, onValueChange = {restaurantCuisine.value = it}, Modifier.fillMaxWidth(),)
         Spacer(modifier = Modifier.padding(20.dp))
 
         // DIETARY OPTIONS
@@ -169,22 +177,54 @@ fun RestaurantCreationScreen() {
         Text(text = stringResource(R.string.signup_restaurant_phone))
         TextField(
             value = restaurantPhoneNumber.value,
-            {restaurantPhoneNumber.value = it},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+            onValueChange = {
+                restaurantPhoneNumber.value = it
+                phoneError = !isValidPhone(it.text)
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            isError = phoneError,
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.padding(20.dp))
 
         // EMAIL - done
         Text(text = stringResource(R.string.signup_restaurant_email))
-        TextField(value = restaurantEmail.value, onValueChange = {restaurantEmail.value = it}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
+        TextField(
+            value = restaurantEmail.value,
+            onValueChange = {
+                // taken from https://stackoverflow.com/questions/65641875/jetpack-compose-textfield-inputfilter-to-have-only-currency-regex-inputs
+                restaurantEmail.value = it
+                emailError = !isValidEmail(it.text)
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            isError = emailError,
+            modifier = Modifier.fillMaxWidth(),)
         Spacer(modifier = Modifier.padding(20.dp))
 
         // FINISH
-        Button(onClick = { /*TODO*/ }) {
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             Text(text = stringResource(R.string.signup_restaurant_finish))
+        }
+        // GO BACK
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(text = stringResource(R.string.back_button))
         }
     }
 }
+
+fun isValidPhone(phoneStr: String?) = Pattern.compile(
+    "^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}\$")
+    .matcher(phoneStr).find()
+fun isValidEmail(emailStr: String?) = Pattern.compile(
+    "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE)
+    .matcher(emailStr).find()
+
 
 @Preview
 @Composable
