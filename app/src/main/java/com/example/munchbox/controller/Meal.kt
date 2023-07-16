@@ -33,10 +33,16 @@ enum class DietaryOption(val id: Int, val str : String) {
  * @member restaurant - Restaurant
  * @member - Day availability
  */
-class Meal(val options : Set<DietaryOption>,
-           val restaurant : Restaurant,
-           val days : Set<DayOfWeek>,
-           val orders : Map<DayOfWeek, Int> = mapOf()) {
+//TODO: remove restaurant object and replace usage with restaurantID with meal APIs
+//TODO: remove usage of total order count and replace with totalOrders from API
+class Meal(
+    val mealID: String,
+    val restaurantID: String,
+    val options : Set<DietaryOption>,
+    val days : Set<DayOfWeek>,
+    val orders : Map<DayOfWeek, Int> = mapOf(),
+    val totalOrders: Int = 0,
+) {
     fun totalOrderCount() : Int {
         var sum : Int = 0;
         for (order in orders) {
