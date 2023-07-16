@@ -2,11 +2,9 @@ package com.example.munchbox.ui.components
 
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.munchbox.R
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
@@ -16,16 +14,18 @@ import com.example.munchbox.controller.Restaurant
 
 
 @Composable
-fun OrderSummaryCard(meal: Meal){
+fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
     MealCard(
         restaurant = meal.restaurant,
         allMeals = setOf(meal),
         onAdd = { null },
-        added = meal.options,
+        onSelectOption = { null },
+        selectedOptions = meal.options,
+        availableOptions = meal.options,
+        added = true,
         disabled = true,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(25.dp)
     )
 }
 @Preview
@@ -35,7 +35,7 @@ fun PreviewOrderSummaryCard(){
     lazeez.addMeals(setOf(Meal(setOf(DietaryOption.HALAL), lazeez, setOf(DayOfWeek.SUNDAY))))
 
     for (meal in lazeez.meals) {
-        OrderSummaryCard(meal)
+        OrderSummaryCard(meal, Modifier.fillMaxWidth())
     }
 }
 

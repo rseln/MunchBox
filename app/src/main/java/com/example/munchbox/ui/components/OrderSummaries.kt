@@ -3,18 +3,17 @@ package com.example.munchbox.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
@@ -24,15 +23,16 @@ import com.example.munchbox.ui.OrderViewModel
 
 @Composable
 fun OrderSummaries(order: OrderUiState, modifier: Modifier = Modifier){
-    Row{
+    Row (
+        modifier = modifier
+    ){
         Box(
             modifier = Modifier
-                .padding(16.dp)
                 .fillMaxWidth(),
         ) {
             Text(
                 text = "Order Summaries",
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.headlineMedium,
             )
         }
     }
@@ -51,14 +51,16 @@ fun OrderSummaries(order: OrderUiState, modifier: Modifier = Modifier){
     }
     for (day in daysWithOrders) {
         Column(modifier = modifier) {
+            Spacer(modifier = Modifier.height(18.dp))
             Text(
                 text = day.str,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(start=16.dp),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier,
             )
             for(meal in dayFilterMap[day]!!){
+                Spacer(modifier = Modifier.height(13.dp))
                 OrderSummaryCard(meal = meal)
+                Spacer(modifier = Modifier.height(13.dp))
             }
         }
     }

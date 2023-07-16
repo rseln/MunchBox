@@ -3,12 +3,16 @@
     <string name="login">Login</string>
     <string name="meal_select">Meal Select</string>
     <string name="meal_review">Meal Review</string>
+    <string name="after_payment">Payment</string>
+    <string name="restaurant_hub">Restaurant Hub</string>
+    <string name="choose_fighter">Choose Your Fighter</string>
     <string name="meal_payment">Meal Payment</string>
     <string name="back_button">Back</string>
     <string name="next">Next</string>
     <string name="checkout">Checkout</string>
     <string name="send">Send</string>
-    <string name="pay">Pay</string>
+    <string name="confirm">Confirm</string>
+    <string name="pay">Proceed with Payment</string>
     <string name="cancel">Cancel</string>
     <string name="meals_1">1 Meal - $10</string>
     <string name="meals_3">3 Meals - $27</string>
@@ -24,5 +28,5 @@
     <string name="signup_restaurant_phone">Business Phone Number</string>
     <string name="signup_restaurant_email">Business Email</string>
     <string name="signup_restaurant_finish">Finish</string>
-
+    <string name="title_activity_payment">Payment</string>
 </resources>

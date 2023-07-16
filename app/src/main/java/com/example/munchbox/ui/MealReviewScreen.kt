@@ -32,10 +32,10 @@ fun MealReviewScreen(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier
+        modifier = modifier
             .verticalScroll(scrollState),
     ){
-        OrderSummaries(orderUiState, modifier)
+        OrderSummaries(orderUiState, Modifier)
         Row(
             modifier = Modifier
                 .padding(dimensionResource(R.dimen.padding_medium))
