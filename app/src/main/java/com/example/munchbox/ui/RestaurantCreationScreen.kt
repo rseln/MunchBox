@@ -1,15 +1,11 @@
 package com.example.munchbox.ui
 
-// uses time picker code from https://www.geeksforgeeks.org/time-picker-in-android-using-jetpack-compose/
 
 import android.app.TimePickerDialog
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,11 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -41,13 +35,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.munchbox.controller.DietaryOption
 import java.util.Calendar
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.example.munchbox.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.regex.Pattern
 
 val dietaryOptions = setOf(
@@ -88,17 +81,23 @@ fun RestaurantCreationScreen() {
     val mHourEnd = mCalendarEnd[Calendar.HOUR_OF_DAY]
     val mMinuteEnd = mCalendarEnd[Calendar.MINUTE]
 
+    val mTimeStartFORMATTED = remember { mutableStateOf("") }
+    val mTimeEndFORMATTED = remember { mutableStateOf("") }
+
+    // uses time picker code from https://www.geeksforgeeks.org/time-picker-in-android-using-jetpack-compose/
     // Creating TimePickerDialogs for RestaurantHours
     val mTimePickerDialogStart = TimePickerDialog(
         mContext,
         {_, mHour : Int, mMinute: Int ->
-            mTimeStart.value = "$mHourStart:$mMinuteStart"
+            mTimeStart.value = "$mHour:$mMinute"
+            mTimeStartFORMATTED.value = convertTo12Hours(mTimeStart.value);
         }, mHourStart, mMinuteStart, false
     )
     val mTimePickerDialogEnd = TimePickerDialog(
         mContext,
         {_, mHour : Int, mMinute: Int ->
             mTimeEnd.value = "$mHour:$mMinute"
+            mTimeEndFORMATTED.value = convertTo12Hours(mTimeEnd.value);
         }, mHourEnd, mMinuteEnd, false
     )
     Column(
@@ -112,14 +111,14 @@ fun RestaurantCreationScreen() {
         Spacer(modifier = Modifier.padding(10.dp))
 
 
-        // RESTAURANT NAME - done
+        // RESTAURANT NAME
         Text(stringResource(R.string.signup_restaurant_name),
             //modifier = Modifier.align(Alignment.Start)
         )
         TextField(value = restaurantName.value, onValueChange = {restaurantName.value = it}, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.padding(20.dp))
 
-        // RESTAURANT ADDRESS - done
+        // RESTAURANT ADDRESS
         Text(stringResource(R.string.signup_restaurant_address))
         TextField(value = restaurantAddress.value, onValueChange = {restaurantAddress.value = it}, Modifier.fillMaxWidth(),)
         Spacer(modifier = Modifier.padding(20.dp))
@@ -129,11 +128,12 @@ fun RestaurantCreationScreen() {
         Button(onClick = { mTimePickerDialogStart.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF0F9D58))) {
             Text(text = stringResource(R.string.signup_restaurant_hours_start), color = Color.White)
         }
-        Text(text = "Selected Start Time: ${mTimeStart.value}")
+        Text(text = "Selected Start Time: ${mTimeStartFORMATTED.value}")
+
         Button(onClick = { mTimePickerDialogEnd.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
             Text(text = stringResource(R.string.signup_restaurant_hours_end), color = Color.White)
         }
-        Text(text = "Selected End Time: ${mTimeEnd.value}")
+        Text(text = "Selected End Time: ${mTimeEndFORMATTED.value}")
         Spacer(modifier = Modifier.padding(20.dp))
 
         // CUISINE
@@ -187,7 +187,7 @@ fun RestaurantCreationScreen() {
         )
         Spacer(modifier = Modifier.padding(20.dp))
 
-        // EMAIL - done
+        // EMAIL
         Text(text = stringResource(R.string.signup_restaurant_email))
         TextField(
             value = restaurantEmail.value,
@@ -225,7 +225,15 @@ fun isValidEmail(emailStr: String?) = Pattern.compile(
     "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE)
     .matcher(emailStr).find()
 
-
+// taken from  https://stackoverflow.com/questions/6907968/how-to-convert-24-hr-format-time-in-to-12-hr-format
+fun convertTo12Hours(militaryTime: String): String{
+    //in => "14:00:00"
+    //out => "02:00 PM"
+    val inputFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("h:mm aa", Locale.getDefault())
+    val date = inputFormat.parse(militaryTime)
+    return outputFormat.format(date)
+}
 @Preview
 @Composable
 fun PreviewRestaurantCreationScreen() {
