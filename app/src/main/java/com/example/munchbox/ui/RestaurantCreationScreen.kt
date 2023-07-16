@@ -45,6 +45,9 @@ import com.example.munchbox.controller.DietaryOption
 import java.util.Calendar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import com.example.munchbox.R
 
 val dietaryOptions = setOf(
     Pair(0, "Halal"),
@@ -97,39 +100,41 @@ fun RestaurantCreationScreen() {
 
     Column(
         //horizontalAlignment = Alignment.CenterHorizontally
-    modifier = Modifier.verticalScroll(rememberScrollState())
+    modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .padding(dimensionResource(R.dimen.padding_medium))
     ) {
         // RESTAURANT NAME - done
-        Text("Restaurant Name",
+        Text(stringResource(R.string.signup_restaurant_name),
             //modifier = Modifier.align(Alignment.Start)
         )
         TextField(value = restaurantName.value, onValueChange = {restaurantName.value = it})
         Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT ADDRESS - done
-        Text(text = "Address")
+        Text(stringResource(R.string.signup_restaurant_address))
         TextField(value = restaurantAddress.value, onValueChange = {restaurantAddress.value = it})
         Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT HOURS
-        Text(text = "Restaurant Hours")
+        Text(stringResource(R.string.signup_restaurant_hours))
         Button(onClick = { mTimePickerDialogStart.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF0F9D58))) {
-            Text(text = "Select Opening Time", color = Color.White)
+            Text(text = stringResource(R.string.signup_restaurant_hours_start), color = Color.White)
         }
         Text(text = "Selected Start Time: ${mTimeStart.value}")
         Button(onClick = { mTimePickerDialogEnd.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
-            Text(text = "Select Closing Time", color = Color.White)
+            Text(text = stringResource(R.string.signup_restaurant_hours_end), color = Color.White)
         }
         Text(text = "Selected End Time: ${mTimeEnd.value}")
         Spacer(modifier = Modifier.padding(20.dp))
 
         // CUISINE
-        Text(text = "Cuisine")
+        Text(text = stringResource(R.string.signup_restaurant_cuisine))
         TextField(value = restaurantCuisine.value, onValueChange = {restaurantCuisine.value = it})
         Spacer(modifier = Modifier.padding(20.dp))
 
         // DIETARY OPTIONS
-        Text(text = "Dietary Offerings")
+        Text(text = stringResource(R.string.signup_restaurant_dietary_options))
         FlowRow(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -161,7 +166,7 @@ fun RestaurantCreationScreen() {
         Spacer(modifier = Modifier.padding(20.dp))
 
         // PHONE NUMBER
-        Text(text = "Business Phone Number")
+        Text(text = stringResource(R.string.signup_restaurant_phone))
         TextField(
             value = restaurantPhoneNumber.value,
             {restaurantPhoneNumber.value = it},
@@ -170,13 +175,13 @@ fun RestaurantCreationScreen() {
         Spacer(modifier = Modifier.padding(20.dp))
 
         // EMAIL - done
-        Text(text = "Business Email")
+        Text(text = stringResource(R.string.signup_restaurant_email))
         TextField(value = restaurantEmail.value, onValueChange = {restaurantEmail.value = it}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
         Spacer(modifier = Modifier.padding(20.dp))
 
         // FINISH
         Button(onClick = { /*TODO*/ }) {
-            Text(text = "Finish")
+            Text(text = stringResource(R.string.signup_restaurant_finish))
         }
     }
 }

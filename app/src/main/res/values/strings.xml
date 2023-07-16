@@ -13,4 +13,15 @@
     <string name="meals_1">1 Meal - $10</string>
     <string name="meals_3">3 Meals - $27</string>
     <string name="meals_5">5 Meals - $42</string>
+    <string name="signup_restaurant_name">Restaurant Name</string>
+    <string name="signup_restaurant_address">Address</string>
+    <string name="signup_restaurant_hours">Hours of Operation</string>
+    <string name="signup_restaurant_hours_start">Select Start Time</string>
+    <string name="signup_restaurant_hours_end">Select End Time</string>
+    <string name="signup_restaurant_cuisine">Cuisine</string>
+    <string name="signup_restaurant_dietary_options">Dietary Options</string>
+    <string name="signup_restaurant_phone">Business Phone Number</string>
+    <string name="signup_restaurant_email">Business Email</string>
+    <string name="signup_restaurant_finish">Finish</string>
+
 </resources>
