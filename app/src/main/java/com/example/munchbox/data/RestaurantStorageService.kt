@@ -20,7 +20,7 @@ import javax.inject.Inject
 class RestaurantStorageService
 @Inject
 constructor(private val firestore: FirebaseFirestore){
-    fun createDBRestaurant(name : String, imageID: Int? = null): String {
+    suspend fun createDBRestaurant(name : String, imageID: Int? = null): String? = withContext(Dispatchers.IO) {
         val restaurantID:String = "restaurant_" + UUID.randomUUID().toString()
         val meals : List<Meal> = listOf()
         val data = hashMapOf(
@@ -29,11 +29,14 @@ constructor(private val firestore: FirebaseFirestore){
             "meals" to meals,
             "imageID" to imageID
         )
+        try {
+            firestore.collection("Restaurants").document(restaurantID).set(data)
+            return@withContext restaurantID
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+        return@withContext null
 
-        firestore.collection("Restaurants").document(restaurantID)
-            .set(data)
-
-        return restaurantID
     }
 
     suspend fun getRestaurantByID(restaurantID: String): Restaurant? = withContext(Dispatchers.IO){
@@ -87,7 +90,7 @@ constructor(private val firestore: FirebaseFirestore){
         return@withContext null
     }
 
-    fun updateRestaurantByID(restaurantID: String, name : String? = null, meals: Set<Meal>? = null, imageID: Int? = null): String {
+    suspend fun updateRestaurantByID(restaurantID: String, name : String? = null, meals: Set<Meal>? = null, imageID: Int? = null): String? = withContext(Dispatchers.IO){
         val data:MutableMap<String, Any?> = mutableMapOf()
 
         if(name != null) {
@@ -102,21 +105,22 @@ constructor(private val firestore: FirebaseFirestore){
         if(imageID != null) {
             data["imageID"] = imageID
         }
-
-        firestore.collection("Restaurants").document(restaurantID)
-            .set(data, SetOptions.merge())
-
-        return restaurantID
-    }
-
-    fun deleteRestaurantByID(restaurantID: String): Boolean {
-        try {
-            firestore.collection("Restaurants").document(restaurantID).delete()
-            return true
+        try{
+            firestore.collection("Restaurants").document(restaurantID).set(data, SetOptions.merge())
+            return@withContext restaurantID
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
+        return@withContext null
+    }
 
-        return false
+    suspend fun deleteRestaurantByID(restaurantID: String): Boolean= withContext(Dispatchers.IO) {
+        try {
+            firestore.collection("Restaurants").document(restaurantID).delete()
+            return@withContext true
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+        return@withContext false
     }
 }
