@@ -158,7 +158,7 @@ fun MealSelectionScreen(
 
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
-                restaurant = it,
+                restaurantName = it.name,
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
@@ -177,7 +177,8 @@ fun MealSelectionScreen(
                 added = added,
                 disabled = !added && (orderedMeals[selectedDay.id] != null || numOrderedMeals >= numMealsRequired),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                imageID = it.imageID
             )
             Spacer(modifier = Modifier.height(13.dp))
         }

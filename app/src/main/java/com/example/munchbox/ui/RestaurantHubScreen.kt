@@ -38,8 +38,9 @@ fun RestaurantHubScreen(
     val availableMeals = remember { mutableStateOf(orderUiState.meals) }
     val scrollState = rememberScrollState()
 
+    //TODO: Replace with CRUD
     fun addNewMeal(newDietaryOptions : Set<DietaryOption>, newDays : Set<DayOfWeek>) {
-        val meal : Meal = Meal(newDietaryOptions, restaurant, newDays)
+        val meal : Meal = Meal("meal_id", "rest_id", "restaurant", newDietaryOptions, newDays)
         availableMeals.value = availableMeals.value.plus(meal)
         selectedDays.value = setOf<DayOfWeek>()
         selectedOptions.value = setOf<DietaryOption>()

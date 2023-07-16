@@ -45,22 +45,25 @@ import com.example.munchbox.ui.theme.Typography
 fun MealCardContainer() {
 
     val restaurant = Restaurant("Lazeez", setOf())
-    val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val vegeMeal = Meal("meal_id", "rest_id", "Lazeez", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val meatMeal = Meal("meal_id", "rest_id", "Lazeez", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
     restaurant.addMeals(allMeals)
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(restaurant: Restaurant,
-             allMeals: Set<Meal>,
-             onAdd: (Meal) -> Unit,
-             onSelectOption: (DietaryOption) -> Unit,
-             selectedOptions : Set<DietaryOption>,
-             availableOptions : Set<DietaryOption>,
-             added: Boolean,
-             disabled: Boolean = false,
-             modifier: Modifier = Modifier) {
+fun MealCard(
+    restaurantName: String,
+    allMeals: Set<Meal>,
+    onAdd: (Meal) -> Unit,
+    onSelectOption: (DietaryOption) -> Unit,
+    selectedOptions : Set<DietaryOption>,
+    availableOptions : Set<DietaryOption>,
+    added: Boolean,
+    disabled: Boolean = false,
+    modifier: Modifier = Modifier,
+    imageID: Int? = null,
+) {
 
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
@@ -91,20 +94,22 @@ fun MealCard(restaurant: Restaurant,
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
-        restaurant.imageID?.let { painterResource(id = it) }?.let {
-            Image(
-                painter = it,
-                contentDescription = "Contact profile picture",
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.large)
-                    .fillMaxWidth()
-                    .aspectRatio(3f / 2f),
-                contentScale = ContentScale.FillBounds
-            )
+        if(imageID != null){
+            painterResource(id = imageID)?.let {
+                Image(
+                    painter = it,
+                    contentDescription = "Contact profile picture",
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.large)
+                        .fillMaxWidth()
+                        .aspectRatio(3f / 2f),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
         }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
-                text = restaurant.name,
+                text = restaurantName,
                 style = Typography.headlineMedium,
             )
             Spacer(modifier = Modifier.height(8.dp))

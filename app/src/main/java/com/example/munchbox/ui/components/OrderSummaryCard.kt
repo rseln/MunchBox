@@ -16,7 +16,7 @@ import com.example.munchbox.controller.Restaurant
 @Composable
 fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
     MealCard(
-        restaurant = meal.restaurant,
+        restaurantName = meal.restaurantName,
         allMeals = setOf(meal),
         onAdd = { null },
         onSelectOption = { null },
@@ -32,7 +32,7 @@ fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
 @Composable
 fun PreviewOrderSummaryCard(){
     val lazeez = Restaurant("Lazeez", setOf(), R.drawable.lazeez)
-    lazeez.addMeals(setOf(Meal(setOf(DietaryOption.HALAL), lazeez, setOf(DayOfWeek.SUNDAY))))
+    lazeez.addMeals(setOf(Meal("lazeez_meal", "lazeez_id", "lazeez", setOf(DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY))))
 
     for (meal in lazeez.meals) {
         OrderSummaryCard(meal, Modifier.fillMaxWidth())

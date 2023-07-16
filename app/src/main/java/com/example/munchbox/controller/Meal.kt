@@ -38,10 +38,12 @@ enum class DietaryOption(val id: Int, val str : String) {
 class Meal(
     val mealID: String,
     val restaurantID: String,
+    val restaurantName: String,
     val options : Set<DietaryOption>,
     val days : Set<DayOfWeek>,
     val orders : Map<DayOfWeek, Int> = mapOf(),
     val totalOrders: Int = 0,
+    val restaurant: Restaurant? = null,
 ) {
     fun totalOrderCount() : Int {
         var sum : Int = 0;
