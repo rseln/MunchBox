@@ -60,7 +60,7 @@ constructor(private val firestore: FirebaseFirestore){
         return@withContext null
     }
 
-    suspend fun getAllRestaurants(): Map<Restaurant, List<Meal>> = withContext(Dispatchers.IO){
+    suspend fun getAllRestaurants(): Map<Restaurant, List<Meal>>?= withContext(Dispatchers.IO){
         var restaurantsToMeals:MutableMap<Restaurant, List<Meal>> = mutableMapOf()
         val restaurantSnapshots = firestore.collection("Restaurants").get().await()
         try {
@@ -95,7 +95,7 @@ constructor(private val firestore: FirebaseFirestore){
                             meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, orders, totalOrders))
                         }
                     }
-                    restaurantsToMeals[Restaurant(id,name,imageID)] = meals
+                    restaurantsToMeals[Restaurant(id,name,imageID] = meals
                 }
             }
             return@withContext restaurantsToMeals
@@ -103,6 +103,7 @@ constructor(private val firestore: FirebaseFirestore){
         catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
+        return@withContext null
     }
 
     suspend fun updateRestaurantByID(restaurantID: String, name : String? = null, existingMeals: Set<Meal>? = null, imageID: Int? = null): String? = withContext(Dispatchers.IO){
