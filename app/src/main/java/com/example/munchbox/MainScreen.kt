@@ -315,7 +315,7 @@ fun MunchBoxApp(
 }
 
 /**
- * Resets the [OrderUiState] and pops up to [OrderScreeen.Start]
+ * Resets the [OrderUiState] and pops up to [OrderScreen.Start]
  */
 private fun cancelOrderAndNavigateToStart(
     viewModel: OrderViewModel,

@@ -16,9 +16,9 @@ object DataSource {
     )
 
     /** Fake Restaurants to use for now.**/
-    var lazeez = Restaurant(name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
-    var campusPizza = Restaurant(name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
-    var shawaramaPlus = Restaurant(name="Shawarma Plus", setOf(), imageID = R.drawable.shawarmaplus)
+    var lazeez = Restaurant("1", name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
+    var campusPizza = Restaurant("2", name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
+    var shawaramaPlus = Restaurant("3", name="Shawarma Plus", setOf(), imageID = R.drawable.shawarmaplus)
 
     val lazeezMeal = Meal("lazeez_meal_1", "lazeez_id", "Lazeez", setOf(DietaryOption.VEGE, DietaryOption.GF), setOf(DayOfWeek.SUNDAY), mapOf(Pair(DayOfWeek.SUNDAY, 20)))
     val lazeezMeal2 = Meal("lazeez_meal_2", "lazeez_id", "Lazeez", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY))

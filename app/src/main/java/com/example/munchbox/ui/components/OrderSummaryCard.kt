@@ -31,7 +31,7 @@ fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
 @Preview
 @Composable
 fun PreviewOrderSummaryCard(){
-    val lazeez = Restaurant("Lazeez", setOf(), R.drawable.lazeez)
+    val lazeez = Restaurant("1", "Lazeez", setOf(), R.drawable.lazeez)
     lazeez.addMeals(setOf(Meal("lazeez_meal", "lazeez_id", "lazeez", setOf(DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY))))
 
     for (meal in lazeez.meals) {

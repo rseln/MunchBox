@@ -73,35 +73,9 @@ import com.google.firebase.firestore.FirebaseFirestore
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    onLoginButtonClicked: () -> Unit = {}
-) {
+fun LoginScreen(onLoginButtonClicked: () -> Unit = {}) {
     val context = LocalContext.current
-    var meal by remember{ mutableStateOf<Meal?>(null) }
-    var meals by remember{ mutableStateOf<List<Meal>?>(null) }
-    val storageService = MealStorageService(FirebaseFirestore.getInstance())
 
-    LaunchedEffect(Unit){
-        val mealID = storageService.createDBMeal("rest_id_2", "rest_2", setOf(DietaryOption.VEGE, DietaryOption.GF), setOf(DayOfWeek.SUNDAY), mapOf(Pair(DayOfWeek.SUNDAY, 20)))
-        meal =  storageService.getMealByID(mealID)
-        meals = storageService.getAllMeals()
-        storageService.updateMealByID("meal_b5b2ffa9-82ab-4744-8c22-a7d2d52262f2", "steves shack", setOf(DietaryOption.GF), setOf(DayOfWeek.FRIDAY))
-        storageService.deleteMealByMealID("meal_b5b2ffa9-82ab-4744-8c22-a7d2d52262f2")
-        storageService.deleteMealsByRestaurantID("rest_id_2")
-    }
-
-    if(meal != null){
-        Log.d("HOLY", meal!!.mealID)
-        Log.d("HOLY", meal!!.restaurantName)
-        Log.d("HOLY", meal!!.restaurantID)
-    }
-    if(meals != null){
-        for(meal in meals!!){
-            Log.d(meal!!.mealID, meal!!.mealID)
-            Log.d(meal!!.mealID, meal!!.restaurantName)
-            Log.d(meal!!.mealID, meal!!.restaurantID)
-        }
-    }
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
             onClick = {  /*TODO*/ },

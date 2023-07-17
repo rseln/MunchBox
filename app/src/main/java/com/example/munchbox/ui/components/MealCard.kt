@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,7 +45,7 @@ import com.example.munchbox.ui.theme.Typography
 @Composable
 fun MealCardContainer() {
 
-    val restaurant = Restaurant("Lazeez", setOf())
+    val restaurant = Restaurant("1","Lazeez", setOf())
     val vegeMeal = Meal("meal_id", "rest_id", "Lazeez", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val meatMeal = Meal("meal_id", "rest_id", "Lazeez", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
