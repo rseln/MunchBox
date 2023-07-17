@@ -16,6 +16,8 @@ import javax.inject.Inject
 
 //TODO: store total amount of orders per meal
 //TODO: Maybe change enums into just strings?
+//TODO: GET meals by day
+//TODO: GET meals by restaurant ID
 class MealStorageService
 @Inject
 constructor(private val firestore: FirebaseFirestore){
@@ -24,7 +26,7 @@ constructor(private val firestore: FirebaseFirestore){
         restaurantName: String,
         options : Set<DietaryOption> = setOf(),
         days : Set<DayOfWeek> = setOf(),
-        orders : Map<DayOfWeek, Int> = mapOf()
+        amountOrdered : Map<DayOfWeek, Int> = mapOf()
     ): String = withContext(Dispatchers.IO) {
 
         val mealID:String = "meal_" + UUID.randomUUID().toString()
@@ -35,8 +37,8 @@ constructor(private val firestore: FirebaseFirestore){
             "restaurantName" to restaurantName,
             "dietaryOptions" to options.map{it.str},
             "daysOffered" to days.map{it.str},
-            "orders" to orders.mapKeys{it.key.str},
-            "totalOrders" to totalOrderCount(orders)
+            "amountOrdered" to amountOrdered.mapKeys{it.key.str},
+            "totalOrders" to totalOrderCount(amountOrdered)
         )
         firestore.collection("Meals").document(mealID).set(data)
 
@@ -84,12 +86,12 @@ constructor(private val firestore: FirebaseFirestore){
                     val restaurantName = data?.get("restaurantName") as? String ?: ""
                     val fetchedDietaryOptions = data?.get("DietaryOptions") as? Set<String> ?: setOf()
                     val fetchedDaysOffered = data?.get("daysOffered") as? Set<String> ?: setOf()
-                    val fetchedOrders = data?.get("orders") as? Map<String, Int> ?: mapOf()
+                    val fetchedAmountOrdered = data?.get("amountOrdered") as? Map<String, Int> ?: mapOf()
                     val totalOrders = data?.get("totalOrders") as? Int ?: 0
 
                     val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it) }.toSet()
                     val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
-                    val orders = fetchedOrders.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
+                    val orders = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
                     meals.add(Meal(mealID, restaurantID, restaurantName, dietaryOptions, daysOffered, orders, totalOrders))
                 }
             }
@@ -106,7 +108,7 @@ constructor(private val firestore: FirebaseFirestore){
         restaurantName: String? = null,
         options: Set<DietaryOption>? = null,
         days: Set<DayOfWeek>? = null,
-        orders: Map<DayOfWeek, Int>? = null,
+        amountOrdered: Map<DayOfWeek, Int>? = null,
     ): String? = withContext(Dispatchers.IO) {
         val data:MutableMap<String, Any?> = mutableMapOf()
 
@@ -119,9 +121,9 @@ constructor(private val firestore: FirebaseFirestore){
         if(restaurantName!=null){
             data["restaurantName"] = restaurantName
         }
-        if (orders != null){
-            data["orders"] = orders.mapKeys{it.key.str}
-            data["totalOrders"] = totalOrderCount(orders)
+        if (amountOrdered != null){
+            data["amountOrdered"] = amountOrdered.mapKeys{it.key.str}
+            data["totalOrders"] = totalOrderCount(amountOrdered)
         }
 
         try{
@@ -132,7 +134,7 @@ constructor(private val firestore: FirebaseFirestore){
         }
         return@withContext null
     }
-
+//   TODO: if meals are deleted handle the meals list in Restaurant API as well
     suspend fun deleteMealByMealID(mealID: String): Boolean = withContext(Dispatchers.IO) {
         try {
             firestore.collection("Meals").document(mealID).delete()
@@ -142,7 +144,6 @@ constructor(private val firestore: FirebaseFirestore){
         }
         return@withContext false
     }
-
     suspend fun deleteMealsByRestaurantID(restaurantID: String): Boolean = withContext(Dispatchers.IO) {
         try {
 
@@ -157,9 +158,9 @@ constructor(private val firestore: FirebaseFirestore){
         return@withContext false
     }
 
-    private fun totalOrderCount(orders: Map<DayOfWeek, Int>) : Int {
+    private fun totalOrderCount(amountOrdered: Map<DayOfWeek, Int>) : Int {
         var sum : Int = 0;
-        for (order in orders) {
+        for (order in amountOrdered) {
             sum += order.value
         }
         return sum

@@ -35,19 +35,21 @@ enum class DietaryOption(val id: Int, val str : String) {
  */
 //TODO: remove restaurant object and replace usage with restaurantID with meal APIs
 //TODO: remove usage of total order count and replace with totalOrders from API
+//TODO: add a cancelled meal field : Date (YY/MM/DD)
+//TODO: learn abt references
 class Meal(
     val mealID: String,
     val restaurantID: String,
     val restaurantName: String,
     val options : Set<DietaryOption>,
     val days : Set<DayOfWeek>,
-    val orders : Map<DayOfWeek, Int> = mapOf(),
+    val amountOrdered : Map<DayOfWeek, Int> = mapOf(),
     val totalOrders: Int = 0,
     val restaurant: Restaurant? = null,
 ) {
     fun totalOrderCount() : Int {
         var sum : Int = 0;
-        for (order in orders) {
+        for (order in amountOrdered) {
             sum += order.value
         }
         return sum
