@@ -40,7 +40,6 @@ enum class DietaryOption(val id: Int, val str : String) {
 class Meal(
     val mealID: String,
     val restaurantID: String,
-    val restaurantName: String,
     val options : Set<DietaryOption>,
     val days : Set<DayOfWeek>,
     val amountOrdered : Map<DayOfWeek, Int> = mapOf(),
