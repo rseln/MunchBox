@@ -1,4 +1,10 @@
 package com.example.munchbox.controller
 
-class Order {
-}
+import java.util.Date
+
+data class Order(
+    val orderID: String,
+    val restaurantID: String,
+    val mealID: String,
+    val pickUpDate: Date
+)
