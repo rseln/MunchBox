@@ -2,11 +2,24 @@ package com.example.munchbox.ui
 
 
 import android.app.TimePickerDialog
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.media.Image
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -28,8 +41,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -39,9 +54,11 @@ import androidx.compose.ui.unit.sp
 import java.util.Calendar
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import com.example.munchbox.R
 import com.example.munchbox.data.RestaurantStorageService
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.regex.Pattern
@@ -215,6 +232,13 @@ fun RestaurantCreationScreen() {
             modifier = Modifier.fillMaxWidth(),)
         Spacer(modifier = Modifier.padding(20.dp))
 
+        // PHOTO
+        Text(text = stringResource(R.string.signup_restaurant_image))
+
+        PickImageFromGallery()
+
+        Spacer(modifier = Modifier.padding(20.dp))
+
         // FINISH
         Button(
             onClick = {
@@ -231,6 +255,8 @@ fun RestaurantCreationScreen() {
         ) {
             Text(text = stringResource(R.string.back_button))
         }
+
+
     }
 }
 
@@ -249,6 +275,36 @@ fun convertTo12Hours(militaryTime: String): String{
     val outputFormat = SimpleDateFormat("h:mm aa", Locale.getDefault())
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
+}
+// taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
+@Composable
+fun PickImageFromGallery() {
+    var imageURI by remember { mutableStateOf<Uri?>(null)}
+    val context = LocalContext.current
+    val bitmap = remember { mutableStateOf<Bitmap?>(null)}
+
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
+        uri: Uri? -> imageURI = uri
+    }
+
+    Column {
+        if (imageURI != null ) {
+            Text(text = "Image Selected: ${File(imageURI!!.path).name}")
+        }
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    Button(onClick = { launcher.launch(
+        PickVisualMediaRequest(
+        //Here we request only photos. Change this to .ImageAndVideo if
+        //you want videos too.
+        //Or use .VideoOnly if you only want videos.
+        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }) {
+        Text(text = "Pick Image")
+    }
+
 }
 
 
