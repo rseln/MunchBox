@@ -1,4 +1,4 @@
-package com.example.munchbox.ui.screens.mealOrderSummary
+package com.example.munchbox.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,6 @@ import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.OrderUiState
-import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.components.OrderSummaries
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.components.SelectCard

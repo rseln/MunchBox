@@ -43,12 +43,12 @@ import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
-import com.example.munchbox.ui.screens.login.LoginScreen
-import com.example.munchbox.ui.screens.mealOrderSummary.MealOrderSummaryScreen
-import com.example.munchbox.ui.screens.mealPayment.MealPaymentScreen
-import com.example.munchbox.ui.screens.mealReview.MealReviewScreen
-import com.example.munchbox.ui.screens.mealSelection.MealSelectionScreen
-import com.example.munchbox.ui.screens.mealOptions.NumberOfMealsScreen
+import com.example.munchbox.ui.LoginScreen
+import com.example.munchbox.ui.MealOrderSummaryScreen
+import com.example.munchbox.ui.MealPaymentScreen
+import com.example.munchbox.ui.MealReviewScreen
+import com.example.munchbox.ui.MealSelectionScreen
+import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 
 

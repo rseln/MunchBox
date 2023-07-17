@@ -1,4 +1,4 @@
-package com.example.munchbox.ui.screens.mealOptions
+package com.example.munchbox.ui
 
 /*
  * Copyright (C) 2023 The Android Open Source Project

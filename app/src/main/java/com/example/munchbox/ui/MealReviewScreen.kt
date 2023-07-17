@@ -1,4 +1,4 @@
-package com.example.munchbox.ui.screens.mealReview
+package com.example.munchbox.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.R
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
-import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.components.OrderSummaries
 
 @Composable

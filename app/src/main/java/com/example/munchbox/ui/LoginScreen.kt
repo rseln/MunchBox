@@ -1,4 +1,4 @@
-package com.example.munchbox.ui.screens.login
+package com.example.munchbox.ui
 
 /*
  * Copyright (C) 2023 The Android Open Source Project
