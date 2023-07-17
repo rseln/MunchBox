@@ -14,7 +14,7 @@ import com.example.munchbox.controller.Restaurant
 
 
 @Composable
-fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
+fun OrderSummaryCard(meal: Meal, confirmDisabled: Boolean, modifier: Modifier = Modifier.fillMaxWidth()){
     MealCard(
         restaurant = meal.restaurant,
         allMeals = setOf(meal),
@@ -24,6 +24,7 @@ fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
         availableOptions = meal.options,
         added = true,
         disabled = true,
+        confirmDisabled = confirmDisabled,
         modifier = modifier
             .fillMaxWidth()
     )
@@ -35,7 +36,7 @@ fun PreviewOrderSummaryCard(){
     lazeez.addMeals(setOf(Meal(setOf(DietaryOption.HALAL), lazeez, setOf(DayOfWeek.SUNDAY))))
 
     for (meal in lazeez.meals) {
-        OrderSummaryCard(meal, Modifier.fillMaxWidth())
+        OrderSummaryCard(meal, false, Modifier.fillMaxWidth())
     }
 }
 

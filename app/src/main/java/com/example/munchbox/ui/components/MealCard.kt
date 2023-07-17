@@ -23,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -60,6 +62,7 @@ fun MealCard(restaurant: Restaurant,
              availableOptions : Set<DietaryOption>,
              added: Boolean,
              disabled: Boolean = false,
+             confirmDisabled: Boolean = true,
              modifier: Modifier = Modifier) {
 
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
@@ -76,6 +79,9 @@ fun MealCard(restaurant: Restaurant,
         val availableMeals: Set<Meal> = getAvailableMeals(meals, selectedOptions)
         return availableMeals.elementAt(0)
     }
+
+    val isConfirmEnabled = remember { mutableStateOf(true) }
+    val isConfirmed = remember { mutableStateOf(false) }
 
     /**
      * CALLBACKS
@@ -160,6 +166,30 @@ fun MealCard(restaurant: Restaurant,
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )
                         Text("Meal Added")
+                    }
+                }
+            }
+
+            // this literally does nothing right now
+            if (!confirmDisabled) {
+                ElevatedButton(
+                    enabled = isConfirmEnabled.value,
+                    onClick = {
+                        //TODO: call endpoint delete from database (need to figure out how to reflect change onto UI)
+                        if (isConfirmEnabled.value) isConfirmEnabled.value = false
+                        isConfirmed.value = true
+                    },
+                ) {
+                    if (!isConfirmed.value) {
+                        Text("Confirm Pickup")
+                    }
+                    else {
+                        Icon(
+                            imageVector = Icons.Filled.Done,
+                            contentDescription = "Localized Description",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                        Text("Pickup Confirmed")
                     }
                 }
             }
