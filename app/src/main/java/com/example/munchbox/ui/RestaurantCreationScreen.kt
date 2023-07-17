@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,8 @@ import java.util.Calendar
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.example.munchbox.R
+import com.example.munchbox.data.RestaurantStorageService
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.regex.Pattern
@@ -71,6 +74,17 @@ fun RestaurantCreationScreen() {
     // helper state vars
     var emailError by remember { mutableStateOf((false))}
     var phoneError by remember { mutableStateOf((false))}
+
+    // submission / restaurant creation
+    val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
+    @Composable
+    fun onSubmitCallback() {
+        LaunchedEffect(Unit) {
+            val restID = storageService.createDBRestaurant(
+                restaurantName.value.text,
+            )
+        }
+    }
 
 
     // Declaring and initializing a calendar
@@ -203,7 +217,9 @@ fun RestaurantCreationScreen() {
 
         // FINISH
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                // onSubmitCallback()
+              },
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(R.string.signup_restaurant_finish))
@@ -234,6 +250,8 @@ fun convertTo12Hours(militaryTime: String): String{
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
 }
+
+
 @Preview
 @Composable
 fun PreviewRestaurantCreationScreen() {
