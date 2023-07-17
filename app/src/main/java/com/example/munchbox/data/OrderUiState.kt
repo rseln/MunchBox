@@ -12,12 +12,8 @@ data class OrderUiState(
     val meals: Set<Meal> = setOf(),
     /** Selected meal quantity (1, 6, 12) */
     val quantity: Int = 0,
-    /** Selected date for pickup (such as "Jan 1") */
-    val date: String = "",
     /** Total price for the order */
     val price: String = "",
     /** Available pickup dates for the order*/
     val pickupOptions: Set<DayOfWeek> = setOf(),
-    /** Check if Order has been added **/
-    val added: Boolean = false
 )

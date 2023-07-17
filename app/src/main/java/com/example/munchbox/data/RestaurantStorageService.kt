@@ -44,8 +44,8 @@ constructor(private val firestore: FirebaseFirestore){
 
     // Returns a single Restaurant object with its meal information filled in Restaurant.meals
     suspend fun getRestaurantByID(restaurantID: String): Restaurant? = withContext(Dispatchers.IO){
-        val restaurantSnapshot = firestore.collection("Restaurants").document(restaurantID).get().await()
         try {
+            val restaurantSnapshot = firestore.collection("Restaurants").document(restaurantID).get().await()
             if(restaurantSnapshot.exists()){
                 val data = restaurantSnapshot.data
 
@@ -86,8 +86,8 @@ constructor(private val firestore: FirebaseFirestore){
     // Returns all Restaurant objects with their meal information filled in Restaurant.meals
     suspend fun getAllRestaurants(): List<Restaurant>?= withContext(Dispatchers.IO){
         var restaurants : MutableList<Restaurant> = mutableListOf()
-        val restaurantSnapshots = firestore.collection("Restaurants").get().await()
         try {
+            val restaurantSnapshots = firestore.collection("Restaurants").get().await()
             for(restaurantSnapshot in restaurantSnapshots) {
                 if(restaurantSnapshot.exists()){
                     val data = restaurantSnapshot.data
