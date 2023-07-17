@@ -86,7 +86,7 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
 @Preview
 fun PreviewMealsAvailableScreen(){
     /** To show the cards go into interactive mode **/
-    val viewModel:OrderViewModel = viewModel()
+    val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setMeals(meals = allMeals.toList())
     viewModel.setPickupOptions(pickupOptions = pickUpOptions)
