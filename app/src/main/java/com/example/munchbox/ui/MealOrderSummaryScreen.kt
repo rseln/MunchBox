@@ -70,20 +70,15 @@ fun OrdersAvailable(order: OrderUiState,
         }
     }
 
-    // TODO: BUG - pickupOptions does not do what we thought it did, need to find a way to get the pickup date of JUST the meal. Do during db integration
-    if (order.pickupOptions.isEmpty()){
-        return
-    }
-    for(pickupDate in order.pickupOptions) {
-        Column(modifier = modifier) {
-            for(meal in order.meals) {
-                if (currentDay == pickupDate) {
-                    OrderSummaryCard(meal = meal,
-                        false,
-                        onConfirmButtonClicked,
-                        modifier = Modifier.fillMaxWidth())
-                }
-            }
+    //TODO: this is more technically correct but need to adjust when we do db integration
+    Column(modifier = modifier) {
+        // SHOULD JUST BE ONE VALUE SINCE WE CAN ONLY HAVE ONE MEAL PER DAY
+        val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
+        for(meal in mealsToday) {
+            OrderSummaryCard(meal = meal,
+                false,
+                onConfirmButtonClicked,
+                modifier = Modifier.fillMaxWidth())
         }
     }
 }
