@@ -15,8 +15,9 @@ import com.example.munchbox.controller.Restaurant
 
 @Composable
 fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
+    // TODO: Replace restaurant name with the actual restaurant name from DB
     MealCard(
-        restaurantName = meal.restaurantName,
+        restaurantName = "Temporary Lazeez",
         allMeals = setOf(meal),
         onAdd = { null },
         onSelectOption = { null },

@@ -7,10 +7,6 @@ package com.example.munchbox.controller
  * @member restaurant - Restaurant
  * @member - Day availability
  */
-//TODO: remove restaurant object and replace usage with restaurantID with meal APIs
-//TODO: remove usage of total order count and replace with totalOrders from API
-//TODO: add a cancelled meal field : Date (YY/MM/DD)
-//TODO: learn abt references
 data class Meal(
     val mealID: String,
     val restaurantID: String,
@@ -18,4 +14,15 @@ data class Meal(
     val days : Set<DayOfWeek>,
     val amountOrdered : Map<DayOfWeek, Int> = mapOf(),
     val totalOrders: Int = 0,
-)
+) {
+    fun totalOrderCount() : Int {
+        var sum : Int = 0;
+        for (order in amountOrdered) {
+            sum += order.value
+        }
+        return sum
+    }
+    fun optionToStr(option : DietaryOption): String {
+        return option.str
+    }
+}
