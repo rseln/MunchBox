@@ -8,6 +8,7 @@ import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,8 +58,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import com.example.munchbox.R
+import com.google.firebase.storage.ktx.component1
+import com.google.firebase.storage.ktx.component2
+import com.google.firebase.storage.ktx.component3
 import com.example.munchbox.data.RestaurantStorageService
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -77,6 +86,8 @@ val dietaryOptions = setOf(
 @Composable
 fun RestaurantCreationScreen() {
     val mContext = LocalContext.current
+    Log.d("tag", "test Call")
+
 
     // VALUES TO SEND
     val restaurantName = remember { mutableStateOf(TextFieldValue()) }
@@ -94,15 +105,60 @@ fun RestaurantCreationScreen() {
 
     // submission / restaurant creation
     val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
+
     @Composable
-    fun onSubmitCallback() {
-        LaunchedEffect(Unit) {
-            val restID = storageService.createDBRestaurant(
-                restaurantName.value.text,
-            )
+    fun SubmitComposable() {
+        //https://stackoverflow.com/questions/64116377/how-to-call-kotlin-coroutine-in-composable-function-callbacks
+        // Returns a scope that's cancelled when F is removed from composition
+        val coroutineScope = rememberCoroutineScope()
+
+
+        val sendRequestRestaurant: () -> Unit = {
+            coroutineScope.launch {
+                val restID = storageService.createDBRestaurant(
+                    restaurantName.value.text
+                )
+            }
         }
+
+        Button(
+            onClick = {
+                sendRequestRestaurant()
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(text = stringResource(R.string.signup_restaurant_finish))
+        }
+
     }
 
+    // taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
+    @Composable
+    fun PickImageFromGallery() {
+        var imageURI by remember { mutableStateOf<Uri?>(null)}
+        val context = LocalContext.current
+        val bitmap = remember { mutableStateOf<Bitmap?>(null)}
+        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
+                uri: Uri? -> imageURI = uri
+        }
+
+
+        Column {
+            if (imageURI != null ) {
+                Text(text = "Image Selected: ${File(imageURI!!.path).name}")
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(onClick = { launcher.launch(
+            PickVisualMediaRequest(
+                //Here we request only photos. Change this to .ImageAndVideo if
+                //you want videos too.
+                //Or use .VideoOnly if you only want videos.
+                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }) {
+            Text(text = "Upload Image")
+        }
+    }
 
     // Declaring and initializing a calendar
     val mCalendarStart = Calendar.getInstance()
@@ -235,19 +291,12 @@ fun RestaurantCreationScreen() {
         // PHOTO
         Text(text = stringResource(R.string.signup_restaurant_image))
 
-        PickImageFromGallery()
 
         Spacer(modifier = Modifier.padding(20.dp))
 
         // FINISH
-        Button(
-            onClick = {
-                // onSubmitCallback()
-              },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(text = stringResource(R.string.signup_restaurant_finish))
-        }
+        SubmitComposable()
+
         // GO BACK
         Button(
             onClick = { /*TODO*/ },
@@ -277,35 +326,30 @@ fun convertTo12Hours(militaryTime: String): String{
     return outputFormat.format(date)
 }
 // taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
-@Composable
-fun PickImageFromGallery() {
-    var imageURI by remember { mutableStateOf<Uri?>(null)}
-    val context = LocalContext.current
-    val bitmap = remember { mutableStateOf<Bitmap?>(null)}
-
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
-        uri: Uri? -> imageURI = uri
-    }
-
-    Column {
-        if (imageURI != null ) {
-            Text(text = "Image Selected: ${File(imageURI!!.path).name}")
-        }
-    }
-
-    Spacer(modifier = Modifier.height(12.dp))
-
-    Button(onClick = { launcher.launch(
-        PickVisualMediaRequest(
-        //Here we request only photos. Change this to .ImageAndVideo if
-        //you want videos too.
-        //Or use .VideoOnly if you only want videos.
-        mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }) {
-        Text(text = "Pick Image")
-    }
-
-}
+//@Composable
+//fun PickImageFromGallery() {
+//    var imageURI by remember { mutableStateOf<Uri?>(null)}
+//    val context = LocalContext.current
+//    val bitmap = remember { mutableStateOf<Bitmap?>(null)}
+//
+//    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
+//        uri: Uri? -> imageURI = uri
+//    }
+//
+//    Button(onClick = { launcher.launch(
+//        PickVisualMediaRequest(
+//            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+//    }) {
+//        Text(text = "Upload Image")
+//    }
+//
+//    Column {
+//        if (imageURI != null ) {
+//            Text(text = "Image Selected: ${File(imageURI!!.path).name}")
+//        }
+//    }
+//    Spacer(modifier = Modifier.height(12.dp))
+//}
 
 
 @Preview
