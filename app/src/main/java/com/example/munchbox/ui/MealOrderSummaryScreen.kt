@@ -31,6 +31,7 @@ import com.example.munchbox.ui.components.SelectCard
 fun MealOrderSummaryScreen(
     orderUiState: OrderUiState,
     modifier: Modifier = Modifier,
+    onConfirmButtonClicked: () -> Unit = {},
     onNextButtonClicked: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
@@ -45,7 +46,7 @@ fun MealOrderSummaryScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
         if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
-            OrdersAvailable(orderUiState, Modifier)
+            OrdersAvailable(orderUiState, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
             OrderSummaries(orderUiState, Modifier)
@@ -54,7 +55,9 @@ fun MealOrderSummaryScreen(
 }
 
 @Composable
-fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
+fun OrdersAvailable(order: OrderUiState,
+                    onConfirmButtonClicked: () -> Unit = {},
+                    modifier: Modifier = Modifier){
     Row{
         Box(
             modifier = Modifier
@@ -67,14 +70,18 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
         }
     }
 
+    // TODO: BUG - pickupOptions does not do what we thought it did, need to find a way to get the pickup date of JUST the meal. Do during db integration
     if (order.pickupOptions.isEmpty()){
         return
     }
-    for(pickupDate in order.pickupOptions){
-        if (currentDay == pickupDate){
-            Column(modifier = modifier) {
-                for(meal in order.meals){
-                    OrderSummaryCard(meal = meal, false, modifier = Modifier.fillMaxWidth())
+    for(pickupDate in order.pickupOptions) {
+        Column(modifier = modifier) {
+            for(meal in order.meals) {
+                if (currentDay == pickupDate) {
+                    OrderSummaryCard(meal = meal,
+                        false,
+                        onConfirmButtonClicked,
+                        modifier = Modifier.fillMaxWidth())
                 }
             }
         }

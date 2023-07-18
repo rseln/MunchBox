@@ -50,6 +50,7 @@ import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
+import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
@@ -210,6 +211,16 @@ fun MunchBoxApp(
 
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
+                    onConfirmButtonClicked = {
+                        //update meals
+                        //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
+                        uiState.meals = uiState.meals.filter { meal : Meal -> !meal.days.contains(DataSource.currentDay) }.toSet()
+                        viewModel.setMeals(meals = uiState.meals.toList())
+
+                        //refresh page
+                        navController.popBackStack(OrderScreen.MealOrderSummary.name,true)
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    },
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.NumberOfMeals.name)
                     },
