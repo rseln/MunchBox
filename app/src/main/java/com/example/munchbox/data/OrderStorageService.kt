@@ -7,6 +7,7 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +24,8 @@ constructor(private val firestore: FirebaseFirestore){
         userID:String,
         restaurantID: String,
         mealID: String ,
-        pickUpDate:Date
+        pickUpDate:Date,
+        orderPickedUp: Boolean
     ): Order? = withContext(Dispatchers.IO) {
         val orderID:String = "order_" + UUID.randomUUID().toString()
 
@@ -33,44 +35,72 @@ constructor(private val firestore: FirebaseFirestore){
             "restaurantID" to restaurantID,
             "mealID" to mealID,
             "pickUpDate" to Timestamp(pickUpDate),
+            "orderPickedUp" to orderPickedUp
         )
 
         try {
             firestore.collection("Orders").document(orderID).set(data)
-            return@withContext Order(orderID, userID, restaurantID, mealID, pickUpDate)
+            return@withContext Order(orderID, userID, restaurantID, mealID, pickUpDate, orderPickedUp)
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
         return@withContext null
     }
 
-    suspend fun getOrderByOrderId(orderID:String ): Order? = withContext(Dispatchers.IO) {
+    suspend fun getOrderByOrderID(orderID:String ): Order? = withContext(Dispatchers.IO) {
         try {
             val orderSnapshot = firestore.collection("Orders").document(orderID).get().await()
             if(orderSnapshot.exists()){
-                val orderData = orderSnapshot.data
-
-                // Update the fields of the restaurant object with Firestore data
-                val orderID = orderData?.get("orderID") as? String ?: ""
-                val userID = orderData?.get("userID") as? String ?: ""
-                val mealID = orderData?.get("mealID") as? String ?: ""
-                val restaurantID = orderData?.get("restaurantID") as? String ?: ""
-                val fetchedPickUpDate = orderData?.get("pickUpDate") as? Timestamp?: Timestamp(Date())
-                val pickUpDate = fetchedPickUpDate.toDate()
-
-                return@withContext Order(orderID, userID, restaurantID, mealID, pickUpDate)
+                return@withContext createOrderObject(orderSnapshot)
             }
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
         return@withContext null
     }
-//TODO: figure out if we want to separate the users or make order a subcollection within user
-    suspend fun getOrdersByUserId(userID: String ): List<Order>? = withContext(Dispatchers.IO) {
+
+    suspend fun getAllOrders(): List<Order>? = withContext(Dispatchers.IO) {
+        val orders: MutableList<Order>  = mutableListOf()
+        try {
+            val querySnapshot = firestore.collection("Orders").get().await()
+            for(orderSnapshot in querySnapshot.documents){
+                orders.add(createOrderObject(orderSnapshot))
+            }
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+
         return@withContext null
     }
 
-    suspend fun deleteOrderByOrderId(orderID: String): Boolean? = withContext(Dispatchers.IO){
+    suspend fun getAllOrdersByUserID(userID: String ): List<Order>? = withContext(Dispatchers.IO) {
+        val orders: MutableList<Order>  = mutableListOf()
+        try {
+            val querySnapshot = firestore.collection("Orders").whereEqualTo("userID", userID).get().await()
+            for(orderSnapshot in querySnapshot.documents){
+                orders.add( createOrderObject(orderSnapshot))
+            }
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+
+        return@withContext null
+    }
+
+    suspend fun getAllOrdersByRestaurantID(restaurantID: String): List<Order>? = withContext(Dispatchers.IO) {
+        val orders: MutableList<Order>  = mutableListOf()
+        try {
+            val querySnapshot = firestore.collection("Orders").whereEqualTo("restaruantID", restaurantID).get().await()
+            for(orderSnapshot in querySnapshot.documents){
+                orders.add( createOrderObject(orderSnapshot))
+            }
+        }catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+
+        return@withContext null
+    }
+    suspend fun deleteOrderByOrderID(orderID: String): Boolean? = withContext(Dispatchers.IO){
         try {
             firestore.collection("Orders").document(orderID).delete()
             return@withContext true
@@ -80,4 +110,15 @@ constructor(private val firestore: FirebaseFirestore){
         return@withContext false
     }
 
+    private fun createOrderObject(orderSnapshot: DocumentSnapshot): Order{
+        val orderData = orderSnapshot.data
+        val orderID = orderData?.get("orderID") as? String ?: ""
+        val userID = orderData?.get("userID") as? String ?: ""
+        val mealID = orderData?.get("mealID") as? String ?: ""
+        val restaurantID = orderData?.get("restaurantID") as? String ?: ""
+        val fetchedPickUpDate = orderData?.get("pickUpDate") as? Timestamp?: Timestamp(Date())
+        val pickUpDate = fetchedPickUpDate.toDate()
+        val orderPickedUp = orderData?.get("orderPickedUp") as? Boolean?: false
+        return Order(orderID, userID, restaurantID, mealID, pickUpDate, orderPickedUp)
+    }
 }

@@ -8,4 +8,5 @@ data class Order(
     val restaurantID: String,
     val mealID: String,
     val pickUpDate: Date,
+    val orderPickedUp: Boolean,
 )
