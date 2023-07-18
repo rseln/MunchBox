@@ -59,7 +59,7 @@ fun OrderSummaries(order: OrderUiState, modifier: Modifier = Modifier){
             )
             for(meal in dayFilterMap[day]!!){
                 Spacer(modifier = Modifier.height(13.dp))
-                OrderSummaryCard(meal = meal)
+                OrderSummaryCard(meal = meal, true)
                 Spacer(modifier = Modifier.height(13.dp))
             }
         }

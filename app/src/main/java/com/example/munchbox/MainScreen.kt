@@ -204,6 +204,7 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
 
+                //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
                 viewModel.setMeals(meals = uiState.meals.toList())
                 viewModel.setPickupOptions(pickupOptions = pickUpOptions)
 

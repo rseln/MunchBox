@@ -12,10 +12,9 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 
 
-
 @Composable
-fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
-    // TODO: Replace restaurant name with the actual restaurant name from DB
+fun OrderSummaryCard(meal: Meal, confirmDisabled: Boolean, modifier: Modifier = Modifier.fillMaxWidth()){
+// TODO: Replace restaurant name with the actual restaurant name from DB
     MealCard(
         restaurantName = "Temporary Lazeez",
         allMeals = setOf(meal),
@@ -25,6 +24,7 @@ fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
         availableOptions = meal.options,
         added = true,
         disabled = true,
+        confirmDisabled = confirmDisabled,
         modifier = modifier
             .fillMaxWidth()
     )
@@ -36,7 +36,7 @@ fun PreviewOrderSummaryCard(){
 //    lazeez.addMeals(setOf(Meal("lazeez_meal", "lazeez_id", "lazeez", setOf(DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY))))
 
     for (meal in lazeez.meals) {
-        OrderSummaryCard(meal, Modifier.fillMaxWidth())
+        OrderSummaryCard(meal, false, Modifier.fillMaxWidth())
     }
 }
 

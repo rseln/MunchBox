@@ -47,7 +47,7 @@ fun AfterPaymentScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             Text(
-                text = "Thank you! Order purchase complete",
+                text = "Thank you! Order purchase complete.",
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(16.dp)

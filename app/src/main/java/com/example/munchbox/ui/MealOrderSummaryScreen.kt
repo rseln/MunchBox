@@ -74,7 +74,7 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
         if (currentDay == pickupDate){
             Column(modifier = modifier) {
                 for(meal in order.meals){
-                    OrderSummaryCard(meal = meal, modifier = Modifier.fillMaxWidth())
+                    OrderSummaryCard(meal = meal, false, modifier = Modifier.fillMaxWidth())
                 }
             }
         }
