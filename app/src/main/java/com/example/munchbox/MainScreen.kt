@@ -224,7 +224,7 @@ fun MunchBoxApp(
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
-                        uiState.meals = uiState.meals.filter { meal : Meal -> !meal.days.contains(DataSource.currentDay) }.toSet()
+                        uiState.meals = uiState.meals.filter { meal : Meal -> !meal.daysMealIsOffered.contains(DataSource.currentDay) }.toSet()
                         viewModel.setMeals(meals = uiState.meals.toList())
 
                         //refresh page

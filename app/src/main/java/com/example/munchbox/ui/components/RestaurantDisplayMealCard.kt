@@ -124,7 +124,7 @@ fun RestaurantDisplayMealCard(meal : Meal,
             FlowRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                for (option in meal.options) {
+                for (option in meal.dietaryRestrictionsOffered) {
                     FilterChip(
                         selected = false,
                         onClick = { },
@@ -135,7 +135,7 @@ fun RestaurantDisplayMealCard(meal : Meal,
             }
             if (expanded.value) {
                 Spacer(modifier = Modifier.height(8.dp))
-                for (day in meal.days) {
+                for (day in meal.daysMealIsOffered) {
                     Text(
                         text = day.str,
                         style = Typography.labelSmall,

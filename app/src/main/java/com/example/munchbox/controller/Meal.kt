@@ -10,12 +10,12 @@ package com.example.munchbox.controller
 data class Meal(
     val mealID: String,
     val restaurantID: String,
-    val options : Set<DietaryOption>,
-    val days : Set<DayOfWeek>,
+    val dietaryRestrictionsOffered : Set<DietaryOption>,
+    val daysMealIsOffered : Set<DayOfWeek>,
     val amountOrdered : Map<DayOfWeek, Int> = mapOf(),
     val totalOrders: Int = 0,
 ) {
-    fun totalOrderCount() : Int {
+    fun totalOrderCount() : Int { //TODO: replace with totalOrders from api call in db
         var sum : Int = 0;
         for (order in amountOrdered) {
             sum += order.value

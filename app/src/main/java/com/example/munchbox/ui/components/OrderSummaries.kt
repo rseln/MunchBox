@@ -45,7 +45,7 @@ fun OrderSummaries(order: OrderUiState,
     /** {MONDAY: {MEAL1, MEAL2}}**/
     val dayFilterMap = mutableMapOf<DayOfWeek,MutableSet<Meal>>()
     for(meal in order.meals){
-        for(day in meal.days){
+        for(day in meal.daysMealIsOffered){
             dayFilterMap[day] = dayFilterMap.getOrDefault(day, mutableSetOf())
             dayFilterMap[day]!!.add(meal)
         }

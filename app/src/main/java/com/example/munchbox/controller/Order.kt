@@ -9,4 +9,5 @@ data class Order(
     val mealID: String,
     val pickUpDate: Date,
     val orderPickedUp: Boolean,
+    val dietaryRestrictionsSelected: Set<DietaryOption> = setOf(),
 )

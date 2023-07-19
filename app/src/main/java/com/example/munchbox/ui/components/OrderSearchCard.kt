@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource
 
@@ -40,7 +39,7 @@ fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
     val today = DataSource.currentDay
 
     // only display if there are meals to fulfill today from the restaurant
-    if (meals.any { meal: Meal -> meal.days.contains(DataSource.currentDay) && meal.restaurantID == restaurant.restaurantID}) {
+    if (meals.any { meal: Meal -> meal.daysMealIsOffered.contains(DataSource.currentDay) && meal.restaurantID == restaurant.restaurantID}) {
         ElevatedCard(
             modifier = Modifier.height(IntrinsicSize.Max),
             shape = MaterialTheme.shapes.large
@@ -107,7 +106,7 @@ fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
 //TODO: EDIT THIS FUNCTION DURING INTEGRATION TO MATCH THE ACTUAL DATA STRUCTURE
 private fun checkOrderExists(id: TextFieldValue, meals: Set<Meal>, today : DayOfWeek, restaurant: Restaurant): Int {
     // Edit this logic later
-    if (meals.any { meal: Meal -> meal.days.contains(today) && meal.restaurantID == restaurant.restaurantID}) {
+    if (meals.any { meal: Meal -> meal.daysMealIsOffered.contains(today) && meal.restaurantID == restaurant.restaurantID}) {
         return 1
     }
     return 0

@@ -1,6 +1,8 @@
 package com.example.munchbox.data
 
 import android.util.Log
+import com.example.munchbox.controller.DayOfWeek
+import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Order
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
@@ -22,7 +24,8 @@ constructor(private val firestore: FirebaseFirestore){
         restaurantID: String,
         mealID: String ,
         pickUpDate:Date,
-        orderPickedUp: Boolean
+        orderPickedUp: Boolean,
+        dietaryRestrictionsSelected: Set<DietaryOption>,
     ): Order? = withContext(Dispatchers.IO) {
         val orderID:String = "order_" + UUID.randomUUID().toString()
 
@@ -32,7 +35,8 @@ constructor(private val firestore: FirebaseFirestore){
             "restaurantID" to restaurantID,
             "mealID" to mealID,
             "pickUpDate" to Timestamp(pickUpDate),
-            "orderPickedUp" to orderPickedUp
+            "orderPickedUp" to orderPickedUp,
+            "dietaryRestrictionsSelected" to dietaryRestrictionsSelected.map{it.str}
         )
 
         try {
@@ -127,6 +131,8 @@ constructor(private val firestore: FirebaseFirestore){
         val fetchedPickUpDate = orderData?.get("pickUpDate") as? Timestamp?: Timestamp(Date())
         val pickUpDate = fetchedPickUpDate.toDate()
         val orderPickedUp = orderData?.get("orderPickedUp") as? Boolean?: false
-        return Order(orderID, userID, restaurantID, mealID, pickUpDate, orderPickedUp)
+        val fetchedDietaryRestrictionsSelected = orderData?.get("dietaryOptionsSelected") as? Set<String> ?: setOf()
+        val dietaryRestrictionsSelected = fetchedDietaryRestrictionsSelected.map { DietaryOption.valueOf(it) }.toSet()
+        return Order(orderID, userID, restaurantID, mealID, pickUpDate, orderPickedUp, dietaryRestrictionsSelected)
     }
 }

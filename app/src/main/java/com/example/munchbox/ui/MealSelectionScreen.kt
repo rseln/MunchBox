@@ -51,7 +51,7 @@ fun MealSelectionScreen(
         var availableRestaurants : Set<Restaurant> = setOf()
 
         for (restaurant in restaurants) {
-            if (restaurant.meals.filter { meal: Meal -> meal.days.contains(selectedDay) }.isNotEmpty()) {
+            if (restaurant.meals.filter { meal: Meal -> meal.daysMealIsOffered.contains(selectedDay) }.isNotEmpty()) {
                 availableRestaurants = availableRestaurants.plus(restaurant)
             }
         }
@@ -62,7 +62,7 @@ fun MealSelectionScreen(
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
         for (meal in meals.asIterable()) {
-            if (meal.options.containsAll(selectedOptions)) {
+            if (meal.dietaryRestrictionsOffered.containsAll(selectedOptions)) {
                 availableMeals = availableMeals.plus(meal)
             }
         }
@@ -75,7 +75,7 @@ fun MealSelectionScreen(
         var availableOptions: Set<DietaryOption> = setOf()
 
         for (meal in availableMeals.iterator()) {
-            availableOptions = availableOptions.plus(meal.options)
+            availableOptions = availableOptions.plus(meal.dietaryRestrictionsOffered)
         }
         return availableOptions
     }
@@ -106,7 +106,7 @@ fun MealSelectionScreen(
     fun getRestaurantMeals(restaurant : Restaurant, day : DayOfWeek) : Set<Meal> {
         var mealsToday : Set<Meal> = setOf()
         // Add all meals that are offered by this restaurant on this day
-        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) })
+        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.daysMealIsOffered.contains(day) })
         return mealsToday
     }
 
@@ -152,11 +152,11 @@ fun MealSelectionScreen(
         availableRestaurants.forEach {
             var initSelect : Set<DietaryOption> = setOf()
             if (it.meals.contains(orderedMeals[selectedDay.id])) {
-                initSelect = initSelect.plus(orderedMeals[selectedDay.id]!!.options)
+                initSelect = initSelect.plus(orderedMeals[selectedDay.id]!!.dietaryRestrictionsOffered)
             }
 
             var added by remember(selectedDay) { mutableStateOf(it.meals.contains(orderedMeals[selectedDay.id])) }
-            var allMeals by remember(selectedDay) { mutableStateOf(it.meals.filter { meal : Meal -> meal.days.contains(selectedDay) }.toSet()) }
+            var allMeals by remember(selectedDay) { mutableStateOf(it.meals.filter { meal : Meal -> meal.daysMealIsOffered.contains(selectedDay) }.toSet()) }
             var selectedOptions by remember(selectedDay) { mutableStateOf(initSelect) }
             var availableOptions by remember(selectedDay) { mutableStateOf(getAvailableOptions(allMeals, selectedOptions))}
 

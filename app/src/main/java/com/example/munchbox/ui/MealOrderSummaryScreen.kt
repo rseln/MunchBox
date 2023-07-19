@@ -48,7 +48,7 @@ fun MealOrderSummaryScreen(
                 onClick = { onNextButtonClicked() })
         }
         Spacer(modifier = Modifier.height(32.dp))
-        if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
+        if (orderUiState.meals.filter { meal : Meal -> meal.daysMealIsOffered.contains(currentDay) }.isNotEmpty()){
             OrdersAvailable(orderUiState, storageServices ,onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
@@ -77,7 +77,7 @@ fun OrdersAvailable(order: OrderUiState,
     //TODO: this is more technically correct but need to adjust when we do db integration
     Column(modifier = modifier) {
         // SHOULD JUST BE ONE VALUE SINCE WE CAN ONLY HAVE ONE MEAL PER DAY
-        val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
+        val mealsToday = order.meals.filter { meal : Meal -> meal.daysMealIsOffered.contains(currentDay) }
         for(meal in mealsToday) {
             OrderSummaryCard(meal = meal,
                 storageService,

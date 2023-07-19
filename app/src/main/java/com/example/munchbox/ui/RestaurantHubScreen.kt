@@ -120,18 +120,18 @@ fun MealSummary(meals : Set<Meal>, onCancelCallback : (Meal) -> Unit, modifier: 
 
         // Find if any of the dietary options are unique
         for (otherMeals in filteredAllMeals) {
-            allUsedDietaryOptions = allUsedDietaryOptions.union(otherMeals.options)
+            allUsedDietaryOptions = allUsedDietaryOptions.union(otherMeals.dietaryRestrictionsOffered)
         }
-        val unusedDietaryOptions = meal.options.minus(allUsedDietaryOptions)
+        val unusedDietaryOptions = meal.dietaryRestrictionsOffered.minus(allUsedDietaryOptions)
 
         // If we already used the nickname, then number it
         if (unusedDietaryOptions.isEmpty()) {
             var idx = 1
-            nickname = meal.options.first().str + " " + idx.toString()
+            nickname = meal.dietaryRestrictionsOffered.first().str + " " + idx.toString()
 
             while (usedNicknames.contains("$nickname $idx")) {
                 idx++
-                nickname = meal.options.first().str + " " + idx.toString()
+                nickname = meal.dietaryRestrictionsOffered.first().str + " " + idx.toString()
             }
 
             usedNicknames = usedNicknames.plus(nickname)
