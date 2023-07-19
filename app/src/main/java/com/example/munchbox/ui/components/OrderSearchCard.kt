@@ -32,9 +32,10 @@ import com.example.munchbox.data.DataSource
 @Composable
 fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
 
-    val search = remember { mutableStateOf(TextFieldValue()) }
+    val search = remember { mutableStateOf(TextFieldValue("")) }
     // -1 is unverified, 0 is false, 1 is true
     val isOrderIdValid = remember { mutableStateOf(-1) }
+    val isButtonDisabled = remember { mutableStateOf(true) }
     val today = DataSource.currentDay
 
     // only display if there are meals to fulfill today from the restaurant
@@ -64,20 +65,25 @@ fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
                         modifier = Modifier.weight(1f).width(240.dp),
                         label = { Text(text = "Order ID") },
                         value = search.value,
-                        onValueChange = { search.value = it }
+                        onValueChange = {
+                            search.value = it
+                            isButtonDisabled.value = search.value.text == ""
+                        }
                     )
                     Spacer(modifier = Modifier.width(10.dp))
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            isOrderIdValid.value = checkOrderExists(search.value, meals, today, restaurant)
-                        },
-                    ) {
-                        Text(
-                            text = "Verify",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+
+                    if (!isButtonDisabled.value) {
+                        ExtendedFloatingActionButton(
+                            onClick = { isOrderIdValid.value = checkOrderExists(search.value, meals, today, restaurant) }
+                        ) {
+                            Text(
+                                text = "Verify",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                     }
                 }
+
                 if (isOrderIdValid.value == 0) {
                     Text(
                         text = "Order ID does not exist.",
@@ -110,6 +116,6 @@ private fun checkOrderExists(id: TextFieldValue, meals: Set<Meal>, today : DayOf
 @Composable
 fun OrderSearchPreview(){
     val lazeezMeal = setOf(Meal(setOf(DietaryOption.VEGE, DietaryOption.GF),
-        DataSource.lazeez, setOf(DayOfWeek.SUNDAY), mapOf(Pair(DayOfWeek.TUESDAY, 20))))
+        DataSource.lazeez, setOf(DayOfWeek.TUESDAY), mapOf(Pair(DayOfWeek.TUESDAY, 20))))
     OrderSearchCard(DataSource.lazeez, lazeezMeal)
 }
