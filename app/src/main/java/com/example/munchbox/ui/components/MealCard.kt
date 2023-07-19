@@ -56,7 +56,7 @@ fun MealCardContainer() {
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(restaurant: Restaurant,
+fun MealCard(restaurantName: String,
              allMeals: Set<Meal>,
              onAdd: (Meal) -> Unit,
              onSelectOption: (DietaryOption) -> Unit,
@@ -99,19 +99,20 @@ fun MealCard(restaurant: Restaurant,
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
-        if(imageID != null){
-            painterResource(id = imageID)?.let {
-                Image(
-                    painter = it,
-                    contentDescription = "Contact profile picture",
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.large)
-                        .fillMaxWidth()
-                        .aspectRatio(3f / 2f),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
-        }
+// TODO: Need to find a replacement for this using the Restaurant.imageID
+//        if(imageID != null){
+//            painterResource(id = imageID)?.let {
+//                Image(
+//                    painter = it,
+//                    contentDescription = "Contact profile picture",
+//                    modifier = Modifier
+//                        .clip(MaterialTheme.shapes.large)
+//                        .fillMaxWidth()
+//                        .aspectRatio(3f / 2f),
+//                    contentScale = ContentScale.FillBounds
+//                )
+//            }
+//        }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
                 text = restaurantName,
