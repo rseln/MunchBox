@@ -19,10 +19,14 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.OrderViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun OrderSummaries(order: OrderUiState, modifier: Modifier = Modifier){
+    val orderService = StorageServices(FirebaseFirestore.getInstance()).orderService()
+
     Row (
         modifier = modifier
     ){
@@ -59,7 +63,7 @@ fun OrderSummaries(order: OrderUiState, modifier: Modifier = Modifier){
             )
             for(meal in dayFilterMap[day]!!){
                 Spacer(modifier = Modifier.height(13.dp))
-                OrderSummaryCard(meal = meal, true)
+                OrderSummaryCard(meal = meal, orderService, true)
                 Spacer(modifier = Modifier.height(13.dp))
             }
         }

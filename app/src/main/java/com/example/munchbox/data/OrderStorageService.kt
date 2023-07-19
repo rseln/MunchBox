@@ -1,11 +1,7 @@
 package com.example.munchbox.data
 
 import android.util.Log
-import com.example.munchbox.controller.DayOfWeek
-import com.example.munchbox.controller.DietaryOption
-import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
-import com.example.munchbox.controller.Restaurant
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -101,7 +97,7 @@ constructor(private val firestore: FirebaseFirestore){
 
         return@withContext null
     }
-    suspend fun updateOrderByOrderID(orderID:String, orderPickedUp: Boolean): String? = withContext(Dispatchers.IO) {
+    suspend fun updateOrderPickedUpByOrderID(orderID:String, orderPickedUp: Boolean): String? = withContext(Dispatchers.IO) {
         val data:MutableMap<String, Any?> = mutableMapOf()
         data["orderPickedUp"] = orderPickedUp
         try{

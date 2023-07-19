@@ -51,6 +51,7 @@ import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
@@ -62,6 +63,7 @@ import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantHubScreen
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 /**
@@ -118,6 +120,13 @@ fun MunchBoxApp(
     viewModel: OrderViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+    /**
+     * Instantiating the StorageService Class
+     * Eg. Access storage services via storageService.orderService
+     */
+    val storageService = StorageServices(FirebaseFirestore.getInstance())
+
+
     val context = LocalContext.current
 
     // Get current back stack entry
@@ -211,6 +220,7 @@ fun MunchBoxApp(
 
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
+                    orderService = storageService.orderService(),
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date

@@ -28,8 +28,10 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.DayTabs
 import com.example.munchbox.ui.components.MealCard
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun MealSelectionScreen(
@@ -42,6 +44,8 @@ fun MealSelectionScreen(
     /**
      * State Variables
      */
+    val orderService = StorageServices(FirebaseFirestore.getInstance()).orderService()
+
     var selectedDay by remember { mutableStateOf(DayOfWeek.SATURDAY) }
 
     fun getAvailableRestaurants(restaurants : Set<Restaurant>) : Set<Restaurant> {
@@ -159,6 +163,7 @@ fun MealSelectionScreen(
 
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
+                orderService = orderService,
                 restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
