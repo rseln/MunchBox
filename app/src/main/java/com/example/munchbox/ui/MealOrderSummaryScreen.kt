@@ -22,7 +22,6 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.DataSource.pickUpOptions
-import com.example.munchbox.data.OrderStorageService
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSummaries
@@ -33,7 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 @Composable
 fun MealOrderSummaryScreen(
     orderUiState: OrderUiState,
-    orderService: OrderStorageService,
+    storageServices: StorageServices,
     modifier: Modifier = Modifier,
     onConfirmButtonClicked: () -> Unit = {},
     onNextButtonClicked: () -> Unit = {},
@@ -50,17 +49,17 @@ fun MealOrderSummaryScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
         if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
-            OrdersAvailable(orderUiState, orderService ,onConfirmButtonClicked, Modifier)
+            OrdersAvailable(orderUiState, storageServices ,onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
-            OrderSummaries(orderUiState, Modifier)
+            OrderSummaries(orderUiState, storageServices, Modifier)
         }
     }
 }
 
 @Composable
 fun OrdersAvailable(order: OrderUiState,
-                    orderService: OrderStorageService,
+                    storageService: StorageServices,
                     onConfirmButtonClicked: () -> Unit = {},
                     modifier: Modifier = Modifier){
     Row{
@@ -81,7 +80,7 @@ fun OrdersAvailable(order: OrderUiState,
         val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
         for(meal in mealsToday) {
             OrderSummaryCard(meal = meal,
-                orderService,
+                storageService,
                 false,
                 onConfirmButtonClicked,
                 modifier = Modifier.fillMaxWidth())
@@ -96,9 +95,9 @@ fun PreviewMealsAvailableScreen(){
     /** To show the cards go into interactive mode **/
     val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val orderService = StorageServices(FirebaseFirestore.getInstance()).orderService()
+    val storageService = StorageServices(FirebaseFirestore.getInstance())
 
     viewModel.setMeals(meals = allMeals.toList())
     viewModel.setPickupOptions(pickupOptions = pickUpOptions)
-    MealOrderSummaryScreen(orderUiState = uiState, orderService)
+    MealOrderSummaryScreen(orderUiState = uiState, storageService)
 }

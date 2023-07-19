@@ -27,11 +27,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.munchbox.data.OrderStorageService
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -52,7 +52,7 @@ fun MealCardContainer() {
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(orderService: OrderStorageService,
+fun MealCard(storageServices: StorageServices,
              restaurantName: String,
              allMeals: Set<Meal>,
              onAdd: (Meal) -> Unit,
@@ -89,11 +89,13 @@ fun MealCard(orderService: OrderStorageService,
     /**
      * COROUTINE FOR API CALLS
      */
+    val orderService = storageServices.orderService()
+
     val coroutineScope = rememberCoroutineScope()
     val updateOrderPickedUpOnClick: () -> Unit = {
         coroutineScope.launch {
             //TODO: CHANGE FROM HARDCODED ORDER ID ONCE WE HAVE PROPER DATA INFRA SET UP
-            orderService.updateOrderPickedUpByOrderID("123", true)
+            orderService.updateOrderPickedUpByOrderID("test_2", true)
         }
     }
 

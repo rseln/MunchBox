@@ -124,7 +124,7 @@ fun MunchBoxApp(
      * Instantiating the StorageService Class
      * Eg. Access storage services via storageService.orderService
      */
-    val storageService = StorageServices(FirebaseFirestore.getInstance())
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
 
 
     val context = LocalContext.current
@@ -220,7 +220,7 @@ fun MunchBoxApp(
 
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
-                    orderService = storageService.orderService(),
+                    storageServices = storageServices,
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
@@ -254,6 +254,7 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
+                    storageServices = storageServices,
                     restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
                     numMealsRequired = uiState.quantity,
 //                    quantityOptions = DataSource.quantityOptions,
@@ -282,6 +283,7 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealReview.name) {
                 MealReviewScreen(
                     orderUiState = uiState,
+                    storageServices = storageServices,
                     onNextButtonClicked = {
                         intent.putExtra("amount", uiState.price)
                         intent.putExtra("numMeals", uiState.quantity)
