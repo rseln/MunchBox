@@ -162,9 +162,6 @@ fun RestaurantCreationScreen() {
                     var photoID = UUID.randomUUID().toString()
                     val imageRef = Firebase.storage.reference.child("$photoID.jpg")
 
-                    // Create a reference to 'images/mountains.jpg'
-                    //val mountainImagesRef = Firebase.storage.reference.child("images/" +  + ".jpg")
-
                     var uploadTask = imageRef.putBytes(data)
 
                     uploadTask.addOnFailureListener {
