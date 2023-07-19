@@ -2,19 +2,16 @@
 
 package com.example.munchbox.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,18 +23,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.theme.Typography
+import kotlinx.coroutines.launch
 
 
 @Preview(
@@ -56,7 +52,8 @@ fun MealCardContainer() {
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(restaurantName: String,
+fun MealCard(storageServices: StorageServices,
+             restaurantName: String,
              allMeals: Set<Meal>,
              onAdd: (Meal) -> Unit,
              onSelectOption: (DietaryOption) -> Unit,
@@ -82,9 +79,6 @@ fun MealCard(restaurantName: String,
         return availableMeals.elementAt(0)
     }
 
-    val isConfirmEnabled = remember { mutableStateOf(true) }
-    val isConfirmed = remember { mutableStateOf(false) }
-
     /**
      * CALLBACKS
      */
@@ -93,8 +87,25 @@ fun MealCard(restaurantName: String,
     }
 
     /**
+     * COROUTINE FOR API CALLS
+     */
+    val orderService = storageServices.orderService()
+
+    val coroutineScope = rememberCoroutineScope()
+    val updateOrderPickedUpOnClick: () -> Unit = {
+        coroutineScope.launch {
+            //TODO: CHANGE FROM HARDCODED ORDER ID ONCE WE HAVE PROPER DATA INFRA SET UP
+            orderService.updateOrderPickedUpByOrderID("test_2", true)
+        }
+    }
+
+    /**
      * UI Components
      */
+
+    val isConfirmEnabled = remember { mutableStateOf(true) }
+    val isConfirmed = remember { mutableStateOf(false) }
+
     ElevatedCard(
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
@@ -182,6 +193,11 @@ fun MealCard(restaurantName: String,
                         //TODO: call endpoint delete from database
                         if (isConfirmEnabled.value) isConfirmEnabled.value = false
                         isConfirmed.value = true
+
+                        //update the database
+                        updateOrderPickedUpOnClick()
+
+                        // for nav + ui changes
                         onConfirmButtonClick()
                     },
                 ) {

@@ -51,6 +51,7 @@ import com.example.munchbox.data.DataSource.shawaramaPlus
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal
 import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
@@ -62,6 +63,7 @@ import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantHubScreen
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 /**
@@ -118,6 +120,13 @@ fun MunchBoxApp(
     viewModel: OrderViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+    /**
+     * Instantiating the StorageService Class
+     * Eg. Access storage services via storageService.orderService
+     */
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
+
+
     val context = LocalContext.current
 
     // Get current back stack entry
@@ -211,6 +220,7 @@ fun MunchBoxApp(
 
                 MealOrderSummaryScreen(
                     orderUiState = uiState,
+                    storageServices = storageServices,
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
@@ -244,6 +254,7 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
+                    storageServices = storageServices,
                     restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
                     numMealsRequired = uiState.quantity,
 //                    quantityOptions = DataSource.quantityOptions,
@@ -272,6 +283,7 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealReview.name) {
                 MealReviewScreen(
                     orderUiState = uiState,
+                    storageServices = storageServices,
                     onNextButtonClicked = {
                         intent.putExtra("amount", uiState.price)
                         intent.putExtra("numMeals", uiState.quantity)

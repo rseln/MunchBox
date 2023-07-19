@@ -21,11 +21,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.R
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSummaries
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun MealReviewScreen(
     orderUiState: OrderUiState,
+    storageServices: StorageServices,
     onCancelButtonClicked: () -> Unit = {},
     onNextButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -35,7 +38,7 @@ fun MealReviewScreen(
         modifier = modifier
             .verticalScroll(scrollState),
     ){
-        OrderSummaries(orderUiState, Modifier)
+        OrderSummaries(orderUiState, storageServices, Modifier)
         Row(
             modifier = Modifier
                 .padding(dimensionResource(R.dimen.padding_medium))
@@ -65,7 +68,8 @@ fun MealReviewScreen(
 fun PreviewMealReviewScreen() {
     val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
     viewModel.setMeals(meals = DataSource.allMeals.toList())
     viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
-    MealReviewScreen(orderUiState = uiState)
+    MealReviewScreen(orderUiState = uiState, storageServices)
 }

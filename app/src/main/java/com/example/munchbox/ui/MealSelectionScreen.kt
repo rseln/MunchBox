@@ -28,11 +28,13 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.DayTabs
 import com.example.munchbox.ui.components.MealCard
 
 @Composable
 fun MealSelectionScreen(
+    storageServices: StorageServices,
     restaurants: Set<Restaurant>,
     numMealsRequired: Int,
     onCancelButtonClicked: () -> Unit = {},
@@ -42,6 +44,7 @@ fun MealSelectionScreen(
     /**
      * State Variables
      */
+
     var selectedDay by remember { mutableStateOf(DayOfWeek.SATURDAY) }
 
     fun getAvailableRestaurants(restaurants : Set<Restaurant>) : Set<Restaurant> {
@@ -159,6 +162,7 @@ fun MealSelectionScreen(
 
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
+                storageServices = storageServices,
                 restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
