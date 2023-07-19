@@ -40,10 +40,11 @@ Contributions:
 - Stripe Integration Design and Implementation: 35 hours
 - Checkout Page: 5 hours
 - After Payment Page: 3 hours
-- User-side Order Verification UI: 5 hours
+- User-side Order Verification UI: 6 hours
+- Restaurant-side Order Verification UI: 3 hours
 - Bug Squashing (collaborative): 3 hours
 
-Total hours committed: 62 hours
+Total hours committed: 66 hours
 
 
 ## Eric

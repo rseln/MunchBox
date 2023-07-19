@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,7 @@ fun MealCard(restaurant: Restaurant,
              added: Boolean,
              disabled: Boolean = false,
              confirmDisabled: Boolean = true,
+             onConfirmButtonClick: () -> Unit,
              modifier: Modifier = Modifier) {
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
@@ -172,14 +174,14 @@ fun MealCard(restaurant: Restaurant,
                 }
             }
 
-            // this literally does nothing right now
             if (!confirmDisabled) {
                 ElevatedButton(
                     enabled = isConfirmEnabled.value,
                     onClick = {
-                        //TODO: call endpoint delete from database (need to figure out how to reflect change onto UI)
+                        //TODO: call endpoint delete from database
                         if (isConfirmEnabled.value) isConfirmEnabled.value = false
                         isConfirmed.value = true
+                        onConfirmButtonClick()
                     },
                 ) {
                     if (!isConfirmed.value) {

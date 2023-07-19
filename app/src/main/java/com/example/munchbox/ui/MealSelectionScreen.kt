@@ -177,6 +177,7 @@ fun MealSelectionScreen(
                 availableOptions = availableOptions,
                 added = added,
                 disabled = !added && (orderedMeals[selectedDay.id] != null || numOrderedMeals >= numMealsRequired),
+                onConfirmButtonClick = {},
                 modifier = Modifier
                     .fillMaxWidth(),
                 imageID = it.imageID

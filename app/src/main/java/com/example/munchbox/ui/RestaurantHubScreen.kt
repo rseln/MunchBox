@@ -22,6 +22,7 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
@@ -94,6 +95,10 @@ fun RestaurantHubScreen(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(32.dp))
+
+        OrderSearchCard(restaurant, availableMeals.value)
+
         Spacer(modifier = Modifier.height(32.dp))
 
         MealSummary(
