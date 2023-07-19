@@ -12,11 +12,14 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 
 
-
 @Composable
-fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
+fun OrderSummaryCard(meal: Meal,
+                     confirmDisabled: Boolean,
+                     onConfirmButtonClick: () -> Unit = {},
+                     modifier: Modifier = Modifier.fillMaxWidth()){
+    // TODO: Replace restaurant name with the actual restaurant name from DB
     MealCard(
-        restaurant = meal.restaurant,
+        restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
         allMeals = setOf(meal),
         onAdd = { null },
         onSelectOption = { null },
@@ -24,6 +27,8 @@ fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
         availableOptions = meal.options,
         added = true,
         disabled = true,
+        confirmDisabled = confirmDisabled,
+        onConfirmButtonClick = onConfirmButtonClick,
         modifier = modifier
             .fillMaxWidth()
     )
@@ -31,11 +36,11 @@ fun OrderSummaryCard(meal: Meal, modifier: Modifier = Modifier.fillMaxWidth()){
 @Preview
 @Composable
 fun PreviewOrderSummaryCard(){
-    val lazeez = Restaurant("1","Lazeez", setOf(), R.drawable.lazeez)
-    lazeez.addMeals(setOf(Meal(setOf(DietaryOption.HALAL), lazeez, setOf(DayOfWeek.SUNDAY))))
+    val lazeez = Restaurant("1", "Lazeez", setOf(), R.drawable.lazeez)
+//    lazeez.addMeals(setOf(Meal("lazeez_meal", "lazeez_id", "lazeez", setOf(DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY))))
 
     for (meal in lazeez.meals) {
-        OrderSummaryCard(meal, Modifier.fillMaxWidth())
+        OrderSummaryCard(meal, false, {}, Modifier.fillMaxWidth())
     }
 }
 

@@ -118,13 +118,14 @@ fun MealSelectionScreen(
         }
     }
 
-    fun getAddedOptions(restaurant: Restaurant, todaysMeal : Meal?) : Set<DietaryOption> {
-        if (todaysMeal == null || todaysMeal.restaurant != restaurant) {
-            return setOf()
-        }
-
-        return todaysMeal.options
-    }
+    // TODO: This is never called and breaks the code due to Meal no longer having restaurant so I commented it
+//    fun getAddedOptions(restaurant: Restaurant, todaysMeal : Meal?) : Set<DietaryOption> {
+//        if (todaysMeal == null || todaysMeal.restaurant != restaurant) {
+//            return setOf()
+//        }
+//
+//        return todaysMeal.options
+//    }
     /**
      * Composables
      */
@@ -158,7 +159,7 @@ fun MealSelectionScreen(
 
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
-                restaurant = it,
+                restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
@@ -176,8 +177,10 @@ fun MealSelectionScreen(
                 availableOptions = availableOptions,
                 added = added,
                 disabled = !added && (orderedMeals[selectedDay.id] != null || numOrderedMeals >= numMealsRequired),
+                onConfirmButtonClick = {},
                 modifier = Modifier
                     .fillMaxWidth()
+//                imageID = it.imageID
             )
             Spacer(modifier = Modifier.height(13.dp))
         }

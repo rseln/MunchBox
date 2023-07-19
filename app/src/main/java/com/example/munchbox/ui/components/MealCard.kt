@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,9 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,15 +48,15 @@ import com.example.munchbox.ui.theme.Typography
 @Composable
 fun MealCardContainer() {
 
-    val restaurant = Restaurant("1", "Lazeez", setOf())
-    val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val restaurant = Restaurant("1","Lazeez", setOf())
+    val vegeMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val meatMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
     restaurant.addMeals(allMeals)
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MealCard(restaurant: Restaurant,
+fun MealCard(restaurantName: String,
              allMeals: Set<Meal>,
              onAdd: (Meal) -> Unit,
              onSelectOption: (DietaryOption) -> Unit,
@@ -60,8 +64,9 @@ fun MealCard(restaurant: Restaurant,
              availableOptions : Set<DietaryOption>,
              added: Boolean,
              disabled: Boolean = false,
+             confirmDisabled: Boolean = true,
+             onConfirmButtonClick: () -> Unit,
              modifier: Modifier = Modifier) {
-
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
         for (meal in meals.asIterable()) {
@@ -77,6 +82,9 @@ fun MealCard(restaurant: Restaurant,
         return availableMeals.elementAt(0)
     }
 
+    val isConfirmEnabled = remember { mutableStateOf(true) }
+    val isConfirmed = remember { mutableStateOf(false) }
+
     /**
      * CALLBACKS
      */
@@ -91,20 +99,23 @@ fun MealCard(restaurant: Restaurant,
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
-        restaurant.imageID?.let { painterResource(id = it) }?.let {
-            Image(
-                painter = it,
-                contentDescription = "Contact profile picture",
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.large)
-                    .fillMaxWidth()
-                    .aspectRatio(3f / 2f),
-                contentScale = ContentScale.FillBounds
-            )
-        }
+// TODO: Need to find a replacement for this using the Restaurant.imageID
+//        if(imageID != null){
+//            painterResource(id = imageID)?.let {
+//                Image(
+//                    painter = it,
+//                    contentDescription = "Contact profile picture",
+//                    modifier = Modifier
+//                        .clip(MaterialTheme.shapes.large)
+//                        .fillMaxWidth()
+//                        .aspectRatio(3f / 2f),
+//                    contentScale = ContentScale.FillBounds
+//                )
+//            }
+//        }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
-                text = restaurant.name,
+                text = restaurantName,
                 style = Typography.headlineMedium,
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -160,6 +171,30 @@ fun MealCard(restaurant: Restaurant,
                             modifier = Modifier.size(FilterChipDefaults.IconSize)
                         )
                         Text("Meal Added")
+                    }
+                }
+            }
+
+            if (!confirmDisabled) {
+                ElevatedButton(
+                    enabled = isConfirmEnabled.value,
+                    onClick = {
+                        //TODO: call endpoint delete from database
+                        if (isConfirmEnabled.value) isConfirmEnabled.value = false
+                        isConfirmed.value = true
+                        onConfirmButtonClick()
+                    },
+                ) {
+                    if (!isConfirmed.value) {
+                        Text("Confirm Pickup")
+                    }
+                    else {
+                        Icon(
+                            imageVector = Icons.Filled.Done,
+                            contentDescription = "Localized Description",
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                        Text("Pickup Confirmed")
                     }
                 }
             }

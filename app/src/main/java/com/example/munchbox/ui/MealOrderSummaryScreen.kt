@@ -31,6 +31,7 @@ import com.example.munchbox.ui.components.SelectCard
 fun MealOrderSummaryScreen(
     orderUiState: OrderUiState,
     modifier: Modifier = Modifier,
+    onConfirmButtonClicked: () -> Unit = {},
     onNextButtonClicked: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
@@ -45,7 +46,7 @@ fun MealOrderSummaryScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
         if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
-            OrdersAvailable(orderUiState, Modifier)
+            OrdersAvailable(orderUiState, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
             OrderSummaries(orderUiState, Modifier)
@@ -54,7 +55,9 @@ fun MealOrderSummaryScreen(
 }
 
 @Composable
-fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
+fun OrdersAvailable(order: OrderUiState,
+                    onConfirmButtonClicked: () -> Unit = {},
+                    modifier: Modifier = Modifier){
     Row{
         Box(
             modifier = Modifier
@@ -67,16 +70,15 @@ fun OrdersAvailable(order: OrderUiState, modifier: Modifier = Modifier){
         }
     }
 
-    if (order.pickupOptions.isEmpty()){
-        return
-    }
-    for(pickupDate in order.pickupOptions){
-        if (currentDay == pickupDate){
-            Column(modifier = modifier) {
-                for(meal in order.meals){
-                    OrderSummaryCard(meal = meal, modifier = Modifier.fillMaxWidth())
-                }
-            }
+    //TODO: this is more technically correct but need to adjust when we do db integration
+    Column(modifier = modifier) {
+        // SHOULD JUST BE ONE VALUE SINCE WE CAN ONLY HAVE ONE MEAL PER DAY
+        val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
+        for(meal in mealsToday) {
+            OrderSummaryCard(meal = meal,
+                false,
+                onConfirmButtonClicked,
+                modifier = Modifier.fillMaxWidth())
         }
     }
 }

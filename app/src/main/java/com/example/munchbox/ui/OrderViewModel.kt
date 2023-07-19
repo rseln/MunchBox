@@ -71,13 +71,14 @@ class OrderViewModel : ViewModel() {
     /**
      * Set the [pickupDate] for this order's state and update the price
      */
-    fun setDate(pickupDate: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                date = pickupDate,
-            )
-        }
-    }
+    // TODO: OrderUIState no longer uses date, it is stored in the Order Collection in DB (can we delete this?)
+//    fun setDate(pickupDate: String) {
+//        _uiState.update { currentState ->
+//            currentState.copy(
+//                date = pickupDate,
+//            )
+//        }
+//    }
 
     /**
      * Reset the order state
