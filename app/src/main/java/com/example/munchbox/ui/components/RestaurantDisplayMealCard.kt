@@ -97,11 +97,11 @@ fun RestaurantDisplayMealCard(meal : Meal,
                 style = Typography.labelSmall,
             )
             Text(
-                text = if (!meal.orders.contains(today)) {
+                text = if (!meal.amountOrdered.contains(today)) {
                     "0"
                 }
                 else {
-                    meal.orders[today].toString()
+                    meal.amountOrdered[today].toString()
                 },
                 style = Typography.labelSmall,
             )
@@ -141,11 +141,11 @@ fun RestaurantDisplayMealCard(meal : Meal,
                         style = Typography.labelSmall,
                     )
                     Text(
-                        text = if (!meal.orders.contains(day)) {
+                        text = if (!meal.amountOrdered.contains(day)) {
                             "0"
                         }
                         else {
-                            meal.orders[day].toString()
+                            meal.amountOrdered[day].toString()
                         },
                         style = Typography.labelSmall,
                     )

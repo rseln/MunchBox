@@ -16,16 +16,16 @@ object DataSource {
     )
 
     /** Fake Restaurants to use for now.**/
-    var lazeez = Restaurant(name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
-    var campusPizza = Restaurant(name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
-    var shawaramaPlus = Restaurant(name="Shawarma Plus", setOf(), imageID = R.drawable.shawarmaplus)
+    var lazeez = Restaurant("1", name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
+    var campusPizza = Restaurant("2", name="Campus Pizza", setOf(), imageID = R.drawable.campuspizza)
+    var shawaramaPlus = Restaurant("3", name="Shawarma Plus", setOf(), imageID = R.drawable.shawarmaplus)
 
-    val lazeezMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF), lazeez, setOf(DayOfWeek.SUNDAY), mapOf(Pair(DayOfWeek.SUNDAY, 20)))
-    val lazeezMeal2 = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), lazeez, setOf(DayOfWeek.SUNDAY))
-    val campusPizzaMeal =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), campusPizza, setOf(DayOfWeek.TUESDAY))
-    val campusPizzaMeal2 =  Meal(setOf(DietaryOption.GF), campusPizza, setOf(DayOfWeek.TUESDAY))
-    val shawarmaPlusMeal =  Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), shawaramaPlus, setOf(DayOfWeek.SUNDAY))
-    val shawarmaPlusMeal2 =  Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), shawaramaPlus, setOf(DayOfWeek.WEDNESDAY))
+    val lazeezMeal = Meal("lazeez_meal_1", "lazeez_id", setOf(DietaryOption.VEGE, DietaryOption.GF), setOf(DayOfWeek.SUNDAY), mapOf(Pair(DayOfWeek.SUNDAY, 20)))
+    val lazeezMeal2 = Meal("lazeez_meal_2", "lazeez_id", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY))
+    val campusPizzaMeal =  Meal("campus_pizza_meal_1", "campus_pizza_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.TUESDAY))
+    val campusPizzaMeal2 =  Meal("campus_pizza_meal_2", "campus_pizza_id", setOf(DietaryOption.GF), setOf(DayOfWeek.TUESDAY))
+    val shawarmaPlusMeal =  Meal("shawarma_plus_meal_1", "shawarma_plus_id", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY))
+    val shawarmaPlusMeal2 =  Meal("shawarma_plus_meal_2", "shawarma_plus_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.WEDNESDAY))
 
     val allMeals = setOf(lazeezMeal, lazeezMeal2, campusPizzaMeal, campusPizzaMeal2, shawarmaPlusMeal, shawarmaPlusMeal2)
     val pickUpOptions = setOf(DayOfWeek.TUESDAY)

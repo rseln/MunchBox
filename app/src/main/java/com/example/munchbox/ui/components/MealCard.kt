@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,9 +48,9 @@ import com.example.munchbox.ui.theme.Typography
 @Composable
 fun MealCardContainer() {
 
-    val restaurant = Restaurant("Lazeez", setOf())
-    val vegeMeal = Meal(setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
-    val meatMeal = Meal(setOf(DietaryOption.HALAL, DietaryOption.MEAT), restaurant, setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val restaurant = Restaurant("1","Lazeez", setOf())
+    val vegeMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val meatMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
     restaurant.addMeals(allMeals)
 }
@@ -66,7 +67,6 @@ fun MealCard(restaurant: Restaurant,
              confirmDisabled: Boolean = true,
              onConfirmButtonClick: () -> Unit,
              modifier: Modifier = Modifier) {
-
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
         for (meal in meals.asIterable()) {
@@ -99,20 +99,22 @@ fun MealCard(restaurant: Restaurant,
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
-        restaurant.imageID?.let { painterResource(id = it) }?.let {
-            Image(
-                painter = it,
-                contentDescription = "Contact profile picture",
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.large)
-                    .fillMaxWidth()
-                    .aspectRatio(3f / 2f),
-                contentScale = ContentScale.FillBounds
-            )
+        if(imageID != null){
+            painterResource(id = imageID)?.let {
+                Image(
+                    painter = it,
+                    contentDescription = "Contact profile picture",
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.large)
+                        .fillMaxWidth()
+                        .aspectRatio(3f / 2f),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
         }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
-                text = restaurant.name,
+                text = restaurantName,
                 style = Typography.headlineMedium,
             )
             Spacer(modifier = Modifier.height(8.dp))

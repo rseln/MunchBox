@@ -63,7 +63,7 @@ fun MealReviewScreen(
 @Composable
 @Preview
 fun PreviewMealReviewScreen() {
-    val viewModel:OrderViewModel = viewModel()
+    val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     viewModel.setMeals(meals = DataSource.allMeals.toList())
     viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
