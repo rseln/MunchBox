@@ -42,9 +42,10 @@ Contributions:
 - After Payment Page: 3 hours
 - User-side Order Verification UI: 6 hours
 - Restaurant-side Order Verification UI: 3 hours
+- Order Verification API Integration: 3 hours
 - Bug Squashing (collaborative): 3 hours
 
-Total hours committed: 66 hours
+Total hours committed: 69 hours
 
 
 ## Eric
