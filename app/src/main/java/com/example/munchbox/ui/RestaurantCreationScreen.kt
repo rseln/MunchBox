@@ -4,15 +4,12 @@ package com.example.munchbox.ui
 import android.app.TimePickerDialog
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -37,7 +34,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -56,11 +51,7 @@ import androidx.compose.ui.unit.sp
 import java.util.Calendar
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import com.example.munchbox.R
-import com.google.firebase.storage.ktx.component1
-import com.google.firebase.storage.ktx.component2
-import com.google.firebase.storage.ktx.component3
 import com.example.munchbox.data.RestaurantStorageService
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -68,7 +59,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
@@ -88,8 +78,6 @@ val dietaryOptions = setOf(
 @Composable
 fun RestaurantCreationScreen() {
     val mContext = LocalContext.current
-    Log.d("tag", "test Call")
-
 
     // VALUES TO SEND
     val restaurantName = remember { mutableStateOf(TextFieldValue()) }
@@ -118,9 +106,10 @@ fun RestaurantCreationScreen() {
 
         val sendRequestRestaurant: () -> Unit = {
             coroutineScope.launch {
-//                val restID = storageService.createDBRestaurant(
-//                    restaurantName.value.text
-//                )
+                val restID = storageService.createDBRestaurant(
+                    restaurantName.value.text,
+                    //imageURL
+                )
             }
         }
 
@@ -135,7 +124,8 @@ fun RestaurantCreationScreen() {
 
     }
 
-    // taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
+    // general form taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
+    // auto uploads image and updates form's download URL for rest creation
     @Composable
     fun PickImageFromGallery() {
 
@@ -179,35 +169,45 @@ fun RestaurantCreationScreen() {
 
                     uploadTask.addOnFailureListener {
                         // Handle unsuccessful uploads
-                    }.addOnSuccessListener { taskSnapshot ->
-                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                        // ...
-                    }
+                        Log.e("FIRESTORE ERROR", it.toString())
 
-//                    val urlTask = uploadTask.continueWithTask { task ->
-//                        if (!task.isSuccessful) {
-//                            task.exception?.let {
-//                                throw it
-//                            }
-//                        }
-//                        imageRef.downloadUrl
-//                    }.addOnCompleteListener { task ->
-//                        if (task.isSuccessful) {
-//                            val downloadUri = task.result
-//                            imageURL
-//                        } else {
-//                            // Handle failures
-//                            // ...
-//                        }
+                    }
+//                    .addOnSuccessListener { taskSnapshot ->
+//                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+//                        // ...
 //                    }
+
+                    val urlTask = uploadTask.continueWithTask { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let {
+                                Log.e("FIRESTORE ERROR", it.toString())
+                                throw it
+                            }
+                        }
+                        imageRef.downloadUrl
+                    }.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val downloadUri = task.result
+                            imageURL.value = downloadUri.toString()
+                        } else {
+                            // Handle failures
+                            // ...
+                            Log.e("FIRESTORE ERROR", "Unsuccessful image DownloadURL retrieve")
+                        }
+                    }
                     imageUri = null
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(onClick = { launcher.launch("image/*") }) {
-                Text(text = "Pick Image")
+            if (imageURL.value != "") {
+                Text(text = "Image Submitted Successfully")
+            }
+            else {
+                Button(onClick = { launcher.launch("image/*") }) {
+                    Text(text = "Pick Image")
+                }
             }
         }
 
@@ -378,7 +378,6 @@ fun convertTo12Hours(militaryTime: String): String{
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
 }
-
 
 @Preview
 @Composable
