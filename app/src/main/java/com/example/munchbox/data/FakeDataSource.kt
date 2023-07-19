@@ -28,5 +28,5 @@ object DataSource {
     val shawarmaPlusMeal2 =  Meal("shawarma_plus_meal_2", "shawarma_plus_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.WEDNESDAY))
 
     val allMeals = setOf(lazeezMeal, lazeezMeal2, campusPizzaMeal, campusPizzaMeal2, shawarmaPlusMeal, shawarmaPlusMeal2)
-    val pickUpOptions = setOf(DayOfWeek.TUESDAY)
+//    val pickUpOptions = setOf(DayOfWeek.TUESDAY)
 }
