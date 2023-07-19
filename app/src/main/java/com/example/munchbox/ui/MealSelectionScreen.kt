@@ -159,7 +159,7 @@ fun MealSelectionScreen(
 
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
-                restaurantName = it.name,
+                restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
@@ -179,8 +179,8 @@ fun MealSelectionScreen(
                 disabled = !added && (orderedMeals[selectedDay.id] != null || numOrderedMeals >= numMealsRequired),
                 onConfirmButtonClick = {},
                 modifier = Modifier
-                    .fillMaxWidth(),
-                imageID = it.imageID
+                    .fillMaxWidth()
+//                imageID = it.imageID
             )
             Spacer(modifier = Modifier.height(13.dp))
         }

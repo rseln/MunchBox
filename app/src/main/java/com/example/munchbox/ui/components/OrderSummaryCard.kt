@@ -19,7 +19,7 @@ fun OrderSummaryCard(meal: Meal,
                      modifier: Modifier = Modifier.fillMaxWidth()){
     // TODO: Replace restaurant name with the actual restaurant name from DB
     MealCard(
-        restaurantName = "Temporary Lazeez",
+        restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
         allMeals = setOf(meal),
         onAdd = { null },
         onSelectOption = { null },

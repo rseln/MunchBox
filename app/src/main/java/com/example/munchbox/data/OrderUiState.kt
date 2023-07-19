@@ -9,7 +9,7 @@ import com.example.munchbox.controller.Meal
  */
 data class OrderUiState(
     var meals: Set<Meal> = setOf(),
-    /** Selected meal quantity (1, 6, 12) */
+    /** Selected meal quantity (1, 3, 5) */
     val quantity: Int = 0,
     /** Total price for the order */
     val price: String = "",
