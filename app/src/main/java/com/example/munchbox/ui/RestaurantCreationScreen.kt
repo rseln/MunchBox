@@ -67,9 +67,11 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 import java.util.regex.Pattern
 
 val dietaryOptions = setOf(
@@ -98,6 +100,8 @@ fun RestaurantCreationScreen() {
     var selectedOptions by remember { mutableStateOf(setOf<Pair<Int, String>>()) }
     val restaurantPhoneNumber = remember {mutableStateOf(TextFieldValue())}
     val restaurantEmail = remember {mutableStateOf(TextFieldValue())}
+    val imageURL = remember {mutableStateOf("")}
+
 
     // helper state vars
     var emailError by remember { mutableStateOf((false))}
@@ -112,12 +116,11 @@ fun RestaurantCreationScreen() {
         // Returns a scope that's cancelled when F is removed from composition
         val coroutineScope = rememberCoroutineScope()
 
-
         val sendRequestRestaurant: () -> Unit = {
             coroutineScope.launch {
-                val restID = storageService.createDBRestaurant(
-                    restaurantName.value.text
-                )
+//                val restID = storageService.createDBRestaurant(
+//                    restaurantName.value.text
+//                )
             }
         }
 
@@ -135,29 +138,79 @@ fun RestaurantCreationScreen() {
     // taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
     @Composable
     fun PickImageFromGallery() {
-        var imageURI by remember { mutableStateOf<Uri?>(null)}
+
+        var imageUri by remember { mutableStateOf<Uri?>(null) }
         val context = LocalContext.current
-        val bitmap = remember { mutableStateOf<Bitmap?>(null)}
-        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
-                uri: Uri? -> imageURI = uri
-        }
+        val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
+        val launcher =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+                imageUri = uri
+            }
 
-        Column {
-            if (imageURI != null ) {
-                Text(text = "Image Selected: ${File(imageURI!!.path).name}")
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            imageUri?.let {
+                if (Build.VERSION.SDK_INT < 28) {
+                    bitmap.value = MediaStore.Images
+                        .Media.getBitmap(context.contentResolver, it)
+                } else {
+                    val source = ImageDecoder.createSource(context.contentResolver, it)
+                    bitmap.value = ImageDecoder.decodeBitmap(source)
+                }
+
+                bitmap.value?.let { btm ->
+                    val baos = ByteArrayOutputStream()
+                    btm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                    val data = baos.toByteArray()
+
+                    // Create a reference to "mountains.jpg"
+                    var photoID = UUID.randomUUID().toString()
+                    val imageRef = Firebase.storage.reference.child("$photoID.jpg")
+
+                    // Create a reference to 'images/mountains.jpg'
+                    //val mountainImagesRef = Firebase.storage.reference.child("images/" +  + ".jpg")
+
+                    var uploadTask = imageRef.putBytes(data)
+
+                    uploadTask.addOnFailureListener {
+                        // Handle unsuccessful uploads
+                    }.addOnSuccessListener { taskSnapshot ->
+                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                        // ...
+                    }
+
+//                    val urlTask = uploadTask.continueWithTask { task ->
+//                        if (!task.isSuccessful) {
+//                            task.exception?.let {
+//                                throw it
+//                            }
+//                        }
+//                        imageRef.downloadUrl
+//                    }.addOnCompleteListener { task ->
+//                        if (task.isSuccessful) {
+//                            val downloadUri = task.result
+//                            imageURL
+//                        } else {
+//                            // Handle failures
+//                            // ...
+//                        }
+//                    }
+                    imageUri = null
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(onClick = { launcher.launch("image/*") }) {
+                Text(text = "Pick Image")
             }
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(onClick = { launcher.launch(
-            PickVisualMediaRequest(
-                //Here we request only photos. Change this to .ImageAndVideo if
-                //you want videos too.
-                //Or use .VideoOnly if you only want videos.
-                mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }) {
-            Text(text = "Upload Image")
-        }
+
     }
 
     // Declaring and initializing a calendar
@@ -290,7 +343,7 @@ fun RestaurantCreationScreen() {
 
         // PHOTO
         Text(text = stringResource(R.string.signup_restaurant_image))
-
+        PickImageFromGallery()
 
         Spacer(modifier = Modifier.padding(20.dp))
 
@@ -325,31 +378,6 @@ fun convertTo12Hours(militaryTime: String): String{
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
 }
-// taken from https://github.com/Kiran-Bahalaskar/Pick-Image-From-Gallery-With-Jetpack-Compose/blob/master/app/src/main/java/com/kiranbahalaskar/pickimagefromgallery/MainActivity.kt
-//@Composable
-//fun PickImageFromGallery() {
-//    var imageURI by remember { mutableStateOf<Uri?>(null)}
-//    val context = LocalContext.current
-//    val bitmap = remember { mutableStateOf<Bitmap?>(null)}
-//
-//    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.PickVisualMedia()) {
-//        uri: Uri? -> imageURI = uri
-//    }
-//
-//    Button(onClick = { launcher.launch(
-//        PickVisualMediaRequest(
-//            mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
-//    }) {
-//        Text(text = "Upload Image")
-//    }
-//
-//    Column {
-//        if (imageURI != null ) {
-//            Text(text = "Image Selected: ${File(imageURI!!.path).name}")
-//        }
-//    }
-//    Spacer(modifier = Modifier.height(12.dp))
-//}
 
 
 @Preview
