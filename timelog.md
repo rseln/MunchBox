@@ -3,6 +3,12 @@
 **This file tracks the development and software design contributions of each team member to the project (does not include meetings and report writing).**
 
 ## Anees
+Total hours commited: 63 hours
+
+| Contributions | Hours | Related Commits |
+| ----------- | ----------- | ----------- |
+| Header      | Title       |             |
+| Paragraph   | Text        |             |
 
 Contributions:
 - Pricing Options Page: 6 hours
