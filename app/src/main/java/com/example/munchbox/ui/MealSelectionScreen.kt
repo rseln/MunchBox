@@ -1,5 +1,6 @@
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.DayTabs
 import com.example.munchbox.ui.components.MealCard
@@ -36,6 +38,7 @@ import com.example.munchbox.ui.components.MealCard
 fun MealSelectionScreen(
     storageServices: StorageServices,
     restaurants: Set<Restaurant>,
+    orderInfo: OrderUiState,
     numMealsRequired: Int,
     onCancelButtonClicked: () -> Unit = {},
     onSubmit: (Array<Meal?>) -> Unit,
@@ -168,9 +171,13 @@ fun MealSelectionScreen(
                 onAdd = { meal ->
                     recordMealAddition(meal)
                     added = !added
+                    if(added){
+                        orderInfo.selectedToPickUpDay[meal] = selectedDay
+                    }
                     if (!added) {
                         selectedOptions = setOf()
                         availableOptions = getAvailableOptions(allMeals, selectedOptions)
+                        orderInfo.selectedToPickUpDay.remove(meal)
                     }
                 },
                 onSelectOption = { option : DietaryOption ->
