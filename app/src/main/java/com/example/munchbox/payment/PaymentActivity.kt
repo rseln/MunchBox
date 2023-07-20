@@ -4,9 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.munchbox.R
+import com.example.munchbox.ui.theme.MunchBoxTheme
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -23,6 +34,7 @@ class PaymentActivity : ComponentActivity() {
     lateinit var customerConfig: PaymentSheet.CustomerConfiguration
     lateinit var returnIntent: Intent
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,17 +51,26 @@ class PaymentActivity : ComponentActivity() {
 
         setContent {
             if (numMeals != null) {
-                MealPaymentScreen(
-                    numMeals = numMeals,
-                    price = amount,
-                    onPayButtonClicked = {
-                        paymentFlow()
-                    },
-                    onCancelButtonClicked = {
-                        setResult(RESULT_CANCELED, returnIntent)
-                        finish()
-                    }
-                )
+                MunchBoxTheme {
+                    TopAppBar(
+                        title = { Text(stringResource(R.string.meal_payment)) }
+                    )
+                    MealPaymentScreen(
+                        numMeals = numMeals,
+                        price = amount,
+                        onPayButtonClicked = {
+                            paymentFlow()
+                        },
+                        onCancelButtonClicked = {
+                            setResult(RESULT_CANCELED, returnIntent)
+                            finish()
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .padding(25.dp)
+                    )
+                }
             }
         }
 

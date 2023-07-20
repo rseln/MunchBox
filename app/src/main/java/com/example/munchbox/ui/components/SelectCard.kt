@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
 
 
 @Preview(
@@ -49,7 +50,7 @@ fun SelectCard(headerText: String,
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
-            ExtendedFloatingActionButton(
+            Button(
                 onClick = { onClick() },
             ) {
                 Text(

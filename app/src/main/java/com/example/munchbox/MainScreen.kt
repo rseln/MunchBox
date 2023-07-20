@@ -16,11 +16,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -96,11 +94,8 @@ fun MunchBoxAppBar(
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
         modifier = modifier,
-        navigationIcon = {
+         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
@@ -314,8 +309,8 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealPayment.name) {
                 MealPaymentScreen(
-                    viewModel.uiState.value.quantity,
-                    viewModel.uiState.value.price,
+                    numMeals = viewModel.uiState.value.quantity,
+                    price = viewModel.uiState.value.price,
                     onCancelButtonClicked = {
                         orderedMeals = listOf()
                         viewModel.setMeals(listOf())
@@ -323,7 +318,11 @@ fun MunchBoxApp(
                     },
                     onPayButtonClicked = {
                         navController.navigate(OrderScreen.MealOrderSummary.name)
-                    } // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
+                    }, // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .padding(25.dp)
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {

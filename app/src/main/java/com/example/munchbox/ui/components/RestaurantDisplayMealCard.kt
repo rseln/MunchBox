@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -152,7 +152,7 @@ fun RestaurantDisplayMealCard(meal : Meal,
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                ElevatedButton(
+                Button(
                     onClick = {
                         onCancelCallback(meal)
                     },
