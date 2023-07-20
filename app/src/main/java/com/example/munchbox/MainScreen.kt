@@ -327,7 +327,7 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.RestaurantHub.name) {
                 RestaurantHubScreen(orderUiState = viewModel.uiState.value,
-                    restaurant = lazeez,
+                    restaurant = lazeez, // TODO: Change this to the actual restaurant logged in instead of always lazeez
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()
