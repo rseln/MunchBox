@@ -34,6 +34,7 @@ Contributions:
 - UI Improvements: 3 hours
 - API and Database design (collaborative): 5 hours
 - Bug Squashing (collaborative): 10 hours
+- UI Theming PR: 4 hours
 
 Total hours committed: 74 hours
 
