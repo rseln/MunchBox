@@ -26,23 +26,16 @@ fun MealPaymentScreen(
     numMeals: Int,
     price: String,
     onCancelButtonClicked: () -> Unit = {},
-    onPayButtonClicked: () -> Unit = {}
+    onPayButtonClicked: () -> Unit = {},
+    modifier : Modifier = Modifier
 ) {
     val parsedPrice = "$" + price.slice(0..1) + "." + price.substring(2)
 
     Column(
-        modifier = Modifier
-            .padding(16.dp)
+        modifier = modifier
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
-
-        Text(
-            text = "Payment Summary",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
         Spacer(modifier = Modifier.height(30.dp))
 
         Image(
