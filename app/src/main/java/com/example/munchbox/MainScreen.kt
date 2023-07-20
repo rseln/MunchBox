@@ -95,7 +95,7 @@ fun MunchBoxAppBar(
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
         modifier = modifier,
-        navigationIcon = {
+         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
