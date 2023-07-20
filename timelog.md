@@ -3,8 +3,6 @@
 **This file tracks the development and software design contributions of each team member to the project (does not include meetings and report writing).**
 
 ## Anees
-Total hours commited: 63 hours
-
 | Contributions | Hours | Related Commits |
 | ----------- | ----------- | ----------- |
 | Header      | Title       |             |
@@ -18,9 +16,10 @@ Contributions:
 - Restuarant API (collaborative): 10 hours
 - Meal API (collaborative): 8 hours
 - Order API (collaborative): 8 hours
+- Meal Create Backend Integration: 2 hours
 - Bug Squashing (collaborative): 2 hours
 
-Total hours committed: 63 hours
+Total hours committed: 65 hours
 
 ## Karim
 
