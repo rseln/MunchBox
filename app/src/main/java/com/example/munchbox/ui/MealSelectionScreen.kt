@@ -172,6 +172,9 @@ fun MealSelectionScreen(
                         selectedOptions = setOf()
                         availableOptions = getAvailableOptions(allMeals, selectedOptions)
                     }
+                    else {
+                        selectedOptions = meal.options
+                    }
                 },
                 onSelectOption = { option : DietaryOption ->
                     selectedOptions = onSelectCallback(selectedOptions, option)
