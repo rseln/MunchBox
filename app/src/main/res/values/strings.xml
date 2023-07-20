@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">MunchBox</string>
     <string name="login">Login</string>
+    <string name="signup">Sign Up</string>
     <string name="meal_select">Meal Select</string>
     <string name="meal_review">Meal Review</string>
     <string name="after_payment">Payment</string>

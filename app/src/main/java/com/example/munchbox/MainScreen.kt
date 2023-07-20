@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -44,7 +45,9 @@ import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
 import com.example.munchbox.ui.ChooseFighterScreen
-import com.example.munchbox.ui.LoginScreen
+import com.example.munchbox.login.LoginScreen
+import com.example.munchbox.signup.SignUpScreen
+import com.example.munchbox.signup.SignUpViewModel
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
@@ -62,6 +65,7 @@ import kotlinx.coroutines.launch
 
 // note: Maybe we should rename to "Pages" to be more inclusive of login (low priority tho)
 enum class OrderScreen(@StringRes val title: Int) {
+    Signup(title = R.string.signup),
     Login(title = R.string.login),
     MealOrderSummary(title = R.string.app_name),
     NumberOfMeals(title = R.string.app_name),
@@ -177,23 +181,18 @@ fun MunchBoxApp(
             )
         }
     ) { innerPadding ->
+        val uiState by viewModel.uiState.collectAsState()
         NavHost(
             navController = navController,
-            startDestination = OrderScreen.Login.name,
+            startDestination = OrderScreen.Signup.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(route = OrderScreen.Signup.name) {
+                SignUpScreen(navController)
+            }
+
             composable(route = OrderScreen.Login.name) {
-                LoginScreen(
-                    onLoginButtonClicked = {
-                        // Need to write a function to do actual verification later!!!
-                        // Just nav to next page for now
-                        navController.navigate(OrderScreen.ChooseFighter.name) {
-                            popUpTo(OrderScreen.Login.name) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
+                LoginScreen(navController)
             }
             composable(route = OrderScreen.ChooseFighter.name) {
                 ChooseFighterScreen(
