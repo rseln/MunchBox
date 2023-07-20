@@ -1,5 +1,6 @@
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,10 +24,14 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantHubScreen(
@@ -39,12 +45,23 @@ fun RestaurantHubScreen(
     val availableMeals = remember { mutableStateOf(orderUiState.meals) }
     val scrollState = rememberScrollState()
 
-    fun addNewMeal(newDietaryOptions : Set<DietaryOption>, newDays : Set<DayOfWeek>) {
-        val meal : Meal = Meal("meal_id", "rest_id", newDietaryOptions, newDays)
-        availableMeals.value = availableMeals.value.plus(meal)
-        selectedDays.value = setOf<DayOfWeek>()
-        selectedOptions.value = setOf<DietaryOption>()
+    val storageService = StorageServices(FirebaseFirestore.getInstance())
+
+    val coroutineScope = rememberCoroutineScope()
+    val createNewMeal: () -> Unit = {
+        coroutineScope.launch {
+            val meal = storageService.restaurantService().addMealToRestaurant(restaurant.restaurantID, selectedOptions.value, selectedDays.value)
+            availableMeals.value = availableMeals.value.plus(meal!!)
+            selectedDays.value = setOf<DayOfWeek>()
+            selectedOptions.value = setOf<DietaryOption>()
+        }
     }
+
+    // TODO: do we even need these params anymore? everything exists in mutableStates as far as i can tell
+    fun addNewMeal(newDietaryOptions : Set<DietaryOption>, newDays : Set<DayOfWeek>) {
+        createNewMeal()
+    }
+
     fun cancelMeal(meal : Meal) {
         availableMeals.value = availableMeals.value.minus(meal)
     }
