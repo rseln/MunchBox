@@ -10,7 +10,7 @@ import com.example.munchbox.controller.Meal
 // TODO: Probably delete pickupOptions and change Meals to Orders
 data class OrderUiState(
     //TODO: potentialy change this to a set of orders instead(GIANT OVERHAUL DAY)
-    var meals: Set<Meal> = setOf(),
+    var meals: List<Meal> = listOf(),
     /** Selected meal quantity (1, 3, 5) */
     var currentOrderQuantity: Int = 0,
     /** Total price for the order */
@@ -20,7 +20,10 @@ data class OrderUiState(
     //TODO: remove this once we have a set of orders then we can use that to keep track of
     // all the pick up dates for the selected values?
     // map of <MEAL, DayOfWeek>
-    var selectedToPickUpDay: MutableMap<Meal, DayOfWeek> = mutableMapOf()
+    var selectedToPickUpDay: MutableMap<Meal, DayOfWeek> = mutableMapOf(),
+
+    var unorderedMeals : List<Meal> = listOf(),
+    var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf()
 )
 {
     fun addMeal(newMeal: Meal?, day : DayOfWeek) {

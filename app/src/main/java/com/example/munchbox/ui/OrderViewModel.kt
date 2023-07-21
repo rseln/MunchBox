@@ -48,6 +48,32 @@ class MuncherViewModel : ViewModel() {
     val uiState: StateFlow<MuncherUiState> = _uiState.asStateFlow()
 
     /**
+     * Adds a set of meals to the UI state that are pending payment
+     */
+    fun setUnorderedMeals(mealDayPairs : MutableMap<Meal, DayOfWeek>, mealList : List<Meal>) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                orderUiState = currentState.orderUiState.copy(
+                    unorderedMeals = mealList,
+                    unorderedSelectedPickupDay = mealDayPairs
+                )
+            )
+        }
+    }
+    /**
+     * Clear the unordered meals from the UI state
+     */
+    fun clearUnorderedMeals() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                orderUiState = currentState.orderUiState.copy(
+                    unorderedMeals = listOf(),
+                    unorderedSelectedPickupDay = mutableMapOf<Meal, DayOfWeek>()
+                )
+            )
+        }
+    }
+    /**
      * Grab all the ordered orders for a user
      */
     suspend fun getOrders(userId : String) : Set<Order> {
@@ -162,7 +188,7 @@ class OrderViewModel : ViewModel() {
     fun setMeals(meals: List<Meal>){
         _uiState.update { currentState ->
             currentState.copy(
-                meals = meals.toSet(),
+                meals = meals,
             )
         }
     }

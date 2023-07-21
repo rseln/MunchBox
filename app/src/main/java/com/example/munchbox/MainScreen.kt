@@ -37,6 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.DataSource.campusPizza
@@ -138,11 +139,6 @@ fun MunchBoxApp(
         backStackEntry?.destination?.route ?: OrderScreen.Login.name
     )
 
-    /**
-     * State variables for order summaries etc.
-     */
-    var orderedMeals by remember { mutableStateOf(listOf<Meal>()) }
-
     lazeez.addMeals(setOf(lazeezMeal, lazeezMeal2))
     shawaramaPlus.addMeals(setOf(shawarmaPlusMeal, shawarmaPlusMeal2))
     campusPizza.addMeals(setOf(campusPizzaMeal, campusPizzaMeal2))
@@ -163,7 +159,7 @@ fun MunchBoxApp(
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(OrderScreen.AfterPayment.name)
-            for(meal in orderedMeals){
+            for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
                     // TODO: replace userID with userID of current user
                     storageServices.orderService().createDBOrder(
@@ -177,9 +173,8 @@ fun MunchBoxApp(
             }
         }
         if (result.resultCode == Activity.RESULT_CANCELED) {
-            orderedMeals = listOf()
-            viewModel.setMeals(listOf())
-            cancelOrderAndNavigateToStart(viewModel, navController)
+            muncherViewModel.clearUnorderedMeals()
+            cancelOrderAndNavigateToStart(navController)
         }
     }
 
@@ -277,19 +272,19 @@ fun MunchBoxApp(
                     numMealsRequired = uiState.orderUiState.currentOrderQuantity,
 //                    quantityOptions = DataSource.quantityOptions,
                     onCancelButtonClicked = {
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+                        muncherViewModel.clearUnorderedMeals()
+                        cancelOrderAndNavigateToStart(navController)
                     },
                     onSubmit = { newOrderedMeals : Array<Meal?> ->
-                        orderedMeals = listOf()
-                        for (meal in newOrderedMeals) {
-                            if (meal == null)
-                                continue
-                            orderedMeals = orderedMeals.plus(meal)
+                        var mealDayPairs : MutableMap<Meal, DayOfWeek> = mutableMapOf()
+                        var mealList : List<Meal> = listOf()
+                        for ((index, meal) in newOrderedMeals.withIndex()) {
+                            if (meal != null) {
+                                mealDayPairs[meal] = DayOfWeek.values()[index]
+                                mealList = mealList.plus(meal)
+                            }
                         }
-
-                        viewModel.setMeals(orderedMeals)
+                        muncherViewModel.setUnorderedMeals(mealDayPairs, mealList)
                         navController.navigate(OrderScreen.MealReview.name)
                     },
                     modifier = Modifier
@@ -366,10 +361,8 @@ fun MunchBoxApp(
  * Resets the [OrderUiState] and pops up to [OrderScreen.Start]
  */
 private fun cancelOrderAndNavigateToStart(
-    viewModel: OrderViewModel,
     navController: NavHostController
 ) {
-    viewModel.resetOrder()
     navController.popBackStack(OrderScreen.MealOrderSummary.name, inclusive = false)
 }
 
