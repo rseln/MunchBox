@@ -106,6 +106,7 @@ class MuncherViewModel : ViewModel() {
         for (order in orders) {
              ret.addOrderedMeal(_uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
                  getDayOfWeekFromDate(order.pickUpDate))
+             ret.orders = ret.orders.plus(order)
         }
         return ret
     }

@@ -2,6 +2,7 @@ package com.example.munchbox.data
 
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Order
 
 /**
  * Data class that represents the current UI state in terms of [currentOrderQuantity], [flavor],
@@ -23,7 +24,8 @@ data class OrderUiState(
     var selectedToPickUpDay: MutableMap<Meal, DayOfWeek> = mutableMapOf(),
 
     var unorderedMeals : List<Meal> = listOf(),
-    var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf()
+    var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf(),
+    var orders: Set<Order> = setOf(),
 )
 {
     fun addOrderedMeal(newMeal: Meal?, day : DayOfWeek) {

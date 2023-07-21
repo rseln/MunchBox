@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Order
 import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.OrderUiState
@@ -58,7 +59,7 @@ fun MealOrderSummaryScreen(
 }
 
 @Composable
-fun OrdersAvailable(order: OrderUiState,
+fun OrdersAvailable(orderUiState: OrderUiState,
                     storageService: StorageServices,
                     onConfirmButtonClicked: () -> Unit = {},
                     modifier: Modifier = Modifier){
@@ -76,10 +77,12 @@ fun OrdersAvailable(order: OrderUiState,
 
     //TODO: this is more technically correct but need to adjust when we do db integration
     Column(modifier = modifier) {
-        // SHOULD JUST BE ONE VALUE SINCE WE CAN ONLY HAVE ONE MEAL PER DAY
-        val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
-        for(meal in mealsToday) {
-            OrderSummaryCard(meal = meal,
+        // TODO: Update current day to be today
+        val ordersToday = orderUiState.orders.filter { order : Order -> order.pickUpDate.equals(currentDay) }
+        // TODO: Get meal by meal id
+        for(order in ordersToday) {
+            OrderSummaryCard(meal = Meal("-1", "-1", setOf(), setOf()),
+                order = order,
                 storageService,
                 false,
                 onConfirmButtonClicked,
