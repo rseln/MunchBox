@@ -14,7 +14,7 @@ constructor(private val firestore: FirebaseFirestore){
         return OrderStorageService(firestore)
     }
 
-    fun UserService() : UserStorageService {
+    fun userService() : UserStorageService {
         return UserStorageService(firestore)
     }
 

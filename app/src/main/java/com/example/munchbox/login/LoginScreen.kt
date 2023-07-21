@@ -82,11 +82,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.munchbox.OrderScreen
 import com.example.munchbox.R
+import com.example.munchbox.controller.User
 import com.example.munchbox.data.ClientID.ServerClient
+import com.example.munchbox.data.StorageServices
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 /**
@@ -100,6 +105,7 @@ fun LoginScreen(
     viewModel: SignInViewModel = hiltViewModel(),
 ) {
 
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
     val googleSignInState = viewModel.googleState.value
 
     val launcher =
@@ -187,28 +193,28 @@ fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(50.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-        OutlinedButton(
-            onClick = {
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .requestIdToken(ServerClient)
-                    .build()
+            OutlinedButton(
+                onClick = {
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail()
+                        .requestIdToken(ServerClient)
+                        .build()
 
-                val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
-                launcher.launch(googleSignInClient.signInIntent)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(start = 40.dp, end = 40.dp),
-            shape = RoundedCornerShape(5.dp),
-            border = BorderStroke(1.dp, Color.Blue),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.White,
-                contentColor = Color.Blue
-            )
-        ) {
+                    launcher.launch(googleSignInClient.signInIntent)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(start = 40.dp, end = 40.dp),
+                shape = RoundedCornerShape(5.dp),
+                border = BorderStroke(1.dp, Color.Blue),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Blue
+                )
+            ) {
             Row (
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -225,65 +231,59 @@ fun LoginScreen(
                     style = TextStyle(fontSize = 18.sp, fontFamily = FontFamily.SansSerif),
                     modifier = Modifier.fillMaxWidth()
                 )
+            } }
+        }
 
+        LaunchedEffect(key1 = state.value?.isSuccess) {
+            scope.launch {
+                if (state.value?.isSuccess?.isNotEmpty() == true) {
+                    val success = state.value?.isSuccess
+                    Toast.makeText(context, "${success}", Toast.LENGTH_LONG).show()
+                    val IDuser = Firebase.auth.currentUser?.uid
+                    val userType: String? = IDuser?.let {
+                        storageServices.userService().getTypeByUserID(
+                            it
+                        )
+                    }
+                    if (userType == "Muncher") {
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    }
+                    else if (userType == "Restaurant") {
+                        navController.navigate(OrderScreen.RestaurantHub.name)
+                    }
+
+                }
             }
         }
+        LaunchedEffect(key1 = state.value?.isError) {
+            scope.launch {
+                if (state.value?.isError?.isNotEmpty() == true) {
+                    val error = state.value?.isError
+                    Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        LaunchedEffect(key1 = googleSignInState.success) {
+            scope.launch {
+                if(googleSignInState.success != null) {
+                    Toast.makeText(context, "Sign In Success", Toast.LENGTH_LONG).show()
+                    navController.navigate(OrderScreen.MealOrderSummary.name)
+                }
+            }
+        }
+
+        LaunchedEffect(key1 = googleSignInState.error) {
+            scope.launch {
+                if(googleSignInState.error != null) {
+                    val error = googleSignInState.error
+                    Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
     }
-
-
-        /*Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth(0.8F)
-                    .padding(8.dp)
-            ) {
-                IconButton( onClick = {
-
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestEmail()
-                        .requestIdToken(ServerClient)
-                        .build()
-
-                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-
-                launcher.launch(googleSignInClient.signInIntent)
-                }){
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = "Google Login",
-                        tint= Color.Unspecified
-                    )
-                }*/
-
-                LaunchedEffect(key1 = state.value?.isSuccess) {
-                    scope.launch {
-                        if (state.value?.isSuccess?.isNotEmpty() == true) {
-                            val success = state.value?.isSuccess
-                            Toast.makeText(context, "${success}", Toast.LENGTH_LONG).show()
-                            navController.navigate(OrderScreen.RestaurantHub.name)
-                        }
-                    }
-                }
-                LaunchedEffect(key1 = state.value?.isError) {
-                    scope.launch {
-                        if (state.value?.isError?.isNotEmpty() == true) {
-                            val error = state.value?.isError
-                            Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-
-                LaunchedEffect(key1 = googleSignInState.success) {
-                    scope.launch {
-                        if(googleSignInState.success != null) {
-                            Toast.makeText(context, "Sign In Success", Toast.LENGTH_LONG).show()
-                            navController.navigate(OrderScreen.RestaurantHub.name)
-                        }
-                    }
-                }
-            }
-        }
+}
 
 fun loginVerification(
     username: MutableState<TextFieldValue>,

@@ -66,7 +66,9 @@ import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantHubScreen
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 
@@ -85,6 +87,7 @@ enum class OrderScreen(@StringRes val title: Int) {
     AfterPayment(title = R.string.after_payment),
     MealPayment(title = R.string.meal_payment),
     RestaurantHub(title = R.string.restaurant_hub),
+    RestaurantCreation(title = R.string.restaurant_signup),
     ChooseFighter(title = R.string.choose_fighter),
 }
 
@@ -164,16 +167,18 @@ fun MunchBoxApp(
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(OrderScreen.AfterPayment.name)
+            val user = Firebase.auth.currentUser?.uid
             for(meal in orderedMeals){
                 coroutineScope.launch {
-                    // TODO: replace userID with userID of current user
-                    storageServices.orderService().createDBOrder(
-                        userID = "temp_user_id",
-                        mealID = meal.mealID,
-                        restaurantID = meal.restaurantID,
-                        pickUpDate = uiState.selectedToPickUpDay[meal]!!.date,
-                        orderPickedUp = false,
-                    )
+                    if (user != null) {
+                        storageServices.orderService().createDBOrder(
+                            userID = user,
+                            mealID = meal.mealID,
+                            restaurantID = meal.restaurantID,
+                            pickUpDate = uiState.selectedToPickUpDay[meal]!!.date,
+                            orderPickedUp = false,
+                        )
+                    }
                 }
             }
         }
@@ -210,10 +215,23 @@ fun MunchBoxApp(
             composable(route = OrderScreen.ChooseFighter.name) {
                 ChooseFighterScreen(
                     onMunchButtonClick = {
+                        coroutineScope.launch {
+                            val user = Firebase.auth.currentUser
+                            if (user != null) {
+                                user.email?.let { it1 ->
+                                    storageServices.userService().createDBUser(
+                                        userID = user.uid,
+                                        email = it1,
+                                        type = "Muncher",
+                                        restaurantID = null
+                                    )
+                                }
+                            }
+                        }
                         navController.navigate(OrderScreen.MealOrderSummary.name)
                     },
                     onRestaurantButtonClick = {
-                        navController.navigate(OrderScreen.RestaurantHub.name)
+                        navController.navigate(OrderScreen.RestaurantCreation.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
