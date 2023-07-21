@@ -20,6 +20,8 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.DataSource
+import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.MuncherUiState
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.RestaurantUiState
@@ -97,17 +99,32 @@ class MuncherViewModel : ViewModel() {
     /**
      * Update the order UI state from DB
      */
-    suspend fun getOrderUiState(userId : String) : OrderUiState {
+    suspend fun getOrderUiState(userId : String): OrderUiState{
         // TODO @SEAN
         var ret : OrderUiState = OrderUiState()
         val orders : Set<Order> = getOrders(userId)
         // Append all meals to the order ui state
         for (order in orders) {
-             ret.addMeal(_uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
+             ret.addOrderedMeal(_uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
                  getDayOfWeekFromDate(order.pickUpDate))
         }
-
         return ret
+    }
+
+    suspend fun updateConfirmedMeals(meals: Set<Meal>, pickupOptions: MutableMap<Meal, DayOfWeek>){
+        for((meal, date) in pickupOptions){
+            if(date == currentDay){
+                _uiState.value.storageServices.orderService().deleteOrderByMealID(meal.mealID)
+            }
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                orderUiState = currentState.orderUiState.copy(
+                    // TODO:replace current day with actual current day
+                    meals = meals.filter{meal -> pickupOptions[meal]!=currentDay}.toSet()
+                )
+            )
+        }
     }
 
     /**
@@ -122,6 +139,7 @@ class MuncherViewModel : ViewModel() {
             return restaurants.toSet()
         }
     }
+//    maybe not needed?
     suspend fun updateMuncherState (userId : String) {
         _uiState.update { currentState ->
             currentState.copy(

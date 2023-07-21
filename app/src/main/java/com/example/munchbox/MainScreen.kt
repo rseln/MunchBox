@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -227,8 +228,7 @@ fun MunchBoxApp(
                  * **/
 
                 //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
-                viewModel.setMeals(meals = uiState.meals.toList())
-//                viewModel.setPickupOptions(pickupOptions = pickUpOptions)
+                LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
 
                 MealOrderSummaryScreen(
                     orderUiState = uiState.orderUiState,
@@ -236,8 +236,8 @@ fun MunchBoxApp(
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
-                        uiState.meals = uiState.meals.filter { meal : Meal -> !meal.days.contains(DataSource.currentDay) }.toSet()
-                        viewModel.setMeals(meals = uiState.meals.toList())
+                        //TODO: all we do here is delete order and meal from database
+                        muncherViewModel.updateConfirmedMeals(uiState.orderUiState.meals, uiState.orderUiState.selectedToPickUpDay)
 
                         //refresh page
                         navController.popBackStack(OrderScreen.MealOrderSummary.name,true)

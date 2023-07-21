@@ -118,6 +118,16 @@ constructor(private val firestore: FirebaseFirestore){
         return@withContext false
     }
 
+    suspend fun deleteOrderByMealID(mealID: String): Boolean? = withContext(Dispatchers.IO){
+        try {
+            firestore.collection("Orders").document(mealID).delete()
+            return@withContext true
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+        return@withContext false
+    }
+
     private fun createOrderObject(orderSnapshot: DocumentSnapshot): Order{
         val orderData = orderSnapshot.data
         val orderID = orderData?.get("orderID") as? String ?: ""
