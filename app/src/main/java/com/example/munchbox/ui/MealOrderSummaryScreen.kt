@@ -49,7 +49,7 @@ fun MealOrderSummaryScreen(
         Spacer(modifier = Modifier.height(32.dp))
 //      TODO: change logic to be the date instead of day of week
         if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
-            OrdersAvailable(orderUiState, storageServices ,onConfirmButtonClicked, Modifier)
+            OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
             OrderSummaries(orderUiState, storageServices, Modifier)

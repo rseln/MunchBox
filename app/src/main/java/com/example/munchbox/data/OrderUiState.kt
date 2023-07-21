@@ -23,7 +23,7 @@ data class OrderUiState(
     var selectedToPickUpDay: MutableMap<Meal, DayOfWeek> = mutableMapOf()
 )
 {
-    fun addMeal(newMeal: Meal?, day : DayOfWeek) {
+    fun addOrderedMeal(newMeal: Meal?, day : DayOfWeek) {
         if (newMeal != null) {
             meals = meals.plus(newMeal)
             selectedToPickUpDay.plus(Pair(newMeal, day))
