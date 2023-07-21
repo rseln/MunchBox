@@ -41,34 +41,47 @@ fun OrderSummaries(order: OrderUiState,
             )
         }
     }
-    /** Map of days in the week to a set of meals **/
-    /** {MONDAY: {MEAL1, MEAL2}}**/
-    val dayFilterMap = mutableMapOf<DayOfWeek,MutableSet<Meal>>()
-    for(meal in order.meals){
-        for(day in meal.days){
-            dayFilterMap[day] = dayFilterMap.getOrDefault(day, mutableSetOf())
-            dayFilterMap[day]!!.add(meal)
-        }
-    }
-    /** Filter our in order list of days with the days with meals on the map**/
-    val daysWithOrders = DayOfWeek.values().filter{
-        dayFilterMap.contains(it)
-    }
-    for (day in daysWithOrders) {
+    val selectedToPickUpDayList = order.selectedToPickUpDay.toList().sortedBy { it.second.id }
+    for((meal,pickUpDate) in selectedToPickUpDayList) {
         Column(modifier = modifier) {
             Spacer(modifier = Modifier.height(18.dp))
             Text(
-                text = day.str,
+                text = pickUpDate.str,
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier,
             )
-            for(meal in dayFilterMap[day]!!){
-                Spacer(modifier = Modifier.height(13.dp))
-                OrderSummaryCard(meal = meal, storageServices, true)
-                Spacer(modifier = Modifier.height(13.dp))
-            }
+            Spacer(modifier = Modifier.height(13.dp))
+            OrderSummaryCard(meal = meal,storageServices, true)
+            Spacer(modifier = Modifier.height(13.dp))
         }
     }
+//    /** Map of days in the week to a set of meals **/
+//    /** {MONDAY: {MEAL1, MEAL2}}**/
+//    val dayFilterMap = mutableMapOf<DayOfWeek,MutableSet<Meal>>()
+//    for(meal in order.meals){
+//        for(day in meal.days){
+//            dayFilterMap[day] = dayFilterMap.getOrDefault(day, mutableSetOf())
+//            dayFilterMap[day]!!.add(meal)
+//        }
+//    }
+//    /** Filter our in order list of days with the days with meals on the map**/
+//    val daysWithOrders = DayOfWeek.values().filter{
+//        dayFilterMap.contains(it)
+//    }
+//    for (day in daysWithOrders) {
+//        Column(modifier = modifier) {
+//            Spacer(modifier = Modifier.height(18.dp))
+//            Text(
+//                text = day.str,
+//                style = MaterialTheme.typography.headlineSmall,
+//                modifier = Modifier,
+//            )
+//            for(meal in dayFilterMap[day]!!){
+//                Spacer(modifier = Modifier.height(13.dp))
+//                OrderSummaryCard(meal = meal, true)
+//                Spacer(modifier = Modifier.height(13.dp))
+//            }
+//        }
 }
 
 @Preview
@@ -78,6 +91,6 @@ fun PreviewOrderSummaries(){
     val uiState by viewModel.uiState.collectAsState()
     val storageService = StorageServices(FirebaseFirestore.getInstance())
     viewModel.setMeals(meals = DataSource.allMeals.toList())
-    viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
+//    viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
     OrderSummaries(order = uiState, storageService)
 }

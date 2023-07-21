@@ -50,10 +50,10 @@ class OrderViewModel : ViewModel() {
     /**
      * Set the pickup options for the meals
      */
-    fun setPickupOptions(pickupOptions:Set<DayOfWeek>){
+    fun setPickupOptions(pickupOptions:MutableMap<Meal, DayOfWeek>){
         _uiState.update { currentState ->
             currentState.copy(
-                pickupOptions = pickupOptions,
+                selectedToPickUpDay = pickupOptions,
             )
         }
     }
@@ -84,7 +84,7 @@ class OrderViewModel : ViewModel() {
      * Reset the order state
      */
     fun resetOrder() {
-//        _uiState.value = OrderUiState(pickupOptions = pickupOptions())
+        _uiState.value = OrderUiState(selectedToPickUpDay = mutableMapOf())
     }
 
     /**

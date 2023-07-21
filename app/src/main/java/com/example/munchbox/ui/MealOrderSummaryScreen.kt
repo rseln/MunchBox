@@ -21,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
-import com.example.munchbox.data.DataSource.pickUpOptions
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSummaries
@@ -48,6 +47,7 @@ fun MealOrderSummaryScreen(
                 onClick = { onNextButtonClicked() })
         }
         Spacer(modifier = Modifier.height(32.dp))
+//      TODO: change logic to be the date instead of day of week
         if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
             OrdersAvailable(orderUiState, storageServices ,onConfirmButtonClicked, Modifier)
         }
@@ -98,6 +98,6 @@ fun PreviewMealsAvailableScreen(){
     val storageService = StorageServices(FirebaseFirestore.getInstance())
 
     viewModel.setMeals(meals = allMeals.toList())
-    viewModel.setPickupOptions(pickupOptions = pickUpOptions)
+//    viewModel.setPickupOptions(pickupOptions = pickUpOptions)
     MealOrderSummaryScreen(orderUiState = uiState, storageService)
 }
