@@ -1,8 +1,6 @@
 package com.example.munchbox.data
 
 import android.util.Log
-import androidx.compose.ui.text.toLowerCase
-import androidx.lifecycle.ViewModel
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
@@ -10,8 +8,6 @@ import com.example.munchbox.controller.Restaurant
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -62,7 +58,7 @@ constructor(private val firestore: FirebaseFirestore){
                         // Update the fields of the restaurant object with Firestore data
                         val mealID = mealData?.get("mealID") as? String ?: ""
                         val restaurantID = mealData?.get("restaurantID") as? String ?: ""
-                        val fetchedDietaryOptions = mealData?.get("DietaryOptions") as? Set<String> ?: setOf()
+                        val fetchedDietaryOptions = mealData?.get("dietaryOptions") as? Set<String> ?: setOf()
                         val fetchedDaysOffered = mealData?.get("daysOffered") as? Set<String> ?: setOf()
                         val fetchedAmountOrdered = mealData?.get("amountOrdered") as? Map<String, Int> ?: mapOf()
                         val totalOrders = mealData?.get("totalOrders") as? Int ?: 0
@@ -108,7 +104,7 @@ constructor(private val firestore: FirebaseFirestore){
                             // Update the fields of the restaurant object with Firestore data
                             val mealID = mealData?.get("mealID") as? String ?: ""
                             val restaurantID = mealData?.get("restaurantID") as? String ?: ""
-                            val fetchedDietaryOptions = mealData?.get("DietaryOptions") as? Set<String> ?: setOf()
+                            val fetchedDietaryOptions = mealData?.get("dietaryOptions") as? Set<String> ?: setOf()
                             val fetchedDaysOffered = mealData?.get("daysOffered") as? Set<String> ?: setOf()
                             val fetchedAmountOrdered = mealData?.get("amountOrdered") as? Map<String, Int> ?: mapOf()
                             val totalOrders = mealData?.get("totalOrders") as? Int ?: 0
@@ -202,7 +198,7 @@ constructor(private val firestore: FirebaseFirestore){
                 // Update the fields of the restaurant object with Firestore data
                 val mealID = mealData?.get("mealID") as? String ?: ""
                 val restaurantID = mealData?.get("restaurantID") as? String ?: ""
-                val fetchedDietaryOptions = mealData?.get("DietaryOptions") as? Set<String> ?: setOf()
+                val fetchedDietaryOptions = mealData?.get("dietaryOptions") as? Set<String> ?: setOf()
                 val fetchedDaysOffered = mealData?.get("daysOffered") as? Set<String> ?: setOf()
                 val fetchedAmountOrdered = mealData?.get("amountOrdered") as? Map<String, Int> ?: mapOf()
                 val totalOrders = mealData?.get("totalOrders") as? Int ?: 0

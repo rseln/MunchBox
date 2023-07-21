@@ -145,6 +145,9 @@ fun MunchBoxApp(
      */
     val coroutineScope = rememberCoroutineScope()
 
+    //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
+    LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
+
     /**
      * Logic to navigate to and from payment activity
      */
@@ -223,8 +226,6 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
 
-                //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
-                LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
 
                 MealOrderSummaryScreen(
                     orderUiState = uiState.orderUiState,
@@ -265,7 +266,7 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
                     storageServices = storageServices,
-                    restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
+                    restaurants = uiState.availableRestaurants,
                     orderInfo = uiState.orderUiState,
                     numMealsRequired = uiState.orderUiState.currentOrderQuantity,
 //                    quantityOptions = DataSource.quantityOptions,

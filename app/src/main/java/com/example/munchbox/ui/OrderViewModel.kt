@@ -111,11 +111,6 @@ class MuncherViewModel : ViewModel() {
     }
 
     suspend fun updateConfirmedMeals(meals: List<Meal>, pickupOptions: MutableMap<Meal, DayOfWeek>){
-        for((meal, date) in pickupOptions){
-            if(date == currentDay){
-                _uiState.value.storageServices.orderService().deleteOrderByMealID(meal.mealID)
-            }
-        }
         _uiState.update { currentState ->
             currentState.copy(
                 orderUiState = currentState.orderUiState.copy(

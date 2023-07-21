@@ -15,8 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.munchbox.controller.DayOfWeek
-import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
@@ -41,7 +39,7 @@ fun OrderSummaries(order: OrderUiState,
             )
         }
     }
-    val selectedToPickUpDayList = order.selectedToPickUpDay.toList().sortedBy { it.second.id }
+    val selectedToPickUpDayList = order.unorderedSelectedPickupDay.toList().sortedBy { it.second.id }
     for((meal,pickUpDate) in selectedToPickUpDayList) {
         Column(modifier = modifier) {
             Spacer(modifier = Modifier.height(18.dp))
