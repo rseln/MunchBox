@@ -18,16 +18,115 @@ package com.example.munchbox.ui
 import androidx.lifecycle.ViewModel
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Order
+import com.example.munchbox.controller.Restaurant
+import com.example.munchbox.data.MuncherUiState
 import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.RestaurantUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.util.Calendar
+import java.util.Date
 
 
 /**
  * [OrderViewModel] holds information about a meal plan order
  */
+class MuncherViewModel : ViewModel() {
+    /**
+     * MAIN SCREEN
+     *      VIEW MODEL
+     *          Orders
+     *          Restaurants + Meals
+     *          DB --> Restaurants + Meals, Orders
+     *      VIEW MODEL.update()
+     *
+     */
+    private val _uiState = MutableStateFlow(MuncherUiState())
+    val uiState: StateFlow<MuncherUiState> = _uiState.asStateFlow()
+
+    /**
+     * Grab all the ordered orders for a user
+     */
+    suspend fun getOrders(userId : String) : Set<Order> {
+        val order = _uiState.value.storageServices.orderService().getAllOrdersByUserID(userId)
+        if (order == null) {
+            return setOf<Order>()
+        }
+        else {
+            return order.toSet()
+        }
+    }
+
+    fun getDayOfWeekFromDate(date: Date): DayOfWeek {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val kotlinDayInt : Int = calendar.get(Calendar.DAY_OF_WEEK)
+        return DayOfWeek.values()[kotlinDayInt - 1]
+    }
+
+
+    /**
+     * Update the order UI state from DB
+     */
+    suspend fun getOrderUiState(userId : String) : OrderUiState {
+        // TODO @SEAN
+        var ret : OrderUiState = OrderUiState()
+        val orders : Set<Order> = getOrders(userId)
+        // Append all meals to the order ui state
+        for (order in orders) {
+             ret.addMeal(_uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
+                 getDayOfWeekFromDate(order.pickUpDate))
+        }
+
+        return ret
+    }
+
+    /**
+     * Grab all available restaurants from DB
+     */
+    suspend fun updateRestaurants() : Set<Restaurant> {
+        val restaurants = _uiState.value.storageServices.restaurantService().getAllRestaurants()
+        if (restaurants == null) {
+            return setOf<Restaurant>()
+        }
+        else {
+            return restaurants.toSet()
+        }
+    }
+    suspend fun updateMuncherState (userId : String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                orderUiState = getOrderUiState(userId),
+                availableRestaurants = updateRestaurants()
+            )
+        }
+    }
+}
+class RestaurantViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(RestaurantUiState())
+    val uiState: StateFlow<RestaurantUiState> = _uiState.asStateFlow()
+
+    /**
+     * Grab all available restaurants from DB
+     */
+    fun updateMeals(userId : String) : Set<Meal> {
+        // TODO
+        return setOf<Meal>()
+    }
+    /**
+     * Grab all the ordered orders for a user
+     */
+    fun updateRestaurantState (userId : String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                meals = updateMeals(userId),
+            )
+        }
+    }
+}
 class OrderViewModel : ViewModel() {
 
     /**
@@ -42,8 +141,8 @@ class OrderViewModel : ViewModel() {
     fun setQuantity(numberCupcakes: Int, priceCupcakes: Int) {
         _uiState.update { currentState ->
             currentState.copy(
-                quantity = numberCupcakes,
-                price = "$$priceCupcakes"
+                currentOrderQuantity = numberCupcakes,
+                currentOrderPrice = "$$priceCupcakes"
             )
         }
     }

@@ -3,7 +3,6 @@ package com.example.munchbox
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -60,9 +58,11 @@ import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
+import com.example.munchbox.ui.MuncherViewModel
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantHubScreen
+import com.example.munchbox.ui.RestaurantViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
@@ -115,7 +115,8 @@ fun MunchBoxAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MunchBoxApp(
-    viewModel: OrderViewModel = viewModel(),
+    muncherViewModel: MuncherViewModel = viewModel(),
+    restaurantViewModel: RestaurantViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     /**
@@ -127,7 +128,9 @@ fun MunchBoxApp(
 
     val context = LocalContext.current
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by muncherViewModel.uiState.collectAsState()
+    // TODO setup another uistate for restaruant
+
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
@@ -167,7 +170,7 @@ fun MunchBoxApp(
                         userID = "temp_user_id",
                         mealID = meal.mealID,
                         restaurantID = meal.restaurantID,
-                        pickUpDate = uiState.selectedToPickUpDay[meal]!!.date,
+                        pickUpDate = uiState.orderUiState.selectedToPickUpDay[meal]!!.date,
                         orderPickedUp = false,
                     )
                 }
@@ -233,7 +236,7 @@ fun MunchBoxApp(
 //                viewModel.setPickupOptions(pickupOptions = pickUpOptions)
 
                 MealOrderSummaryScreen(
-                    orderUiState = uiState,
+                    orderUiState = uiState.orderUiState,
                     storageServices = storageServices,
                     onConfirmButtonClicked = {
                         //update meals
@@ -270,8 +273,8 @@ fun MunchBoxApp(
                 MealSelectionScreen(
                     storageServices = storageServices,
                     restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
-                    orderInfo = uiState,
-                    numMealsRequired = uiState.quantity,
+                    orderInfo = uiState.orderUiState,
+                    numMealsRequired = uiState.orderUiState.currentOrderQuantity,
 //                    quantityOptions = DataSource.quantityOptions,
                     onCancelButtonClicked = {
                         orderedMeals = listOf()
@@ -300,8 +303,8 @@ fun MunchBoxApp(
                     orderUiState = uiState,
                     storageServices = storageServices,
                     onNextButtonClicked = {
-                        intent.putExtra("amount", uiState.price)
-                        intent.putExtra("numMeals", uiState.quantity)
+                        intent.putExtra("amount", uiState.currentOrderPrice)
+                        intent.putExtra("numMeals", uiState.currentOrderQuantity)
                         stripeLauncher.launch(intent)
                     },
                     onCancelButtonClicked = {
@@ -329,8 +332,8 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealPayment.name) {
                 MealPaymentScreen(
-                    numMeals = viewModel.uiState.value.quantity,
-                    price = viewModel.uiState.value.price,
+                    numMeals = viewModel.uiState.value.currentOrderQuantity,
+                    price = viewModel.uiState.value.currentOrderPrice,
                     onCancelButtonClicked = {
                         orderedMeals = listOf()
                         viewModel.setMeals(listOf())

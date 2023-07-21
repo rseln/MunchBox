@@ -9,13 +9,13 @@ import java.util.Date
 
 // The dayOfWeek val is different from id due to calendar using a different id system
 enum class DayOfWeek(val id:Int, val date:Date, val str: String) {
-    MONDAY (0, getNextWeeksDayOfWeek(2),"Monday"),
-    TUESDAY (1, getNextWeeksDayOfWeek(3),"Tuesday"),
-    WEDNESDAY (2, getNextWeeksDayOfWeek(4),"Wednesday"),
-    THURSDAY (3, getNextWeeksDayOfWeek(5),"Thursday"),
-    FRIDAY (4, getNextWeeksDayOfWeek(6),"Friday"),
-    SATURDAY (5, getNextWeeksDayOfWeek(7),"Saturday"),
-    SUNDAY  (6, getNextWeeksDayOfWeek(1), "Sunday"),
+    SUNDAY  (0, getNextWeeksDayOfWeek(1), "Sunday"),
+    MONDAY (1, getNextWeeksDayOfWeek(2),"Monday"),
+    TUESDAY (2, getNextWeeksDayOfWeek(3),"Tuesday"),
+    WEDNESDAY (3, getNextWeeksDayOfWeek(4),"Wednesday"),
+    THURSDAY (4, getNextWeeksDayOfWeek(5),"Thursday"),
+    FRIDAY (5, getNextWeeksDayOfWeek(6),"Friday"),
+    SATURDAY (6, getNextWeeksDayOfWeek(7),"Saturday"),
 }
 
 enum class DietaryOption(val id: Int, val str : String) {
