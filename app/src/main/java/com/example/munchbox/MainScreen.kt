@@ -256,7 +256,7 @@ fun MunchBoxApp(
                 NumberOfMealsScreen(
                     quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = { numMeals, price ->
-                        viewModel.setQuantity(numMeals, price)
+                        muncherViewModel.setQuantity(numMeals, price)
                         navController.navigate(OrderScreen.MealSelect.name)
                     },
                     modifier = Modifier

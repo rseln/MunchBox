@@ -130,6 +130,20 @@ class MuncherViewModel : ViewModel() {
             )
         }
     }
+
+    /**
+     * Set the quantity [currentOrderQuantity] of orderNum for this order's state and update the price
+     */
+    fun setQuantity(numberMeal: Int, priceMeal: Int) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                orderUiState = currentState.orderUiState.copy(
+                    currentOrderQuantity = numberMeal,
+                    currentOrderPrice = "$$priceMeal"
+                )
+            )
+        }
+    }
 }
 class RestaurantViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(RestaurantUiState())
