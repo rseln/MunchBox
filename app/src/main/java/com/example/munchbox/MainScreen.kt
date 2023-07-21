@@ -295,11 +295,11 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealReview.name) {
                 MealReviewScreen(
-                    orderUiState = uiState,
+                    orderUiState = muncherViewModel.uiState.value.orderUiState,
                     storageServices = storageServices,
                     onNextButtonClicked = {
-                        intent.putExtra("amount", uiState.currentOrderPrice)
-                        intent.putExtra("numMeals", uiState.currentOrderQuantity)
+                        intent.putExtra("amount", muncherViewModel.uiState.value.orderUiState.currentOrderPrice)
+                        intent.putExtra("numMeals", muncherViewModel.uiState.value.orderUiState.currentOrderQuantity)
                         stripeLauncher.launch(intent)
                     },
                     onCancelButtonClicked = {
@@ -307,9 +307,8 @@ fun MunchBoxApp(
                          * TODO: BUG - previous orders will be deleted on cancel need to adjust this logic everywhere this is used.
                          * Might need to be fixed once we have a database and store data properly
                         **/
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+                        muncherViewModel.clearUnorderedMeals()
+                        cancelOrderAndNavigateToStart(navController)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -327,12 +326,11 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealPayment.name) {
                 MealPaymentScreen(
-                    numMeals = viewModel.uiState.value.currentOrderQuantity,
-                    price = viewModel.uiState.value.currentOrderPrice,
+                    numMeals = muncherViewModel.uiState.value.orderUiState.currentOrderQuantity,
+                    price = muncherViewModel.uiState.value.orderUiState.currentOrderPrice,
                     onCancelButtonClicked = {
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+                        muncherViewModel.clearUnorderedMeals()
+                        cancelOrderAndNavigateToStart(navController)
                     },
                     onPayButtonClicked = {
                         navController.navigate(OrderScreen.MealOrderSummary.name)
@@ -346,7 +344,7 @@ fun MunchBoxApp(
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {
-                RestaurantHubScreen(orderUiState = viewModel.uiState.value,
+                RestaurantHubScreen(orderUiState = restaurantViewModel.uiState.value,
                     restaurant = lazeez, // TODO: Change this to the actual restaurant logged in instead of always lazeez
                     modifier = Modifier
                         .fillMaxSize()
