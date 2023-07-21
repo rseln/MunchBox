@@ -1,6 +1,5 @@
 package com.example.munchbox.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,19 +22,18 @@ import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource.currentDay
-import com.example.munchbox.data.OrderUiState
+import com.example.munchbox.data.RestaurantUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantHubScreen(
-    orderUiState: OrderUiState,
+    orderUiState: RestaurantUiState,
     restaurant : Restaurant,
     modifier: Modifier = Modifier,
 ) {

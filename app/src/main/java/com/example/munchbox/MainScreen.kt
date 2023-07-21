@@ -23,10 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -62,7 +59,6 @@ import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.MuncherViewModel
 import com.example.munchbox.ui.NumberOfMealsScreen
-import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantHubScreen
 import com.example.munchbox.ui.RestaurantViewModel
 import com.google.firebase.firestore.FirebaseFirestore
@@ -167,7 +163,7 @@ fun MunchBoxApp(
                         userID = "temp_user_id",
                         mealID = meal.mealID,
                         restaurantID = meal.restaurantID,
-                        pickUpDate = uiState.orderUiState.selectedToPickUpDay[meal]!!.date,
+                        pickUpDate = uiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
                         orderPickedUp = false,
                     )
                 }
@@ -237,7 +233,9 @@ fun MunchBoxApp(
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
                         //TODO: all we do here is delete order and meal from database
-                        muncherViewModel.updateConfirmedMeals(uiState.orderUiState.meals, uiState.orderUiState.selectedToPickUpDay)
+                        coroutineScope.launch {
+                            muncherViewModel.updateConfirmedMeals(uiState.orderUiState.meals, uiState.orderUiState.selectedToPickUpDay)
+                        }
 
                         //refresh page
                         navController.popBackStack(OrderScreen.MealOrderSummary.name,true)

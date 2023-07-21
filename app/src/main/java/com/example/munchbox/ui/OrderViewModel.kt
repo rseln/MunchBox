@@ -20,7 +20,6 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
-import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.MuncherUiState
 import com.example.munchbox.data.OrderUiState
@@ -111,7 +110,7 @@ class MuncherViewModel : ViewModel() {
         return ret
     }
 
-    suspend fun updateConfirmedMeals(meals: Set<Meal>, pickupOptions: MutableMap<Meal, DayOfWeek>){
+    suspend fun updateConfirmedMeals(meals: List<Meal>, pickupOptions: MutableMap<Meal, DayOfWeek>){
         for((meal, date) in pickupOptions){
             if(date == currentDay){
                 _uiState.value.storageServices.orderService().deleteOrderByMealID(meal.mealID)
@@ -121,7 +120,7 @@ class MuncherViewModel : ViewModel() {
             currentState.copy(
                 orderUiState = currentState.orderUiState.copy(
                     // TODO:replace current day with actual current day
-                    meals = meals.filter{meal -> pickupOptions[meal]!=currentDay}.toSet()
+                    meals = meals.filter{meal -> pickupOptions[meal]!=currentDay}
                 )
             )
         }
