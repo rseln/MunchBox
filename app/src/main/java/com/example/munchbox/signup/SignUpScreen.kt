@@ -229,4 +229,12 @@ fun SignUpScreen (
             }
         }
     }
+    LaunchedEffect(key1 = googleSignInState.error) {
+        scope.launch {
+            if(googleSignInState.error != null) {
+                val error = googleSignInState.error
+                Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 }

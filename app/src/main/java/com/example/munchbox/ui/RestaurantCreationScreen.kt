@@ -53,6 +53,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.example.munchbox.R
 import com.example.munchbox.data.RestaurantStorageService
+import com.example.munchbox.data.StorageServices
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.ktx.Firebase
@@ -96,7 +98,7 @@ fun RestaurantCreationScreen() {
     var phoneError by remember { mutableStateOf((false))}
 
     // submission / restaurant creation
-    val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
 
     @Composable
     fun SubmitComposable() {
@@ -106,10 +108,22 @@ fun RestaurantCreationScreen() {
 
         val sendRequestRestaurant: () -> Unit = {
             coroutineScope.launch {
-                val restID = storageService.createDBRestaurant(
+                val restID = storageServices.restaurantService().createDBRestaurant(
                     restaurantName.value.text,
                     //imageURL
                 )
+                val user = Firebase.auth.currentUser
+                if (user != null) {
+                    user.email?.let { it1 ->
+                        storageServices.userService().createDBUser(
+                            userID = user.uid,
+                            email = it1,
+                            type = "Restaurant",
+                            // TODO : populate with corresponding restaurant ID
+                            restaurantID = null
+                        )
+                    }
+                }
             }
         }
 
@@ -163,7 +177,6 @@ fun RestaurantCreationScreen() {
                     val imageRef = Firebase.storage.reference.child("$photoID.jpg")
 
                     var uploadTask = imageRef.putBytes(data)
-
                     uploadTask.addOnFailureListener {
                         // Handle unsuccessful uploads
                         Log.e("FIRESTORE ERROR", it.toString())
