@@ -1,6 +1,5 @@
 package com.example.munchbox.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -172,12 +171,12 @@ fun MealSelectionScreen(
                     recordMealAddition(meal)
                     added = !added
                     if(added){
-                        orderInfo.selectedToPickUpDay[meal] = selectedDay
+                        orderInfo.unorderedSelectedPickupDay[meal] = selectedDay
                     }
                     if (!added) {
                         selectedOptions = setOf()
                         availableOptions = getAvailableOptions(allMeals, selectedOptions)
-                        orderInfo.selectedToPickUpDay.remove(meal)
+                        orderInfo.unorderedSelectedPickupDay.remove(meal)
                     }
                 },
                 onSelectOption = { option : DietaryOption ->
