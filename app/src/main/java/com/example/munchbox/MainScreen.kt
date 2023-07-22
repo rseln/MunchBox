@@ -243,7 +243,7 @@ fun MunchBoxApp(
                                     storageServices.userService().createDBUser(
                                         userID = user.uid,
                                         email = it1,
-                                        type = "Muncher",
+                                        type = "Restaurant",
                                         restaurantID = null
                                     )
                                 }
