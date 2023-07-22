@@ -18,9 +18,9 @@ data class OrderUiState(
     var currentOrderPrice: String = "",
     /** Available pickup dates for an order*/
     /** mapped as the mealID -> Day to pick up*/
-    //TODO: remove this once we have a set of orders then we can use that to keep track of
-    // all the pick up dates for the selected values?
-    // map of <MEAL, DayOfWeek>
+
+    //TODO: currently if the same order is made from the same meal on the meal selection
+    // it views them as one order. Potential issue due to them having the same mealID
     var selectedToPickUpDay: Map<Meal, DayOfWeek> = mutableMapOf(), //TODO: rename to orderedSelectedPickupDay
 
     var unorderedMeals : List<Meal> = listOf(),
