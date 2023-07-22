@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 fun MealCardContainer() {
 
     val restaurant = Restaurant("1","Lazeez", setOf())
-    val vegeMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val vegeMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.VEGETARIAN, DietaryOption.GLUTEN_FREE, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val meatMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
     restaurant.addMeals(allMeals)

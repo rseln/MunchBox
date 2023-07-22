@@ -1,5 +1,6 @@
 package com.example.munchbox.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,9 +25,11 @@ import com.example.munchbox.ui.OrderViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun OrderSummaries(order: OrderUiState,
+fun OrderSummaries(orderUiState: OrderUiState,
                    storageServices: StorageServices,
-                   modifier: Modifier = Modifier
+                   modifier: Modifier = Modifier,
+                   isReview: Boolean = false,
+                   isHub: Boolean = false,
 ){
     Row (
         modifier = modifier
@@ -41,7 +44,14 @@ fun OrderSummaries(order: OrderUiState,
             )
         }
     }
-    val selectedToPickUpDayList = order.selectedToPickUpDay.toList().sortedBy { it.second.id }
+    var selectedToPickUpDayList: List<Pair<Meal, DayOfWeek>> = mutableListOf()
+    if(isHub){
+        selectedToPickUpDayList = orderUiState.selectedToPickUpDay.toList().sortedBy { it.second.id }
+    }
+    if(isReview){
+        selectedToPickUpDayList = orderUiState.unorderedSelectedPickupDay.toList().sortedBy { it.second.id }
+
+    }
     for((meal,pickUpDate) in selectedToPickUpDayList) {
         Column(modifier = modifier) {
             Spacer(modifier = Modifier.height(18.dp))
@@ -51,7 +61,8 @@ fun OrderSummaries(order: OrderUiState,
                 modifier = Modifier,
             )
             Spacer(modifier = Modifier.height(13.dp))
-            OrderSummaryCard(meal = meal,storageServices, true)
+            Log.d("HELLO FROM ORDER SUMMARY3", meal.mealID)
+            OrderSummaryCard(meal = meal, storageServices, true)
             Spacer(modifier = Modifier.height(13.dp))
         }
     }
@@ -90,7 +101,7 @@ fun PreviewOrderSummaries(){
     val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val storageService = StorageServices(FirebaseFirestore.getInstance())
-    viewModel.setMeals(meals = DataSource.allMeals.toList())
+//    viewModel.setMeals(meals = DataSource.allMeals.toList())
 //    viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
-    OrderSummaries(order = uiState, storageService)
+    OrderSummaries(orderUiState = uiState, storageService)
 }

@@ -3,7 +3,6 @@ package com.example.munchbox
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,13 +20,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -39,17 +35,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
-import com.example.munchbox.data.DataSource.campusPizza
-import com.example.munchbox.data.DataSource.campusPizzaMeal
-import com.example.munchbox.data.DataSource.campusPizzaMeal2
-import com.example.munchbox.data.DataSource.lazeez
-import com.example.munchbox.data.DataSource.lazeezMeal
-import com.example.munchbox.data.DataSource.lazeezMeal2
-import com.example.munchbox.data.DataSource.shawaramaPlus
-import com.example.munchbox.data.DataSource.shawarmaPlusMeal
-import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.payment.MealPaymentScreen
@@ -60,9 +48,10 @@ import com.example.munchbox.ui.LoginScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
+import com.example.munchbox.ui.MuncherViewModel
 import com.example.munchbox.ui.NumberOfMealsScreen
-import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantHubScreen
+import com.example.munchbox.ui.RestaurantViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
@@ -115,7 +104,8 @@ fun MunchBoxAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MunchBoxApp(
-    viewModel: OrderViewModel = viewModel(),
+    muncherViewModel: MuncherViewModel = viewModel(),
+    restaurantViewModel: RestaurantViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     /**
@@ -127,7 +117,10 @@ fun MunchBoxApp(
 
     val context = LocalContext.current
 
-    val uiState by viewModel.uiState.collectAsState()
+    val muncherUiState by muncherViewModel.uiState.collectAsState()
+    val restaurantUiState by restaurantViewModel.uiState.collectAsState()
+    // TODO setup another uistate for restaruant
+
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
@@ -136,18 +129,12 @@ fun MunchBoxApp(
     )
 
     /**
-     * State variables for order summaries etc.
-     */
-    var orderedMeals by remember { mutableStateOf(listOf<Meal>()) }
-
-    lazeez.addMeals(setOf(lazeezMeal, lazeezMeal2))
-    shawaramaPlus.addMeals(setOf(shawarmaPlusMeal, shawarmaPlusMeal2))
-    campusPizza.addMeals(setOf(campusPizzaMeal, campusPizzaMeal2))
-
-    /**
      * coroutineScope for api calls by onClicks functions
      */
     val coroutineScope = rememberCoroutineScope()
+
+    //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
+    LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
 
     /**
      * Logic to navigate to and from payment activity
@@ -160,23 +147,23 @@ fun MunchBoxApp(
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(OrderScreen.AfterPayment.name)
-            for(meal in orderedMeals){
+            for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
                     // TODO: replace userID with userID of current user
                     storageServices.orderService().createDBOrder(
                         userID = "temp_user_id",
                         mealID = meal.mealID,
                         restaurantID = meal.restaurantID,
-                        pickUpDate = uiState.selectedToPickUpDay[meal]!!.date,
+                        pickUpDate = muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
                         orderPickedUp = false,
                     )
                 }
             }
+            coroutineScope.launch{muncherViewModel.updateMuncherState("temp_user_id")}
         }
         if (result.resultCode == Activity.RESULT_CANCELED) {
-            orderedMeals = listOf()
-            viewModel.setMeals(listOf())
-            cancelOrderAndNavigateToStart(viewModel, navController)
+            muncherViewModel.clearUnorderedMeals()
+            cancelOrderAndNavigateToStart(navController)
         }
     }
 
@@ -228,18 +215,17 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
 
-                //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
-                viewModel.setMeals(meals = uiState.meals.toList())
-//                viewModel.setPickupOptions(pickupOptions = pickUpOptions)
 
                 MealOrderSummaryScreen(
-                    orderUiState = uiState,
+                    orderUiState = muncherUiState.orderUiState,
                     storageServices = storageServices,
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
-                        uiState.meals = uiState.meals.filter { meal : Meal -> !meal.days.contains(DataSource.currentDay) }.toSet()
-                        viewModel.setMeals(meals = uiState.meals.toList())
+                        //TODO: all we do here is delete order and meal from database
+                        coroutineScope.launch {
+                            muncherViewModel.updateConfirmedMeals(muncherUiState.orderUiState.meals, muncherUiState.orderUiState.selectedToPickUpDay)
+                        }
 
                         //refresh page
                         navController.popBackStack(OrderScreen.MealOrderSummary.name,true)
@@ -258,7 +244,7 @@ fun MunchBoxApp(
                 NumberOfMealsScreen(
                     quantityOptions = DataSource.quantityOptions,
                     onNextButtonClicked = { numMeals, price ->
-                        viewModel.setQuantity(numMeals, price)
+                        muncherViewModel.setQuantity(numMeals, price)
                         navController.navigate(OrderScreen.MealSelect.name)
                     },
                     modifier = Modifier
@@ -269,24 +255,24 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
                     storageServices = storageServices,
-                    restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
-                    orderInfo = uiState,
-                    numMealsRequired = uiState.quantity,
+                    restaurants = muncherUiState.availableRestaurants,
+                    orderInfo = muncherUiState.orderUiState,
+                    numMealsRequired = muncherUiState.orderUiState.currentOrderQuantity,
 //                    quantityOptions = DataSource.quantityOptions,
                     onCancelButtonClicked = {
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+                        muncherViewModel.clearUnorderedMeals()
+                        cancelOrderAndNavigateToStart(navController)
                     },
                     onSubmit = { newOrderedMeals : Array<Meal?> ->
-                        orderedMeals = listOf()
-                        for (meal in newOrderedMeals) {
-                            if (meal == null)
-                                continue
-                            orderedMeals = orderedMeals.plus(meal)
+                        var mealDayPairs : MutableMap<Meal, DayOfWeek> = mutableMapOf()
+                        var mealList : List<Meal> = listOf()
+                        for ((index, meal) in newOrderedMeals.withIndex()) {
+                            if (meal != null) {
+                                mealDayPairs[meal] = DayOfWeek.values()[index]
+                                mealList = mealList.plus(meal)
+                            }
                         }
-
-                        viewModel.setMeals(orderedMeals)
+                        muncherViewModel.setUnorderedMeals(mealDayPairs, mealList)
                         navController.navigate(OrderScreen.MealReview.name)
                     },
                     modifier = Modifier
@@ -297,11 +283,11 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealReview.name) {
                 MealReviewScreen(
-                    orderUiState = uiState,
+                    orderUiState = muncherViewModel.uiState.value.orderUiState,
                     storageServices = storageServices,
                     onNextButtonClicked = {
-                        intent.putExtra("amount", uiState.price)
-                        intent.putExtra("numMeals", uiState.quantity)
+                        intent.putExtra("amount", muncherViewModel.uiState.value.orderUiState.currentOrderPrice)
+                        intent.putExtra("numMeals", muncherViewModel.uiState.value.orderUiState.currentOrderQuantity)
                         stripeLauncher.launch(intent)
                     },
                     onCancelButtonClicked = {
@@ -309,9 +295,8 @@ fun MunchBoxApp(
                          * TODO: BUG - previous orders will be deleted on cancel need to adjust this logic everywhere this is used.
                          * Might need to be fixed once we have a database and store data properly
                         **/
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+                        muncherViewModel.clearUnorderedMeals()
+                        cancelOrderAndNavigateToStart(navController)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -329,12 +314,11 @@ fun MunchBoxApp(
             }
             composable(route = OrderScreen.MealPayment.name) {
                 MealPaymentScreen(
-                    numMeals = viewModel.uiState.value.quantity,
-                    price = viewModel.uiState.value.price,
+                    numMeals = muncherViewModel.uiState.value.orderUiState.currentOrderQuantity,
+                    price = muncherViewModel.uiState.value.orderUiState.currentOrderPrice,
                     onCancelButtonClicked = {
-                        orderedMeals = listOf()
-                        viewModel.setMeals(listOf())
-                        cancelOrderAndNavigateToStart(viewModel, navController)
+                        muncherViewModel.clearUnorderedMeals()
+                        cancelOrderAndNavigateToStart(navController)
                     },
                     onPayButtonClicked = {
                         navController.navigate(OrderScreen.MealOrderSummary.name)
@@ -348,8 +332,14 @@ fun MunchBoxApp(
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {
-                RestaurantHubScreen(orderUiState = viewModel.uiState.value,
-                    restaurant = lazeez, // TODO: Change this to the actual restaurant logged in instead of always lazeez
+                // TODO Replace with restaurant
+                LaunchedEffect(Unit){restaurantViewModel.updateRestaurantState("lazeez_123")}
+                RestaurantHubScreen(
+                    storageServices = storageServices,
+                    restaurant = restaurantViewModel.uiState.value.restaurant,
+                    updateViewModel = {
+                        coroutineScope.launch{restaurantViewModel.updateRestaurantState("lazeez_123")}
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()
@@ -363,10 +353,8 @@ fun MunchBoxApp(
  * Resets the [OrderUiState] and pops up to [OrderScreen.Start]
  */
 private fun cancelOrderAndNavigateToStart(
-    viewModel: OrderViewModel,
     navController: NavHostController
 ) {
-    viewModel.resetOrder()
     navController.popBackStack(OrderScreen.MealOrderSummary.name, inclusive = false)
 }
 

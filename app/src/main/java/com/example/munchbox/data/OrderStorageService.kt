@@ -63,6 +63,7 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add(createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
@@ -77,6 +78,7 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add( createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
@@ -111,6 +113,16 @@ constructor(private val firestore: FirebaseFirestore){
     suspend fun deleteOrderByOrderID(orderID: String): Boolean? = withContext(Dispatchers.IO){
         try {
             firestore.collection("Orders").document(orderID).delete()
+            return@withContext true
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+        return@withContext false
+    }
+
+    suspend fun deleteOrderByMealID(mealID: String): Boolean? = withContext(Dispatchers.IO){
+        try {
+            firestore.collection("Orders").document(mealID).delete()
             return@withContext true
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())

@@ -54,6 +54,13 @@ fun MealSelectionScreen(
         var availableRestaurants : Set<Restaurant> = setOf()
 
         for (restaurant in restaurants) {
+            for(meal in restaurant.meals){
+                Log.d("HELLO_" + restaurant.restaurantID, meal.mealID)
+                for(day in meal.days){
+                    Log.d("HELLO_ON", day.str)
+                }
+                Log.d("HELLO_DAYS_DONE","")
+            }
             if (restaurant.meals.filter { meal: Meal -> meal.days.contains(selectedDay) }.isNotEmpty()) {
                 availableRestaurants = availableRestaurants.plus(restaurant)
             }
@@ -166,18 +173,18 @@ fun MealSelectionScreen(
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
                 storageServices = storageServices,
-                restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
+                restaurantName = it.name, // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
                     added = !added
                     if(added){
-                        orderInfo.selectedToPickUpDay[meal] = selectedDay
+                        orderInfo.unorderedSelectedPickupDay[meal] = selectedDay
                     }
                     if (!added) {
                         selectedOptions = setOf()
                         availableOptions = getAvailableOptions(allMeals, selectedOptions)
-                        orderInfo.selectedToPickUpDay.remove(meal)
+                        orderInfo.unorderedSelectedPickupDay.remove(meal)
                     }
                     else {
                         selectedOptions = meal.options
