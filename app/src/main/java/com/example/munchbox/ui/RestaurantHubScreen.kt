@@ -28,6 +28,7 @@ import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun RestaurantHubScreen(
@@ -53,6 +54,11 @@ fun RestaurantHubScreen(
         updateViewModel()
 
     }
+    val cancelMealCOROUTINE: (meal : Meal) -> Unit = {
+        coroutineScope.launch {
+            val mealCancelReturn = storageService.restaurantService().updateMeal(restaurant.restaurantID, it.mealID, null, null, Date())
+        }
+    }
 
     // TODO: do we even need these params anymore? everything exists in mutableStates as far as i can tell
     fun addNewMeal(newDietaryOptions : Set<DietaryOption>, newDays : Set<DayOfWeek>) {
@@ -60,6 +66,11 @@ fun RestaurantHubScreen(
     }
 
     fun cancelMeal(meal : Meal) {
+        meal.cancelledOnDate = Date()
+
+        // update in DB
+        cancelMealCOROUTINE(meal)
+
         availableMeals.value = availableMeals.value.minus(meal)
         updateViewModel()
     }

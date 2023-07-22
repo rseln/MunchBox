@@ -1,5 +1,7 @@
 package com.example.munchbox.controller
 
+import java.util.Date
+
 /**
  * @name - Meal
  * @brief - Class interface for a single meal.
@@ -14,6 +16,7 @@ data class Meal(
     val days : Set<DayOfWeek>,
     val amountOrdered : Map<DayOfWeek, Int> = mapOf(),
     val totalOrders: Int = 0,
+    var cancelledOnDate: Date = Date(0),
 ) {
     fun totalOrderCount() : Int {
         var sum : Int = 0;
@@ -22,6 +25,7 @@ data class Meal(
         }
         return sum
     }
+
     fun optionToStr(option : DietaryOption): String {
         return option.str
     }
