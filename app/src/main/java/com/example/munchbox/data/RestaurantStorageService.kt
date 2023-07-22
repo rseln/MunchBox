@@ -63,8 +63,8 @@ constructor(private val firestore: FirebaseFirestore){
                         val fetchedAmountOrdered = mealData?.get("amountOrdered") as? Map<String, Int> ?: mapOf()
                         val totalOrders = mealData?.get("totalOrders") as? Int ?: 0
 
-                        val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it) }.toSet()
-                        val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
+                        val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it.replace(" ", "_").uppercase()) }.toSet()
+                        val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it.uppercase()) }.toSet()
                         val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
                         meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders))
                     }
@@ -110,8 +110,8 @@ constructor(private val firestore: FirebaseFirestore){
                             val totalOrders = mealData?.get("totalOrders") as? Int ?: 0
                             Log.d("HELLO IN GET REST", fetchedDaysOffered[0])
 
-                            val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it) }.toSet()
-                            val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
+                            val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it.replace(" ", "_").uppercase()) }.toSet()
+                            val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it.uppercase()) }.toSet()
                             for(days in daysOffered){
                                 Log.d("HELLO IN GET MEAL2", days.str)
                             }
@@ -179,7 +179,7 @@ constructor(private val firestore: FirebaseFirestore){
             "mealID" to mealID,
             "restaurantID" to restaurantID,
             "dietaryOptions" to options.map{it.str.replace(" ", "_").uppercase()},
-            "daysOffered" to days.map{it.str.replace(" ", "_").uppercase()},
+            "daysOffered" to days.map{it.str.uppercase()},
             "amountOrdered" to amountOrdered.mapKeys{it.key.str},
             "totalOrders" to totalOrders
         )
