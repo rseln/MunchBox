@@ -65,6 +65,7 @@ import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.ui.RestaurantCreationScreen
 import com.example.munchbox.ui.RestaurantHubScreen
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -139,7 +140,7 @@ fun MunchBoxApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentScreen = OrderScreen.valueOf(
-        backStackEntry?.destination?.route ?: OrderScreen.Login.name
+        backStackEntry?.destination?.route ?: OrderScreen.Signup.name
     )
 
     /**
@@ -212,6 +213,10 @@ fun MunchBoxApp(
             composable(route = OrderScreen.Login.name) {
                 LoginScreen(navController)
             }
+
+            composable(route = OrderScreen.RestaurantCreation.name) {
+                RestaurantCreationScreen(navController)
+            }
             composable(route = OrderScreen.ChooseFighter.name) {
                 ChooseFighterScreen(
                     onMunchButtonClick = {
@@ -231,6 +236,19 @@ fun MunchBoxApp(
                         navController.navigate(OrderScreen.MealOrderSummary.name)
                     },
                     onRestaurantButtonClick = {
+                        coroutineScope.launch {
+                            val user = Firebase.auth.currentUser
+                            if (user != null) {
+                                user.email?.let { it1 ->
+                                    storageServices.userService().createDBUser(
+                                        userID = user.uid,
+                                        email = it1,
+                                        type = "Muncher",
+                                        restaurantID = null
+                                    )
+                                }
+                            }
+                        }
                         navController.navigate(OrderScreen.RestaurantCreation.name)
                     },
                     modifier = Modifier
