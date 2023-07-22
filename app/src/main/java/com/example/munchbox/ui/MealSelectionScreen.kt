@@ -66,7 +66,7 @@ fun MealSelectionScreen(
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
         for (meal in meals.asIterable()) {
-            if (meal.options.containsAll(selectedOptions)) {
+            if (meal.options.containsAll(selectedOptions) && meal.cancelledOnDate == Date(0)) {
                 availableMeals = availableMeals.plus(meal)
             }
         }
