@@ -32,6 +32,7 @@ import com.example.munchbox.ui.components.SelectCard
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun RestaurantHubScreen(
@@ -56,6 +57,11 @@ fun RestaurantHubScreen(
             selectedOptions.value = setOf<DietaryOption>()
         }
     }
+    val cancelMealCOROUTINE: (meal : Meal) -> Unit = {
+        coroutineScope.launch {
+            val mealCancelReturn = storageService.restaurantService().updateMeal(restaurant.restaurantID, it.mealID, null, null, Date())
+        }
+    }
 
     // TODO: do we even need these params anymore? everything exists in mutableStates as far as i can tell
     fun addNewMeal(newDietaryOptions : Set<DietaryOption>, newDays : Set<DayOfWeek>) {
@@ -63,6 +69,11 @@ fun RestaurantHubScreen(
     }
 
     fun cancelMeal(meal : Meal) {
+        meal.cancelledOnDate = Date()
+
+        // update in DB
+        cancelMealCOROUTINE(meal)
+
         availableMeals.value = availableMeals.value.minus(meal)
     }
 

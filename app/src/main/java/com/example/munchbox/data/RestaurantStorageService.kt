@@ -15,6 +15,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 
@@ -70,7 +71,7 @@ constructor(private val firestore: FirebaseFirestore){
                         val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it) }.toSet()
                         val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
                         val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
-                        meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders))
+                        meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0)))
                     }
                 }
                 val imageID = data?.get("imageID") as? Int
@@ -116,7 +117,7 @@ constructor(private val firestore: FirebaseFirestore){
                             val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it) }.toSet()
                             val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
                             val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
-                            meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders))
+                            meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0)))
                         }
                     }
                     restaurants.add(Restaurant(id,name, meals.toSet(), imageID))
@@ -175,17 +176,19 @@ constructor(private val firestore: FirebaseFirestore){
 
         val mealID:String = "meal_" + UUID.randomUUID().toString()
         val totalOrders = totalOrderCount(amountOrdered)
+        val cancelledOnDate = Date(0)
         val data = hashMapOf(
             "mealID" to mealID,
             "restaurantID" to restaurantID,
             "dietaryOptions" to options.map{it.str},
             "daysOffered" to days.map{it.str},
             "amountOrdered" to amountOrdered.mapKeys{it.key.str},
-            "totalOrders" to totalOrders
+            "totalOrders" to totalOrders,
+            "cancelledOnDate" to cancelledOnDate
         )
         try {
             firestore.collection("Restaurants").document(restaurantID).collection("Meals").document(mealID).set(data)
-            return@withContext Meal(mealID, restaurantID, options, days, amountOrdered, totalOrders)
+            return@withContext Meal(mealID, restaurantID, options, days, amountOrdered, totalOrders, cancelledOnDate)
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
@@ -211,7 +214,7 @@ constructor(private val firestore: FirebaseFirestore){
                 val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
                 val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
 
-                return@withContext Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders)
+                return@withContext Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0))
             }
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
@@ -220,7 +223,7 @@ constructor(private val firestore: FirebaseFirestore){
     }
 
     // Updates the requested Meal object with the provided fields and returns the mealID
-    suspend fun updateMeal(restaurantID: String, mealID: String, options: Set<DietaryOption>? = null, days: Set<DayOfWeek>? = null,): String? = withContext(Dispatchers.IO){
+    suspend fun updateMeal(restaurantID: String, mealID: String, options: Set<DietaryOption>? = null, days: Set<DayOfWeek>? = null, cancelledOnDate: Date? = null,): String? = withContext(Dispatchers.IO){
         val data:MutableMap<String, Any?> = mutableMapOf()
 
         if(options != null){
@@ -228,6 +231,9 @@ constructor(private val firestore: FirebaseFirestore){
         }
         if(days != null){
             data["daysOffered"] = days.map{it.str}
+        }
+        if(cancelledOnDate != null){
+            data["cancelledOnDate"] = cancelledOnDate
         }
         try{
             firestore.collection("Restaurants").document(restaurantID).collection("Meals").document(mealID).set(data, SetOptions.merge())
