@@ -1,5 +1,6 @@
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,6 +54,13 @@ fun MealSelectionScreen(
         var availableRestaurants : Set<Restaurant> = setOf()
 
         for (restaurant in restaurants) {
+            for(meal in restaurant.meals){
+                Log.d("HELLO_" + restaurant.restaurantID, meal.mealID)
+                for(day in meal.days){
+                    Log.d("HELLO_ON", day.str)
+                }
+                Log.d("HELLO_DAYS_DONE","")
+            }
             if (restaurant.meals.filter { meal: Meal -> meal.days.contains(selectedDay) }.isNotEmpty()) {
                 availableRestaurants = availableRestaurants.plus(restaurant)
             }
@@ -165,7 +173,7 @@ fun MealSelectionScreen(
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
                 storageServices = storageServices,
-                restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
+                restaurantName = it.name, // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)

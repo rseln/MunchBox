@@ -31,7 +31,6 @@ import com.example.munchbox.R
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.data.DataSource.lazeezMeal
 import com.example.munchbox.ui.theme.Typography
 
 @Preview(
@@ -45,13 +44,13 @@ fun t1() {
     var selectedDays = setOf<DayOfWeek>()
     var added : Boolean = false
 
-    RestaurantDisplayMealCard(
-        meal = lazeezMeal,
-        name = "Rox",
-        today = DayOfWeek.SUNDAY,
-        onCancelCallback = { },
-        modifier = Modifier
-    )
+//    RestaurantDisplayMealCard(
+//        meal = lazeezMeal,
+//        name = "Rox",
+//        today = DayOfWeek.SUNDAY,
+//        onCancelCallback = { },
+//        modifier = Modifier
+//    )
 }
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable

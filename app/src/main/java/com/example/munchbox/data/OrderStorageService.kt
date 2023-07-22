@@ -63,6 +63,7 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add(createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
@@ -77,6 +78,7 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add( createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
