@@ -173,7 +173,7 @@ fun MealSelectionScreen(
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
                 storageServices = storageServices,
-                restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
+                restaurantName = it.name, // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
