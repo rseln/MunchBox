@@ -179,6 +179,9 @@ fun MealSelectionScreen(
                         availableOptions = getAvailableOptions(allMeals, selectedOptions)
                         orderInfo.selectedToPickUpDay.remove(meal)
                     }
+                    else {
+                        selectedOptions = meal.options
+                    }
                 },
                 onSelectOption = { option : DietaryOption ->
                     selectedOptions = onSelectCallback(selectedOptions, option)
