@@ -51,7 +51,10 @@ import androidx.compose.ui.unit.sp
 import java.util.Calendar
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import com.example.munchbox.OrderScreen
 import com.example.munchbox.R
+import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.RestaurantStorageService
 import com.example.munchbox.data.StorageServices
 import com.google.firebase.auth.ktx.auth
@@ -78,7 +81,9 @@ val dietaryOptions = setOf(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun RestaurantCreationScreen() {
+fun RestaurantCreationScreen(
+    navController: NavController
+) {
     val mContext = LocalContext.current
 
     // VALUES TO SEND
@@ -108,28 +113,17 @@ fun RestaurantCreationScreen() {
 
         val sendRequestRestaurant: () -> Unit = {
             coroutineScope.launch {
-                val restID = storageServices.restaurantService().createDBRestaurant(
+                val restID: Restaurant? = storageServices.restaurantService().createDBRestaurant(
                     restaurantName.value.text,
                     //imageURL
                 )
-                val user = Firebase.auth.currentUser
-                if (user != null) {
-                    user.email?.let { it1 ->
-                        storageServices.userService().createDBUser(
-                            userID = user.uid,
-                            email = it1,
-                            type = "Restaurant",
-                            // TODO : populate with corresponding restaurant ID
-                            restaurantID = null
-                        )
-                    }
-                }
             }
         }
 
         Button(
             onClick = {
                 sendRequestRestaurant()
+                navController.navigate(OrderScreen.RestaurantHub.name)
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -387,10 +381,4 @@ fun convertTo12Hours(militaryTime: String): String{
     val outputFormat = SimpleDateFormat("h:mm aa", Locale.getDefault())
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
-}
-
-@Preview
-@Composable
-fun PreviewRestaurantCreationScreen() {
-    RestaurantCreationScreen()
 }

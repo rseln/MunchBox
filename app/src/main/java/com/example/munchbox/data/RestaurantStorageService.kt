@@ -7,6 +7,7 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
@@ -25,6 +26,8 @@ constructor(private val firestore: FirebaseFirestore){
     // RESTAURANT API ENDPOINTS START HERE
     // ***********************************
 
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
+
     // Stores the Restaurant in the DB, and returns the Restaurant object (no meals initialized)
     suspend fun createDBRestaurant(name : String, imageID: Int? = null): Restaurant? = withContext(Dispatchers.IO) {
         val restaurantID:String = "restaurant_" + UUID.randomUUID().toString()
@@ -35,6 +38,10 @@ constructor(private val firestore: FirebaseFirestore){
         )
         try {
             firestore.collection("Restaurants").document(restaurantID).set(data)
+            val user = Firebase.auth.currentUser
+            if (user != null) {
+                storageServices.userService().updateRestaurantIDByUserID(restaurantID, user.uid)
+            }
             return@withContext Restaurant(restaurantID, name, setOf(), imageID)
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
