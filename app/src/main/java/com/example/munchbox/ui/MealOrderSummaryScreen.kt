@@ -1,5 +1,6 @@
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,7 +53,16 @@ fun MealOrderSummaryScreen(
             OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
-            OrderSummaries(orderUiState, storageServices, Modifier)
+            Log.d("HELLO IN ORDER SUMMARY", orderUiState.meals[0].mealID)
+            for((meal, day) in orderUiState.selectedToPickUpDay){
+                Log.d("HELLO IN ORDER SUMMARY2", meal.mealID)
+            }
+            OrderSummaries(
+                orderUiState = orderUiState,
+                storageServices = storageServices,
+                modifier = Modifier,
+                isHub = true,
+            )
         }
     }
 }

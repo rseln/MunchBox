@@ -15,6 +15,7 @@
  */
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
@@ -78,12 +79,13 @@ class MuncherViewModel : ViewModel() {
      * Grab all the ordered orders for a user
      */
     suspend fun getOrders(userId : String) : Set<Order> {
-        val order = _uiState.value.storageServices.orderService().getAllOrdersByUserID(userId)
-        if (order == null) {
+        val orders:List<Order>? = _uiState.value.storageServices.orderService().getAllOrdersByUserID(userId)
+        if (orders == null) {
             return setOf<Order>()
         }
         else {
-            return order.toSet()
+//            Log.d("HELLO3",orders.get(0).mealID)
+            return orders.toSet()
         }
     }
 
@@ -106,11 +108,15 @@ class MuncherViewModel : ViewModel() {
         for (order in orders) {
              ret.addOrderedMeal(_uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
                  getDayOfWeekFromDate(order.pickUpDate))
+            Log.d("Hello2", "I got order:" + order.orderID)
+            Log.d("Hello2", "I got date:" +  getDayOfWeekFromDate(order.pickUpDate).str)
+
         }
+
         return ret
     }
 
-    suspend fun updateConfirmedMeals(meals: List<Meal>, pickupOptions: MutableMap<Meal, DayOfWeek>){
+    suspend fun updateConfirmedMeals(meals: List<Meal>, pickupOptions: Map<Meal, DayOfWeek>){
         _uiState.update { currentState ->
             currentState.copy(
                 orderUiState = currentState.orderUiState.copy(
@@ -130,17 +136,20 @@ class MuncherViewModel : ViewModel() {
             return setOf<Restaurant>()
         }
         else {
+            Log.d("Hello5", restaurants[0].restaurantID)
             return restaurants.toSet()
         }
     }
 //    maybe not needed?
     suspend fun updateMuncherState (userId : String) {
+        Log.d("HELLO1", "Im getting the db stuff")
         _uiState.update { currentState ->
             currentState.copy(
                 orderUiState = getOrderUiState(userId),
                 availableRestaurants = updateRestaurants()
             )
         }
+//        Log.d("HELLO4", "I've gotten this:" +    _uiState.value.orderUiState.meals[0].mealID )
     }
 
     /**

@@ -38,7 +38,12 @@ fun MealReviewScreen(
         modifier = modifier
             .verticalScroll(scrollState),
     ){
-        OrderSummaries(orderUiState, storageServices, Modifier)
+        OrderSummaries(
+            orderUiState = orderUiState,
+            storageServices = storageServices,
+            modifier = Modifier,
+            isReview = true,
+        )
         Row(
             modifier = Modifier
                 .padding(dimensionResource(R.dimen.padding_medium))

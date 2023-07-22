@@ -171,6 +171,7 @@ fun MunchBoxApp(
                     )
                 }
             }
+            coroutineScope.launch{muncherViewModel.updateMuncherState("temp_user_id")}
         }
         if (result.resultCode == Activity.RESULT_CANCELED) {
             muncherViewModel.clearUnorderedMeals()
