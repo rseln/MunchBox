@@ -33,6 +33,7 @@ import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.DayTabs
 import com.example.munchbox.ui.components.MealCard
+import java.util.Date
 
 @Composable
 fun MealSelectionScreen(
@@ -109,7 +110,7 @@ fun MealSelectionScreen(
     fun getRestaurantMeals(restaurant : Restaurant, day : DayOfWeek) : Set<Meal> {
         var mealsToday : Set<Meal> = setOf()
         // Add all meals that are offered by this restaurant on this day
-        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) })
+        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) }.filter { meal: Meal -> meal.cancelledOnDate == Date(0) })
         return mealsToday
     }
 
