@@ -10,7 +10,6 @@ import com.example.munchbox.controller.Meal
  */
 // TODO: Probably delete pickupOptions and change Meals to Orders
 data class OrderUiState(
-    //TODO: potentialy change this to a set of orders instead(GIANT OVERHAUL DAY)
     var meals: List<Meal> = listOf(), //TODO: rename to orderedMeals
     /** Selected meal quantity (1, 3, 5) */
     var currentOrderQuantity: Int = 0,
@@ -20,7 +19,9 @@ data class OrderUiState(
     /** mapped as the mealID -> Day to pick up*/
 
     //TODO: currently if the same order is made from the same meal on the meal selection
-    // it views them as one order. Potential issue due to them having the same mealID
+    // it views them as one order. Issue caused due to two identical meals being mapped to one value
+    // potential solution could be to add the orderID to the Meal DB model
+    // Or we get rid of the meal after it is selected in the meal selection screen(encourages eating healthier options?)
     var selectedToPickUpDay: Map<Meal, DayOfWeek> = mutableMapOf(), //TODO: rename to orderedSelectedPickupDay
 
     var unorderedMeals : List<Meal> = listOf(),
