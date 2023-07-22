@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
@@ -107,7 +106,7 @@ fun PreviewMealsAvailableScreen(){
     val uiState by viewModel.uiState.collectAsState()
     val storageService = StorageServices(FirebaseFirestore.getInstance())
 
-    viewModel.setMeals(meals = allMeals.toList())
+//    viewModel.setMeals(meals = allMeals.toList())
 //    viewModel.setPickupOptions(pickupOptions = pickUpOptions)
     MealOrderSummaryScreen(orderUiState = uiState, storageService)
 }

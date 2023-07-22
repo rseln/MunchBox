@@ -179,8 +179,8 @@ constructor(private val firestore: FirebaseFirestore){
         val data = hashMapOf(
             "mealID" to mealID,
             "restaurantID" to restaurantID,
-            "dietaryOptions" to options.map{it.str.uppercase()},
-            "daysOffered" to days.map{it.str.uppercase()},
+            "dietaryOptions" to options.map{it.str.replace(" ", "_").uppercase()},
+            "daysOffered" to days.map{it.str.replace(" ", "_").uppercase()},
             "amountOrdered" to amountOrdered.mapKeys{it.key.str},
             "totalOrders" to totalOrders
         )

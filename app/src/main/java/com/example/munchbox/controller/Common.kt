@@ -20,10 +20,10 @@ enum class DayOfWeek(val id:Int, val date:Date, val str: String) {
 
 enum class DietaryOption(val id: Int, val str : String) {
     HALAL(0, "Halal"),
-    VEGE(1, "Vegetarian"),
+    VEGETARIAN(1, "Vegetarian"),
     KOSHER(2, "Kosher"),
     VEGAN(3, "Vegan"),
-    GF(4, "Gluten Free"),
+    GLUTEN_FREE(4, "Gluten Free"),
     PEANUT_FREE(5, "Peanut Free"),
     MEAT(6, "Meat")
 }

@@ -116,6 +116,6 @@ private fun checkOrderExists(id: TextFieldValue, meals: Set<Meal>, today : DayOf
 @Preview
 @Composable
 fun OrderSearchPreview(){
-    val lazeezMeal = setOf(Meal("temp_meal_id", "temp_restaurant_id", setOf(DietaryOption.VEGE, DietaryOption.GF), setOf(DayOfWeek.TUESDAY), mapOf(Pair(DayOfWeek.TUESDAY, 20))))
+    val lazeezMeal = setOf(Meal("temp_meal_id", "temp_restaurant_id", setOf(DietaryOption.VEGETARIAN, DietaryOption.GLUTEN_FREE), setOf(DayOfWeek.TUESDAY), mapOf(Pair(DayOfWeek.TUESDAY, 20))))
     OrderSearchCard(DataSource.lazeez, lazeezMeal)
 }

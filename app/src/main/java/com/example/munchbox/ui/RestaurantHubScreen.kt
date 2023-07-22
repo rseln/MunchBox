@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantHubScreen(
+    storageServices: StorageServices,
     orderUiState: RestaurantUiState,
     restaurant : Restaurant,
     modifier: Modifier = Modifier,
@@ -43,12 +44,10 @@ fun RestaurantHubScreen(
     val availableMeals = remember { mutableStateOf(orderUiState.meals) }
     val scrollState = rememberScrollState()
 
-    val storageService = StorageServices(FirebaseFirestore.getInstance())
-
     val coroutineScope = rememberCoroutineScope()
     val createNewMeal: () -> Unit = {
         coroutineScope.launch {
-            val meal = storageService.restaurantService().addMealToRestaurant(restaurant.restaurantID, selectedOptions.value, selectedDays.value)
+            val meal = storageServices.restaurantService().addMealToRestaurant(restaurant.restaurantID, selectedOptions.value, selectedDays.value)
             availableMeals.value = availableMeals.value.plus(meal!!)
             selectedDays.value = setOf<DayOfWeek>()
             selectedOptions.value = setOf<DietaryOption>()
@@ -115,11 +114,11 @@ fun RestaurantHubScreen(
         OrderSearchCard(restaurant, availableMeals.value)
 
         Spacer(modifier = Modifier.height(32.dp))
-
+        //TODO:have db retrieve this
         MealSummary(
-            availableMeals.value,
-            {meal : Meal -> cancelMeal(meal)},
-            modifier
+            meals = availableMeals.value,
+            onCancelCallback = {meal : Meal -> cancelMeal(meal)},
+            modifier = modifier
         )
     }
 }

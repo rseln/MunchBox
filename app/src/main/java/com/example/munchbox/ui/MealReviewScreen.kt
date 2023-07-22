@@ -74,7 +74,7 @@ fun PreviewMealReviewScreen() {
     val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val storageServices = StorageServices(FirebaseFirestore.getInstance())
-    viewModel.setMeals(meals = DataSource.allMeals.toList())
+//    viewModel.setMeals(meals = DataSource.allMeals.toList())
 //    viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
     MealReviewScreen(orderUiState = uiState, storageServices)
 }
