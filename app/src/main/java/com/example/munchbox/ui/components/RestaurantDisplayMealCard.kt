@@ -112,7 +112,7 @@ fun RestaurantDisplayMealCard(meal : Meal,
                 style = Typography.labelSmall,
             )
             Text(
-                text = meal.totalOrderCount().toString(),
+                text = meal.totalOrders.toString(),
                 style = Typography.labelSmall,
             )
             Spacer(modifier = Modifier.height(8.dp))

@@ -22,26 +22,24 @@ import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource.currentDay
-import com.example.munchbox.data.RestaurantUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 @Composable
 fun RestaurantHubScreen(
     storageServices: StorageServices,
-    orderUiState: RestaurantUiState,
+    updateViewModel: () -> Unit,
     restaurant : Restaurant,
     modifier: Modifier = Modifier,
 ) {
     val expanded = remember { mutableStateOf(false) }
     val selectedOptions = remember { mutableStateOf(setOf<DietaryOption>()) }
     val selectedDays = remember { mutableStateOf(setOf<DayOfWeek>()) }
-    val availableMeals = remember { mutableStateOf(orderUiState.meals) }
+    val availableMeals = remember (restaurant) { mutableStateOf(restaurant.meals) }
     val scrollState = rememberScrollState()
 
     val coroutineScope = rememberCoroutineScope()
@@ -52,6 +50,8 @@ fun RestaurantHubScreen(
             selectedDays.value = setOf<DayOfWeek>()
             selectedOptions.value = setOf<DietaryOption>()
         }
+        updateViewModel()
+
     }
 
     // TODO: do we even need these params anymore? everything exists in mutableStates as far as i can tell
@@ -61,6 +61,7 @@ fun RestaurantHubScreen(
 
     fun cancelMeal(meal : Meal) {
         availableMeals.value = availableMeals.value.minus(meal)
+        updateViewModel()
     }
 
     fun cancelAdd() {

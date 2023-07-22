@@ -38,7 +38,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
-import com.example.munchbox.data.DataSource.lazeez
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.payment.MealPaymentScreen
@@ -118,7 +117,8 @@ fun MunchBoxApp(
 
     val context = LocalContext.current
 
-    val uiState by muncherViewModel.uiState.collectAsState()
+    val muncherUiState by muncherViewModel.uiState.collectAsState()
+    val restaurantUiState by restaurantViewModel.uiState.collectAsState()
     // TODO setup another uistate for restaruant
 
     // Get current back stack entry
@@ -154,7 +154,7 @@ fun MunchBoxApp(
                         userID = "temp_user_id",
                         mealID = meal.mealID,
                         restaurantID = meal.restaurantID,
-                        pickUpDate = uiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
+                        pickUpDate = muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
                         orderPickedUp = false,
                     )
                 }
@@ -217,14 +217,14 @@ fun MunchBoxApp(
 
 
                 MealOrderSummaryScreen(
-                    orderUiState = uiState.orderUiState,
+                    orderUiState = muncherUiState.orderUiState,
                     storageServices = storageServices,
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
                         //TODO: all we do here is delete order and meal from database
                         coroutineScope.launch {
-                            muncherViewModel.updateConfirmedMeals(uiState.orderUiState.meals, uiState.orderUiState.selectedToPickUpDay)
+                            muncherViewModel.updateConfirmedMeals(muncherUiState.orderUiState.meals, muncherUiState.orderUiState.selectedToPickUpDay)
                         }
 
                         //refresh page
@@ -255,9 +255,9 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
                     storageServices = storageServices,
-                    restaurants = uiState.availableRestaurants,
-                    orderInfo = uiState.orderUiState,
-                    numMealsRequired = uiState.orderUiState.currentOrderQuantity,
+                    restaurants = muncherUiState.availableRestaurants,
+                    orderInfo = muncherUiState.orderUiState,
+                    numMealsRequired = muncherUiState.orderUiState.currentOrderQuantity,
 //                    quantityOptions = DataSource.quantityOptions,
                     onCancelButtonClicked = {
                         muncherViewModel.clearUnorderedMeals()
@@ -332,10 +332,14 @@ fun MunchBoxApp(
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {
+                // TODO Replace with restaurant
+                LaunchedEffect(Unit){restaurantViewModel.updateRestaurantState("lazeez_123")}
                 RestaurantHubScreen(
                     storageServices = storageServices,
-                    orderUiState = restaurantViewModel.uiState.value,
-                    restaurant = lazeez, // TODO: Change this to the actual restaurant logged in instead of always lazeez
+                    restaurant = restaurantViewModel.uiState.value.restaurant,
+                    updateViewModel = {
+                        coroutineScope.launch{restaurantViewModel.updateRestaurantState("lazeez_123")}
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()

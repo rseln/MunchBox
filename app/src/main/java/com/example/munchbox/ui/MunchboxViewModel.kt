@@ -181,10 +181,14 @@ class RestaurantViewModel : ViewModel() {
     /**
      * Grab all the ordered orders for a user
      */
-    fun updateRestaurantState (userId : String) {
+    suspend fun updateRestaurantState (restaurantId : String) {
+        val restaurant : Restaurant? = _uiState.value.storageServices.restaurantService().getRestaurantByID(restaurantId)
+        if (restaurant == null) {
+            return
+        }
         _uiState.update { currentState ->
             currentState.copy(
-                meals = updateMeals(userId),
+               restaurant = restaurant
             )
         }
     }

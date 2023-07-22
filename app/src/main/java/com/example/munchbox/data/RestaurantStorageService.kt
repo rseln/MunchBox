@@ -1,7 +1,6 @@
 package com.example.munchbox.data
 
 import android.util.Log
-import androidx.compose.ui.text.toUpperCase
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
@@ -59,8 +58,8 @@ constructor(private val firestore: FirebaseFirestore){
                         // Update the fields of the restaurant object with Firestore data
                         val mealID = mealData?.get("mealID") as? String ?: ""
                         val restaurantID = mealData?.get("restaurantID") as? String ?: ""
-                        val fetchedDietaryOptions = mealData?.get("dietaryOptions") as? Set<String> ?: setOf()
-                        val fetchedDaysOffered = mealData?.get("daysOffered") as? Set<String> ?: setOf()
+                        val fetchedDietaryOptions = mealData?.get("dietaryOptions") as? List<String> ?: setOf()
+                        val fetchedDaysOffered = mealData?.get("daysOffered") as? List<String> ?: setOf()
                         val fetchedAmountOrdered = mealData?.get("amountOrdered") as? Map<String, Int> ?: mapOf()
                         val totalOrders = mealData?.get("totalOrders") as? Int ?: 0
 
