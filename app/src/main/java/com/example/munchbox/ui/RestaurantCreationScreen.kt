@@ -117,18 +117,6 @@ fun RestaurantCreationScreen(
                     restaurantName.value.text,
                     //imageURL
                 )
-                val user = Firebase.auth.currentUser
-                if (user != null) {
-                    user.email?.let { it1 ->
-                        storageServices.userService().createDBUser(
-                            userID = user.uid,
-                            email = it1,
-                            type = "Restaurant",
-                            // TODO : populate with corresponding restaurant ID
-                            restaurantID = null
-                        )
-                    }
-                }
             }
         }
 
