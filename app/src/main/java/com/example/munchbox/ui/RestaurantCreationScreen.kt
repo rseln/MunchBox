@@ -51,8 +51,13 @@ import androidx.compose.ui.unit.sp
 import java.util.Calendar
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import com.example.munchbox.OrderScreen
 import com.example.munchbox.R
+import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.RestaurantStorageService
+import com.example.munchbox.data.StorageServices
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.ktx.Firebase
@@ -76,7 +81,9 @@ val dietaryOptions = setOf(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun RestaurantCreationScreen() {
+fun RestaurantCreationScreen(
+    navController: NavController
+) {
     val mContext = LocalContext.current
 
     // VALUES TO SEND
@@ -96,7 +103,7 @@ fun RestaurantCreationScreen() {
     var phoneError by remember { mutableStateOf((false))}
 
     // submission / restaurant creation
-    val storageService = RestaurantStorageService(FirebaseFirestore.getInstance())
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
 
     @Composable
     fun SubmitComposable() {
@@ -106,7 +113,7 @@ fun RestaurantCreationScreen() {
 
         val sendRequestRestaurant: () -> Unit = {
             coroutineScope.launch {
-                val restID = storageService.createDBRestaurant(
+                val restID: Restaurant? = storageServices.restaurantService().createDBRestaurant(
                     restaurantName.value.text,
                     //imageURL
                 )
@@ -116,6 +123,7 @@ fun RestaurantCreationScreen() {
         Button(
             onClick = {
                 sendRequestRestaurant()
+                navController.navigate(OrderScreen.RestaurantHub.name)
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -163,7 +171,6 @@ fun RestaurantCreationScreen() {
                     val imageRef = Firebase.storage.reference.child("$photoID.jpg")
 
                     var uploadTask = imageRef.putBytes(data)
-
                     uploadTask.addOnFailureListener {
                         // Handle unsuccessful uploads
                         Log.e("FIRESTORE ERROR", it.toString())
@@ -374,10 +381,4 @@ fun convertTo12Hours(militaryTime: String): String{
     val outputFormat = SimpleDateFormat("h:mm aa", Locale.getDefault())
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
-}
-
-@Preview
-@Composable
-fun PreviewRestaurantCreationScreen() {
-    RestaurantCreationScreen()
 }
