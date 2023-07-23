@@ -8,15 +8,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults.elevation
+import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
@@ -28,17 +36,24 @@ import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource
+import com.example.munchbox.data.StorageServices
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
-
-    val search = remember { mutableStateOf(TextFieldValue("")) }
+fun OrderSearchCard(
+    storageServices: StorageServices,
+    restaurant: Restaurant,
+    meals: Set<Meal>)
+{
+    var search by remember { mutableStateOf(TextFieldValue("")) }
     // -1 is unverified, 0 is false, 1 is true
-    val isOrderIdValid = remember { mutableStateOf(-1) }
-    val isButtonDisabled = remember { mutableStateOf(true) }
-    val today = DataSource.currentDay
+    var isOrderIdValid by remember { mutableStateOf(-1) }
+    var isButtonDisabled by remember { mutableStateOf(true) }
+    var isOrderExist by remember { mutableStateOf<Boolean>(false) }
 
+    val today = DataSource.currentDay
+    val coroutineScope = rememberCoroutineScope()
     // only display if there are meals to fulfill today from the restaurant
     if (meals.any { meal: Meal -> meal.days.contains(DataSource.currentDay) && meal.restaurantID == restaurant.restaurantID}) {
         ElevatedCard(
@@ -63,19 +78,27 @@ fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
 
                 Row(modifier = Modifier.weight(1f, false)) {
                     TextField(
-                        modifier = Modifier.weight(1f).width(240.dp),
-                        label = { Text(text = "Order ID") },
-                        value = search.value,
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(240.dp),
+                        label = { Text(text = "Order Id") },
+                        value = search,
                         onValueChange = {
-                            search.value = it
-                            isButtonDisabled.value = search.value.text == ""
+                            search = it
+                            isButtonDisabled = search.text == ""
+                            isOrderIdValid = -1 // idk to keep or not to keep for ui sake
                         }
                     )
                     Spacer(modifier = Modifier.width(10.dp))
 
-                    if (!isButtonDisabled.value) {
-                        ExtendedFloatingActionButton(
-                            onClick = { isOrderIdValid.value = checkOrderExists(search.value, meals, today, restaurant) }
+                    if (!isButtonDisabled) {
+                        ElevatedButton(
+                            onClick = {
+                              coroutineScope.launch {
+                                  isOrderExist = storageServices.orderService().checkRestaurantOrderExists(search.text, restaurant.restaurantID)
+                                  isOrderIdValid = if(isOrderExist) 1 else 0
+                              }
+                            },
                         ) {
                             Text(
                                 text = "Verify",
@@ -85,14 +108,14 @@ fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
                     }
                 }
 
-                if (isOrderIdValid.value == 0) {
+                if (isOrderIdValid == 0) {
                     Text(
                         text = "Order ID does not exist.",
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.Red
                     )
                 }
-                if (isOrderIdValid.value == 1) {
+                if (isOrderIdValid == 1) {
                     Text(
                         text = "Order ID is valid!",
                         style = MaterialTheme.typography.labelMedium,
@@ -105,17 +128,17 @@ fun OrderSearchCard(restaurant: Restaurant, meals: Set<Meal>) {
 }
 
 //TODO: EDIT THIS FUNCTION DURING INTEGRATION TO MATCH THE ACTUAL DATA STRUCTURE
-private fun checkOrderExists(id: TextFieldValue, meals: Set<Meal>, today : DayOfWeek, restaurant: Restaurant): Int {
-    // Edit this logic later
-    if (meals.any { meal: Meal -> meal.days.contains(today) && meal.restaurantID == restaurant.restaurantID}) {
-        return 1
-    }
-    return 0
-}
+//private fun checkOrderExists(id: TextFieldValue, meals: Set<Meal>, today : DayOfWeek, restaurant: Restaurant): Int {
+//    // Edit this logic later
+//    if (meals.any { meal: Meal -> meal.days.contains(today) && meal.restaurantID == restaurant.restaurantID}) {
+//        return 1
+//    }
+//    return 0
+//}
 
 @Preview
 @Composable
 fun OrderSearchPreview(){
     val lazeezMeal = setOf(Meal("temp_meal_id", "temp_restaurant_id", setOf(DietaryOption.VEGETARIAN, DietaryOption.GLUTEN_FREE), setOf(DayOfWeek.TUESDAY), mapOf(Pair(DayOfWeek.TUESDAY, 20))))
-    OrderSearchCard(DataSource.lazeez, lazeezMeal)
+//    OrderSearchCard(DataSource.lazeez, lazeezMeal)
 }
