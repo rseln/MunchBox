@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +37,7 @@ import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.StorageServices
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,16 +50,10 @@ fun OrderSearchCard(
     // -1 is unverified, 0 is false, 1 is true
     var isOrderIdValid by remember { mutableStateOf(-1) }
     var isButtonDisabled by remember { mutableStateOf(true) }
-    var isVerifyClicked by remember {mutableStateOf<Boolean>(false)}
-
     var isOrderExist by remember { mutableStateOf<Boolean>(false) }
-    LaunchedEffect(isVerifyClicked){
-        isOrderExist = storageServices.orderService().checkOrderExistsByOrderID(search.text)
-        isOrderIdValid = if(isOrderExist) 1 else 0
-        isVerifyClicked = false
-    }
-    val today = DataSource.currentDay
 
+    val today = DataSource.currentDay
+    val coroutineScope = rememberCoroutineScope()
     // only display if there are meals to fulfill today from the restaurant
     if (meals.any { meal: Meal -> meal.days.contains(DataSource.currentDay) && meal.restaurantID == restaurant.restaurantID}) {
         ElevatedCard(
@@ -90,13 +86,19 @@ fun OrderSearchCard(
                         onValueChange = {
                             search = it
                             isButtonDisabled = search.text == ""
+                            isOrderIdValid = -1 // idk to keep or not to keep for ui sake
                         }
                     )
                     Spacer(modifier = Modifier.width(10.dp))
 
                     if (!isButtonDisabled) {
                         ElevatedButton(
-                            onClick = { isVerifyClicked = true }, //runs the launched effect
+                            onClick = {
+                              coroutineScope.launch {
+                                  isOrderExist = storageServices.orderService().checkRestaurantOrderExists(search.text, restaurant.restaurantID)
+                                  isOrderIdValid = if(isOrderExist) 1 else 0
+                              }
+                            },
                         ) {
                             Text(
                                 text = "Verify",

@@ -100,9 +100,12 @@ constructor(private val firestore: FirebaseFirestore){
         return@withContext null
     }
 
-    suspend fun checkOrderExistsByOrderID(orderID:String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun checkRestaurantOrderExists(orderID:String, restaurantID: String): Boolean = withContext(Dispatchers.IO) {
         try{
-            val querySnapshot = firestore.collection("Orders").whereEqualTo("orderID", orderID).get().await()
+            val querySnapshot = firestore.collection("Orders")
+                .whereEqualTo("restaurantID", restaurantID)
+                .whereEqualTo("orderID", orderID)
+                .get().await()
             return@withContext !querySnapshot.isEmpty
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
