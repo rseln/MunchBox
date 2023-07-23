@@ -1,5 +1,6 @@
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.controller.Order
-import com.example.munchbox.data.DataSource.allMeals
 import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
@@ -53,13 +52,22 @@ fun MealOrderSummaryScreen(
             OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.meals.isNotEmpty()) {
-            OrderSummaries(orderUiState, storageServices, Modifier)
+            Log.d("HELLO IN ORDER SUMMARY", orderUiState.meals[0].mealID)
+            for((meal, day) in orderUiState.selectedToPickUpDay){
+                Log.d("HELLO IN ORDER SUMMARY2", meal.mealID)
+            }
+            OrderSummaries(
+                orderUiState = orderUiState,
+                storageServices = storageServices,
+                modifier = Modifier,
+                isHub = true,
+            )
         }
     }
 }
 
 @Composable
-fun OrdersAvailable(orderUiState: OrderUiState,
+fun OrdersAvailable(order: OrderUiState,
                     storageService: StorageServices,
                     onConfirmButtonClicked: () -> Unit = {},
                     modifier: Modifier = Modifier){
@@ -77,12 +85,10 @@ fun OrdersAvailable(orderUiState: OrderUiState,
 
     //TODO: this is more technically correct but need to adjust when we do db integration
     Column(modifier = modifier) {
-        // TODO: Update current day to be today
-        val ordersToday = orderUiState.orders.filter { order : Order -> order.pickUpDate.equals(currentDay) }
-        // TODO: Get meal by meal id
-        for(order in ordersToday) {
-            OrderSummaryCard(meal = Meal("-1", "-1", setOf(), setOf()),
-                order = order,
+        // SHOULD JUST BE ONE VALUE SINCE WE CAN ONLY HAVE ONE MEAL PER DAY
+        val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
+        for(meal in mealsToday) {
+            OrderSummaryCard(meal = meal,
                 storageService,
                 false,
                 onConfirmButtonClicked,
@@ -100,7 +106,7 @@ fun PreviewMealsAvailableScreen(){
     val uiState by viewModel.uiState.collectAsState()
     val storageService = StorageServices(FirebaseFirestore.getInstance())
 
-    viewModel.setMeals(meals = allMeals.toList())
+//    viewModel.setMeals(meals = allMeals.toList())
 //    viewModel.setPickupOptions(pickupOptions = pickUpOptions)
     MealOrderSummaryScreen(orderUiState = uiState, storageService)
 }

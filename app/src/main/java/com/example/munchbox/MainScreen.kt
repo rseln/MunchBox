@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -38,30 +39,27 @@ import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
-import com.example.munchbox.data.DataSource.campusPizza
-import com.example.munchbox.data.DataSource.campusPizzaMeal
-import com.example.munchbox.data.DataSource.campusPizzaMeal2
-import com.example.munchbox.data.DataSource.lazeez
-import com.example.munchbox.data.DataSource.lazeezMeal
-import com.example.munchbox.data.DataSource.lazeezMeal2
-import com.example.munchbox.data.DataSource.shawaramaPlus
-import com.example.munchbox.data.DataSource.shawarmaPlusMeal
-import com.example.munchbox.data.DataSource.shawarmaPlusMeal2
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
 import com.example.munchbox.ui.AfterPaymentScreen
 import com.example.munchbox.ui.ChooseFighterScreen
-import com.example.munchbox.ui.LoginScreen
+import com.example.munchbox.login.LoginScreen
+import com.example.munchbox.signup.SignUpScreen
+import com.example.munchbox.signup.SignUpViewModel
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.MuncherViewModel
 import com.example.munchbox.ui.NumberOfMealsScreen
+import com.example.munchbox.ui.OrderViewModel
+import com.example.munchbox.ui.RestaurantCreationScreen
 import com.example.munchbox.ui.RestaurantHubScreen
 import com.example.munchbox.ui.RestaurantViewModel
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 
@@ -71,6 +69,7 @@ import kotlinx.coroutines.launch
 
 // note: Maybe we should rename to "Pages" to be more inclusive of login (low priority tho)
 enum class OrderScreen(@StringRes val title: Int) {
+    Signup(title = R.string.signup),
     Login(title = R.string.login),
     MealOrderSummary(title = R.string.app_name),
     NumberOfMeals(title = R.string.app_name),
@@ -79,6 +78,7 @@ enum class OrderScreen(@StringRes val title: Int) {
     AfterPayment(title = R.string.after_payment),
     MealPayment(title = R.string.meal_payment),
     RestaurantHub(title = R.string.restaurant_hub),
+    RestaurantCreation(title = R.string.restaurant_signup),
     ChooseFighter(title = R.string.choose_fighter),
 }
 
@@ -126,24 +126,24 @@ fun MunchBoxApp(
 
     val context = LocalContext.current
 
-    val uiState by muncherViewModel.uiState.collectAsState()
+    val muncherUiState by muncherViewModel.uiState.collectAsState()
+    val restaurantUiState by restaurantViewModel.uiState.collectAsState()
     // TODO setup another uistate for restaruant
 
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentScreen = OrderScreen.valueOf(
-        backStackEntry?.destination?.route ?: OrderScreen.Login.name
+        backStackEntry?.destination?.route ?: OrderScreen.Signup.name
     )
-
-    lazeez.addMeals(setOf(lazeezMeal, lazeezMeal2))
-    shawaramaPlus.addMeals(setOf(shawarmaPlusMeal, shawarmaPlusMeal2))
-    campusPizza.addMeals(setOf(campusPizzaMeal, campusPizzaMeal2))
 
     /**
      * coroutineScope for api calls by onClicks functions
      */
     val coroutineScope = rememberCoroutineScope()
+
+    //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
+    LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
 
     /**
      * Logic to navigate to and from payment activity
@@ -156,16 +156,23 @@ fun MunchBoxApp(
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(OrderScreen.AfterPayment.name)
+            val user = Firebase.auth.currentUser?.uid
             for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
-                    // TODO: replace userID with userID of current user
-                    storageServices.orderService().createDBOrder(
-                        userID = "temp_user_id",
-                        mealID = meal.mealID,
-                        restaurantID = meal.restaurantID,
-                        pickUpDate = uiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
-                        orderPickedUp = false,
-                    )
+                    if (user != null) {
+                        storageServices.orderService().createDBOrder(
+                            userID = user,
+                            mealID = meal.mealID,
+                            restaurantID = meal.restaurantID,
+                            pickUpDate =  muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
+                            orderPickedUp = false,
+                        )
+                    }
+                }
+            }
+            coroutineScope.launch{
+                if (user != null) {
+                    muncherViewModel.updateMuncherState(user)
                 }
             }
         }
@@ -185,31 +192,56 @@ fun MunchBoxApp(
             )
         }
     ) { innerPadding ->
+        //val uiState by viewModel.uiState.collectAsState()
         NavHost(
             navController = navController,
-            startDestination = OrderScreen.Login.name,
+            startDestination = OrderScreen.Signup.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable(route = OrderScreen.Signup.name) {
+                SignUpScreen(navController)
+            }
+
             composable(route = OrderScreen.Login.name) {
-                LoginScreen(
-                    onLoginButtonClicked = {
-                        // Need to write a function to do actual verification later!!!
-                        // Just nav to next page for now
-                        navController.navigate(OrderScreen.ChooseFighter.name) {
-                            popUpTo(OrderScreen.Login.name) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
+                LoginScreen(navController)
+            }
+
+            composable(route = OrderScreen.RestaurantCreation.name) {
+                RestaurantCreationScreen(navController)
             }
             composable(route = OrderScreen.ChooseFighter.name) {
                 ChooseFighterScreen(
                     onMunchButtonClick = {
+                        coroutineScope.launch {
+                            val user = Firebase.auth.currentUser
+                            if (user != null) {
+                                user.email?.let { it1 ->
+                                    storageServices.userService().createDBUser(
+                                        userID = user.uid,
+                                        email = it1,
+                                        type = "Muncher",
+                                        restaurantID = null
+                                    )
+                                }
+                            }
+                        }
                         navController.navigate(OrderScreen.MealOrderSummary.name)
                     },
                     onRestaurantButtonClick = {
-                        navController.navigate(OrderScreen.RestaurantHub.name)
+                        coroutineScope.launch {
+                            val user = Firebase.auth.currentUser
+                            if (user != null) {
+                                user.email?.let { it1 ->
+                                    storageServices.userService().createDBUser(
+                                        userID = user.uid,
+                                        email = it1,
+                                        type = "Restaurant",
+                                        restaurantID = null
+                                    )
+                                }
+                            }
+                        }
+                        navController.navigate(OrderScreen.RestaurantCreation.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -223,18 +255,16 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
 
-                //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
-                LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
 
                 MealOrderSummaryScreen(
-                    orderUiState = uiState.orderUiState,
+                    orderUiState = muncherUiState.orderUiState,
                     storageServices = storageServices,
                     onConfirmButtonClicked = {
                         //update meals
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
                         //TODO: all we do here is delete order and meal from database
                         coroutineScope.launch {
-                            muncherViewModel.updateConfirmedMeals(uiState.orderUiState.meals, uiState.orderUiState.selectedToPickUpDay)
+                            muncherViewModel.updateConfirmedMeals(muncherUiState.orderUiState.meals, muncherUiState.orderUiState.selectedToPickUpDay)
                         }
 
                         //refresh page
@@ -265,9 +295,9 @@ fun MunchBoxApp(
             composable(route = OrderScreen.MealSelect.name) {
                 MealSelectionScreen(
                     storageServices = storageServices,
-                    restaurants = setOf(lazeez, campusPizza, shawaramaPlus),
-                    orderInfo = uiState.orderUiState,
-                    numMealsRequired = uiState.orderUiState.currentOrderQuantity,
+                    restaurants = muncherUiState.availableRestaurants,
+                    orderInfo = muncherUiState.orderUiState,
+                    numMealsRequired = muncherUiState.orderUiState.currentOrderQuantity,
 //                    quantityOptions = DataSource.quantityOptions,
                     onCancelButtonClicked = {
                         muncherViewModel.clearUnorderedMeals()
@@ -342,8 +372,14 @@ fun MunchBoxApp(
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {
-                RestaurantHubScreen(orderUiState = restaurantViewModel.uiState.value,
-                    restaurant = lazeez, // TODO: Change this to the actual restaurant logged in instead of always lazeez
+                // TODO Replace with restaurant
+                LaunchedEffect(Unit){restaurantViewModel.updateRestaurantState("lazeez_123")}
+                RestaurantHubScreen(
+                    storageServices = storageServices,
+                    restaurant = restaurantViewModel.uiState.value.restaurant,
+                    updateViewModel = {
+                        coroutineScope.launch{restaurantViewModel.updateRestaurantState("lazeez_123")}
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()

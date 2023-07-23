@@ -22,36 +22,41 @@ import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource.currentDay
-import com.example.munchbox.data.RestaurantUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun RestaurantHubScreen(
-    orderUiState: RestaurantUiState,
+    storageServices: StorageServices,
+    updateViewModel: () -> Unit,
     restaurant : Restaurant,
     modifier: Modifier = Modifier,
 ) {
     val expanded = remember { mutableStateOf(false) }
     val selectedOptions = remember { mutableStateOf(setOf<DietaryOption>()) }
     val selectedDays = remember { mutableStateOf(setOf<DayOfWeek>()) }
-    val availableMeals = remember { mutableStateOf(orderUiState.meals) }
+    val availableMeals = remember (restaurant) { mutableStateOf(restaurant.meals) }
     val scrollState = rememberScrollState()
-
-    val storageService = StorageServices(FirebaseFirestore.getInstance())
 
     val coroutineScope = rememberCoroutineScope()
     val createNewMeal: () -> Unit = {
         coroutineScope.launch {
-            val meal = storageService.restaurantService().addMealToRestaurant(restaurant.restaurantID, selectedOptions.value, selectedDays.value)
+            val meal = storageServices.restaurantService().addMealToRestaurant(restaurant.restaurantID, selectedOptions.value, selectedDays.value)
             availableMeals.value = availableMeals.value.plus(meal!!)
             selectedDays.value = setOf<DayOfWeek>()
             selectedOptions.value = setOf<DietaryOption>()
+        }
+        updateViewModel()
+
+    }
+    val cancelMealCOROUTINE: (meal : Meal) -> Unit = {
+        coroutineScope.launch {
+            val mealCancelReturn = storageServices.restaurantService().updateMeal(restaurant.restaurantID, it.mealID, null, null, Date())
         }
     }
 
@@ -61,7 +66,13 @@ fun RestaurantHubScreen(
     }
 
     fun cancelMeal(meal : Meal) {
+        meal.cancelledOnDate = Date()
+
+        // update in DB
+        cancelMealCOROUTINE(meal)
+
         availableMeals.value = availableMeals.value.minus(meal)
+        updateViewModel()
     }
 
     fun cancelAdd() {
@@ -112,14 +123,14 @@ fun RestaurantHubScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
 
-        OrderSearchCard(restaurant, availableMeals.value)
+        OrderSearchCard(storageServices,restaurant, availableMeals.value)
 
         Spacer(modifier = Modifier.height(32.dp))
-
+        //TODO:have db retrieve this
         MealSummary(
-            availableMeals.value,
-            {meal : Meal -> cancelMeal(meal)},
-            modifier
+            meals = availableMeals.value,
+            onCancelCallback = {meal : Meal -> cancelMeal(meal)},
+            modifier = modifier
         )
     }
 }

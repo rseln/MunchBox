@@ -1,5 +1,6 @@
 package com.example.munchbox.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.DayTabs
 import com.example.munchbox.ui.components.MealCard
+import java.util.Date
 
 @Composable
 fun MealSelectionScreen(
@@ -53,6 +55,13 @@ fun MealSelectionScreen(
         var availableRestaurants : Set<Restaurant> = setOf()
 
         for (restaurant in restaurants) {
+            for(meal in restaurant.meals){
+                Log.d("HELLO_" + restaurant.restaurantID, meal.mealID)
+                for(day in meal.days){
+                    Log.d("HELLO_ON", day.str)
+                }
+                Log.d("HELLO_DAYS_DONE","")
+            }
             if (restaurant.meals.filter { meal: Meal -> meal.days.contains(selectedDay) }.isNotEmpty()) {
                 availableRestaurants = availableRestaurants.plus(restaurant)
             }
@@ -64,7 +73,7 @@ fun MealSelectionScreen(
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
         for (meal in meals.asIterable()) {
-            if (meal.options.containsAll(selectedOptions)) {
+            if (meal.options.containsAll(selectedOptions) && meal.cancelledOnDate == Date(0)) {
                 availableMeals = availableMeals.plus(meal)
             }
         }
@@ -108,7 +117,7 @@ fun MealSelectionScreen(
     fun getRestaurantMeals(restaurant : Restaurant, day : DayOfWeek) : Set<Meal> {
         var mealsToday : Set<Meal> = setOf()
         // Add all meals that are offered by this restaurant on this day
-        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) })
+        mealsToday = mealsToday.plus(restaurant.meals.filter { meal: Meal -> meal.days.contains(day) }.filter { meal: Meal -> meal.cancelledOnDate == Date(0) })
         return mealsToday
     }
 
@@ -165,7 +174,7 @@ fun MealSelectionScreen(
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
                 storageServices = storageServices,
-                restaurantName = "Temporary Lazeez", // TODO: replace this with the actual restaurant name
+                restaurantName = it.name, // TODO: replace this with the actual restaurant name
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)
@@ -177,6 +186,9 @@ fun MealSelectionScreen(
                         selectedOptions = setOf()
                         availableOptions = getAvailableOptions(allMeals, selectedOptions)
                         orderInfo.unorderedSelectedPickupDay.remove(meal)
+                    }
+                    else {
+                        selectedOptions = meal.options
                     }
                 },
                 onSelectOption = { option : DietaryOption ->

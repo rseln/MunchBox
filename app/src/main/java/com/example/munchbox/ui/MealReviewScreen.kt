@@ -38,7 +38,12 @@ fun MealReviewScreen(
         modifier = modifier
             .verticalScroll(scrollState),
     ){
-        OrderSummaries(orderUiState, storageServices, Modifier)
+        OrderSummaries(
+            orderUiState = orderUiState,
+            storageServices = storageServices,
+            modifier = Modifier,
+            isReview = true,
+        )
         Row(
             modifier = Modifier
                 .padding(dimensionResource(R.dimen.padding_medium))
@@ -69,7 +74,7 @@ fun PreviewMealReviewScreen() {
     val viewModel: OrderViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val storageServices = StorageServices(FirebaseFirestore.getInstance())
-    viewModel.setMeals(meals = DataSource.allMeals.toList())
+//    viewModel.setMeals(meals = DataSource.allMeals.toList())
 //    viewModel.setPickupOptions(pickupOptions = DataSource.pickUpOptions)
     MealReviewScreen(orderUiState = uiState, storageServices)
 }

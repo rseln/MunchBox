@@ -21,8 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +47,7 @@ import java.util.Date
 fun MealCardContainer() {
 
     val restaurant = Restaurant("1","Lazeez", setOf())
-    val vegeMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.VEGE, DietaryOption.GF, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
+    val vegeMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.VEGETARIAN, DietaryOption.GLUTEN_FREE, DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val meatMeal = Meal("meal_id", "rest_id", setOf(DietaryOption.HALAL, DietaryOption.MEAT), setOf(DayOfWeek.SUNDAY, DayOfWeek.SATURDAY))
     val allMeals = setOf(vegeMeal, meatMeal)
     restaurant.addMeals(allMeals)
@@ -150,7 +150,7 @@ fun MealCard(storageServices: StorageServices,
                             }
                         },
                         label = { Text(option.str) },
-                        leadingIcon = if (selectedOptions.contains(option)) {
+                        leadingIcon = if (selectedOptions.contains(option) && !added) {
                             {
                                 Icon(
                                     imageVector = Icons.Filled.Done,

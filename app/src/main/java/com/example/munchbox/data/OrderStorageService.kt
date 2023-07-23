@@ -63,6 +63,7 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add(createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
@@ -77,6 +78,7 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add( createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
@@ -97,6 +99,19 @@ constructor(private val firestore: FirebaseFirestore){
 
         return@withContext null
     }
+
+    suspend fun checkRestaurantOrderExists(orderID:String, restaurantID: String): Boolean = withContext(Dispatchers.IO) {
+        try{
+            val querySnapshot = firestore.collection("Orders")
+                .whereEqualTo("restaurantID", restaurantID)
+                .whereEqualTo("orderID", orderID)
+                .get().await()
+            return@withContext !querySnapshot.isEmpty
+        } catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
+        return@withContext false
+    }
     suspend fun updateOrderPickedUpByOrderID(orderID:String, orderPickedUp: Boolean): String? = withContext(Dispatchers.IO) {
         val data:MutableMap<String, Any?> = mutableMapOf()
         data["orderPickedUp"] = orderPickedUp
@@ -108,6 +123,7 @@ constructor(private val firestore: FirebaseFirestore){
         }
         return@withContext null
     }
+
     suspend fun deleteOrderByOrderID(orderID: String): Boolean? = withContext(Dispatchers.IO){
         try {
             firestore.collection("Orders").document(orderID).delete()
