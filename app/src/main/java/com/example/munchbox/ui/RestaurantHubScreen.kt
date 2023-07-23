@@ -112,7 +112,7 @@ fun RestaurantHubScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
 
-        OrderSearchCard(restaurant, availableMeals.value)
+        OrderSearchCard(storageServices,restaurant, availableMeals.value)
 
         Spacer(modifier = Modifier.height(32.dp))
         //TODO:have db retrieve this
