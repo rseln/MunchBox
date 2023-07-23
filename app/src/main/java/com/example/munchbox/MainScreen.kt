@@ -157,20 +157,24 @@ fun MunchBoxApp(
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(OrderScreen.AfterPayment.name)
             val user = Firebase.auth.currentUser?.uid
-            for(meal in orderedMeals){
+            for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
                     if (user != null) {
                         storageServices.orderService().createDBOrder(
                             userID = user,
                             mealID = meal.mealID,
                             restaurantID = meal.restaurantID,
-                            pickUpDate = uiState.selectedToPickUpDay[meal]!!.date,
+                            pickUpDate =  muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
                             orderPickedUp = false,
                         )
                     }
                 }
             }
-            coroutineScope.launch{muncherViewModel.updateMuncherState("temp_user_id")}
+            coroutineScope.launch{
+                if (user != null) {
+                    muncherViewModel.updateMuncherState(user)
+                }
+            }
         }
         if (result.resultCode == Activity.RESULT_CANCELED) {
             muncherViewModel.clearUnorderedMeals()
@@ -188,7 +192,7 @@ fun MunchBoxApp(
             )
         }
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsState()
+        //val uiState by viewModel.uiState.collectAsState()
         NavHost(
             navController = navController,
             startDestination = OrderScreen.Signup.name,

@@ -56,7 +56,7 @@ fun RestaurantHubScreen(
     }
     val cancelMealCOROUTINE: (meal : Meal) -> Unit = {
         coroutineScope.launch {
-            val mealCancelReturn = storageService.restaurantService().updateMeal(restaurant.restaurantID, it.mealID, null, null, Date())
+            val mealCancelReturn = storageServices.restaurantService().updateMeal(restaurant.restaurantID, it.mealID, null, null, Date())
         }
     }
 
