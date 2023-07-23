@@ -28,12 +28,14 @@ data class OrderUiState(
     var unorderedMeals : List<Meal> = listOf(),
     var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf(),
     var orders: Set<Order> = setOf(),
+    var orderToMeal: Map<Order, Meal> = mutableMapOf()
 )
 {
-    fun addOrderedMeal(newMeal: Meal?, day : DayOfWeek) {
+    fun addOrderedMeal(order: Order, newMeal: Meal?, day : DayOfWeek) {
         if (newMeal != null) {
             meals = meals.plus(newMeal)
             selectedToPickUpDay = selectedToPickUpDay.plus(Pair(newMeal, day))
+            orderToMeal = orderToMeal.plus(Pair(order, newMeal))
             Log.d("HELLO ORDERUISTATE", newMeal.mealID)
         }
     }

@@ -57,7 +57,7 @@ fun MealCardContainer() {
 fun MealCard(storageServices: StorageServices,
              restaurantName: String,
              allMeals: Set<Meal>,
-             order: Order,
+             order: Order = Order("-1", "-1", "-1", "-1", Date(), false),
              onAdd: (Meal) -> Unit,
              onSelectOption: (DietaryOption) -> Unit,
              selectedOptions : Set<DietaryOption>,

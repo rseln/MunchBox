@@ -1,6 +1,5 @@
 package com.example.munchbox.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,14 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.munchbox.controller.Meal
-import com.example.munchbox.data.DataSource.currentDay
+import com.example.munchbox.controller.Order
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSummaries
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.components.SelectCard
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Date
 
 @Composable
 fun MealOrderSummaryScreen(
@@ -48,26 +47,17 @@ fun MealOrderSummaryScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
 //      TODO: change logic to be the date instead of day of week
-        if (orderUiState.meals.filter { meal : Meal -> meal.days.contains(currentDay) }.isNotEmpty()){
+        if (orderUiState.orders.any { order: Order -> order.pickUpDate == Date() }){
             OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
-        if (orderUiState.meals.isNotEmpty()) {
-            Log.d("HELLO IN ORDER SUMMARY", orderUiState.meals[0].mealID)
-            for((meal, day) in orderUiState.selectedToPickUpDay){
-                Log.d("HELLO IN ORDER SUMMARY2", meal.mealID)
-            }
-            OrderSummaries(
-                orderUiState = orderUiState,
-                storageServices = storageServices,
-                modifier = Modifier,
-                isHub = true,
-            )
+        if (orderUiState.orders.isNotEmpty()) {
+            OrderSummaries(orderUiState, storageServices, Modifier)
         }
     }
 }
 
 @Composable
-fun OrdersAvailable(order: OrderUiState,
+fun OrdersAvailable(orderUiState: OrderUiState,
                     storageService: StorageServices,
                     onConfirmButtonClicked: () -> Unit = {},
                     modifier: Modifier = Modifier){
@@ -85,14 +75,19 @@ fun OrdersAvailable(order: OrderUiState,
 
     //TODO: this is more technically correct but need to adjust when we do db integration
     Column(modifier = modifier) {
-        // SHOULD JUST BE ONE VALUE SINCE WE CAN ONLY HAVE ONE MEAL PER DAY
-        val mealsToday = order.meals.filter { meal : Meal -> meal.days.contains(currentDay) }
-        for(meal in mealsToday) {
-            OrderSummaryCard(meal = meal,
-                storageService,
-                false,
-                onConfirmButtonClicked,
-                modifier = Modifier.fillMaxWidth())
+        val ordersToday = orderUiState.orders.filter { order: Order -> order.pickUpDate == Date() }
+
+        for(order in ordersToday) {
+            val meal = orderUiState.orderToMeal[order]
+
+            if (meal != null && !order.orderPickedUp) {
+                OrderSummaryCard(meal = meal,
+                    order = order,
+                    storageService,
+                    false,
+                    onConfirmButtonClicked,
+                    modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }
