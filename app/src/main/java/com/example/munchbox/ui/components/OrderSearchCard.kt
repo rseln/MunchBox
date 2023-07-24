@@ -35,16 +35,18 @@ import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
-import com.example.munchbox.data.DataSource
+import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderSearchCard(
     storageServices: StorageServices,
     restaurant: Restaurant,
-    meals: Set<Meal>)
+    orderUiState: OrderUiState)
 {
     var search by remember { mutableStateOf(TextFieldValue("")) }
     // -1 is unverified, 0 is false, 1 is true
@@ -52,10 +54,10 @@ fun OrderSearchCard(
     var isButtonDisabled by remember { mutableStateOf(true) }
     var isOrderExist by remember { mutableStateOf<Boolean>(false) }
 
-    val today = DataSource.currentDay
     val coroutineScope = rememberCoroutineScope()
+    val fmt = SimpleDateFormat("yyyyMMdd")
     // only display if there are meals to fulfill today from the restaurant
-    if (meals.any { meal: Meal -> meal.days.contains(DataSource.currentDay) && meal.restaurantID == restaurant.restaurantID}) {
+    if (orderUiState.orders.any { order: Order -> fmt.format(order.pickUpDate).equals(fmt.format(Date())) && order.restaurantID == restaurant.restaurantID}) {
         ElevatedCard(
             modifier = Modifier.height(IntrinsicSize.Max),
             shape = MaterialTheme.shapes.large

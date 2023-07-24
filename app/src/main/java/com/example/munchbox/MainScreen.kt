@@ -373,6 +373,7 @@ fun MunchBoxApp(
                     updateViewModel = {
                         coroutineScope.launch{restaurantViewModel.updateRestaurantState("lazeez_123")}
                     },
+                    orderUiState = muncherViewModel.uiState.value.orderUiState,
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()
