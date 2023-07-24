@@ -23,7 +23,7 @@ data class OrderUiState(
     // it views them as one order. Issue caused due to two identical meals being mapped to one value
     // potential solution could be to add the orderID to the Meal DB model
     // Or we get rid of the meal after it is selected in the meal selection screen(encourages eating healthier options?)
-    var selectedToPickUpDay: Map<Meal, DayOfWeek> = mutableMapOf(), //TODO: rename to orderedSelectedPickupDay
+    var orderToPickupDay: Map<Order, DayOfWeek> = mutableMapOf(), //TODO: rename to orderedSelectedPickupDay
 
     var unorderedMeals : List<Meal> = listOf(),
     var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf(),
@@ -34,9 +34,11 @@ data class OrderUiState(
     fun addOrderedMeal(order: Order, newMeal: Meal?, day : DayOfWeek) {
         if (newMeal != null) {
             meals = meals.plus(newMeal)
-            selectedToPickUpDay = selectedToPickUpDay.plus(Pair(newMeal, day))
+            orderToPickupDay = orderToPickupDay.plus(Pair(order, day))
             orderToMeal = orderToMeal.plus(Pair(order, newMeal))
-            Log.d("HELLO ORDERUISTATE", newMeal.mealID)
+            orders = orders.plus(order)
+            Log.d("HELLO ORDERUISTATE1", newMeal.mealID)
+            Log.d("HELLO ORDERUISTATE1", order.orderID)
         }
     }
 }

@@ -84,7 +84,7 @@ class MuncherViewModel : ViewModel() {
             return setOf<Order>()
         }
         else {
-//            Log.d("HELLO3",orders.get(0).mealID)
+            Log.d("HELLO3",orders.get(0).mealID)
             return orders.toSet()
         }
     }
@@ -115,12 +115,13 @@ class MuncherViewModel : ViewModel() {
         return ret
     }
 
-    suspend fun updateConfirmedMeals(meals: List<Meal>, pickupOptions: Map<Meal, DayOfWeek>){
+    suspend fun updateConfirmedOrders(orders: Set<Order>, pickupOptions: Map<Order, DayOfWeek>){
         _uiState.update { currentState ->
             currentState.copy(
                 orderUiState = currentState.orderUiState.copy(
                     // TODO:replace current day with actual current day
-                    meals = meals.filter{meal -> pickupOptions[meal]!=currentDay}
+                    //TODO: potential bug with meals since we aren't updating the list here
+                    orders = orders.filter{order -> pickupOptions[order]!=currentDay}.toSet()
                 )
             )
         }
@@ -215,10 +216,10 @@ class OrderViewModel : ViewModel() {
     /**
      * Set the pickup options for the meals
      */
-    fun setPickupOptions(pickupOptions:MutableMap<Meal, DayOfWeek>){
+    fun setPickupOptions(pickupOptions:MutableMap<Order, DayOfWeek>){
         _uiState.update { currentState ->
             currentState.copy(
-                selectedToPickUpDay = pickupOptions,
+                orderToPickupDay = pickupOptions,
             )
         }
     }
@@ -249,7 +250,7 @@ class OrderViewModel : ViewModel() {
      * Reset the order state
      */
     fun resetOrder() {
-        _uiState.value = OrderUiState(selectedToPickUpDay = mutableMapOf())
+        _uiState.value = OrderUiState(orderToPickupDay = mutableMapOf())
     }
 
     /**

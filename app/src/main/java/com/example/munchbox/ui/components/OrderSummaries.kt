@@ -18,17 +18,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Order
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.OrderViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun OrderSummaries(orderUiState: OrderUiState,
-                   storageServices: StorageServices,
-                   modifier: Modifier = Modifier,
-                   isReview: Boolean = false,
-                   isHub: Boolean = false,
+fun OrderSummaries(
+    orderUiState: OrderUiState,
+    storageServices: StorageServices,
+    modifier: Modifier = Modifier,
 ){
     Row (
         modifier = modifier
@@ -43,57 +43,39 @@ fun OrderSummaries(orderUiState: OrderUiState,
             )
         }
     }
-    var selectedToPickUpDayList: List<Pair<Meal, DayOfWeek>> = mutableListOf()
-    if(isHub){
-        selectedToPickUpDayList = orderUiState.selectedToPickUpDay.toList().sortedBy { it.second.id }
+    //skull emoji moment
+    val dayToOrderMap: MutableMap<DayOfWeek, MutableList<Order>> = mutableMapOf()
+    for(day in DayOfWeek.values()){
+        dayToOrderMap[day] = mutableListOf()
     }
-    if(isReview){
-        selectedToPickUpDayList = orderUiState.unorderedSelectedPickupDay.toList().sortedBy { it.second.id }
+    for((order,pickUpDate) in orderUiState.orderToPickupDay) {
+        dayToOrderMap[pickUpDate]!!.add(order)
+    }
+    val dayToOrderList = dayToOrderMap.toList().sortedBy { it.first.id }
+    for((day, orders) in dayToOrderList){
+        if (orders.isNotEmpty()){
+            Column(modifier = modifier) {
+                Spacer(modifier = Modifier.height(18.dp))
+                Text(
+                    text = day.str,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier,
+                )
+                for(order in orders){
+                    val meal = orderUiState.orderToMeal[order]
+                    if(meal!=null){
+                        Spacer(modifier = Modifier.height(13.dp))
+                        Log.d("HELLO FROM ORDER SUMMARY3", meal.mealID)
+                        OrderSummaryCard(meal = meal, storageServices = storageServices, confirmDisabled = true)
+                        Spacer(modifier = Modifier.height(13.dp))
+                    }
+                }
 
-    }
-    for((meal,pickUpDate) in selectedToPickUpDayList) {
-        Column(modifier = modifier) {
-            Spacer(modifier = Modifier.height(18.dp))
-            Text(
-                text = pickUpDate.str,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier,
-            )
-            Spacer(modifier = Modifier.height(13.dp))
-            Log.d("HELLO FROM ORDER SUMMARY3", meal.mealID)
-            OrderSummaryCard(meal = meal, storageServices = storageServices, confirmDisabled = true)
-            Spacer(modifier = Modifier.height(13.dp))
+            }
         }
-    }
-//    /** Map of days in the week to a set of meals **/
-//    /** {MONDAY: {MEAL1, MEAL2}}**/
-//    val dayFilterMap = mutableMapOf<DayOfWeek,MutableSet<Meal>>()
-//    for(meal in order.meals){
-//        for(day in meal.days){
-//            dayFilterMap[day] = dayFilterMap.getOrDefault(day, mutableSetOf())
-//            dayFilterMap[day]!!.add(meal)
-//        }
-//    }
-//    /** Filter our in order list of days with the days with meals on the map**/
-//    val daysWithOrders = DayOfWeek.values().filter{
-//        dayFilterMap.contains(it)
-//    }
-//    for (day in daysWithOrders) {
-//        Column(modifier = modifier) {
-//            Spacer(modifier = Modifier.height(18.dp))
-//            Text(
-//                text = day.str,
-//                style = MaterialTheme.typography.headlineSmall,
-//                modifier = Modifier,
-//            )
-//            for(meal in dayFilterMap[day]!!){
-//                Spacer(modifier = Modifier.height(13.dp))
-//                OrderSummaryCard(meal = meal, true)
-//                Spacer(modifier = Modifier.height(13.dp))
-//            }
-//        }
-}
 
+    }
+}
 @Preview
 @Composable
 fun PreviewOrderSummaries(){

@@ -32,22 +32,25 @@ fun OrderSummaryCard(meal: Meal,
     LaunchedEffect(Unit){
         restaurantName = storageServices.restaurantService().getRestaurantByID(meal.restaurantID)?.name ?: ""
     }
-    MealCard(
-        storageServices = storageServices,
-        restaurantName = restaurantName, // TODO: replace this with the actual restaurant name
-        allMeals = setOf(meal),
-        order = order,
-        onAdd = { null },
-        onSelectOption = { null },
-        selectedOptions = meal.options,
-        availableOptions = meal.options,
-        added = true,
-        disabled = true,
-        confirmDisabled = confirmDisabled,
-        onConfirmButtonClick = onConfirmButtonClick,
-        modifier = modifier
-            .fillMaxWidth()
-    )
+    if(restaurantName != ""){
+        MealCard(
+            storageServices = storageServices,
+            restaurantName = restaurantName, // TODO: replace this with the actual restaurant name
+            allMeals = setOf(meal),
+            order = order,
+            onAdd = { null },
+            onSelectOption = { null },
+            selectedOptions = meal.options,
+            availableOptions = meal.options,
+            added = true,
+            disabled = true,
+            confirmDisabled = confirmDisabled,
+            onConfirmButtonClick = onConfirmButtonClick,
+            modifier = modifier
+                .fillMaxWidth()
+        )
+    }
+
 }
 @Preview
 @Composable
