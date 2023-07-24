@@ -47,12 +47,12 @@ fun MealOrderSummaryScreen(
                 onClick = { onNextButtonClicked() })
         }
         Spacer(modifier = Modifier.height(32.dp))
-//      TODO: change logic to be the date instead of day of week
         val fmt = SimpleDateFormat("yyyyMMdd")
         if (orderUiState.orders.any { order: Order -> fmt.format(order.pickUpDate).equals(fmt.format(Date())) &&
                     !order.orderPickedUp }) {
             OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
+        Spacer(modifier = Modifier.height(32.dp))
         if (orderUiState.orders.isNotEmpty()) {
             OrderSummaries(
                 orderUiState = orderUiState,
@@ -80,7 +80,6 @@ fun OrdersAvailable(orderUiState: OrderUiState,
         }
     }
 
-    //TODO: this is more technically correct but need to adjust when we do db integration
     Column(modifier = modifier) {
 
         val fmt = SimpleDateFormat("yyyyMMdd")

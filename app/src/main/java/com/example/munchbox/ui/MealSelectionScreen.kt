@@ -132,14 +132,6 @@ fun MealSelectionScreen(
         }
     }
 
-    // TODO: This is never called and breaks the code due to Meal no longer having restaurant so I commented it
-//    fun getAddedOptions(restaurant: Restaurant, todaysMeal : Meal?) : Set<DietaryOption> {
-//        if (todaysMeal == null || todaysMeal.restaurant != restaurant) {
-//            return setOf()
-//        }
-//
-//        return todaysMeal.options
-//    }
     /**
      * Composables
      */
@@ -174,7 +166,7 @@ fun MealSelectionScreen(
             Spacer(modifier = Modifier.height(13.dp))
             MealCard (
                 storageServices = storageServices,
-                restaurantName = it.name, // TODO: replace this with the actual restaurant name
+                restaurantName = it.name,
                 imageID = it.imageID,
                 allMeals = allMeals,
                 onAdd = { meal ->

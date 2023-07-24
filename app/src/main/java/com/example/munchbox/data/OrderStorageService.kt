@@ -25,9 +25,10 @@ constructor(private val firestore: FirebaseFirestore){
         orderPickedUp: Boolean
     ): Order? = withContext(Dispatchers.IO) {
         val orderID:String = "order_" + UUID.randomUUID().toString()
-
+        val orderIDFingerprint = orderID.slice(IntRange(6,9))
         val data = hashMapOf(
             "orderID" to orderID,
+            "orderIDFingerprint" to orderIDFingerprint,
             "userID" to userID,
             "restaurantID" to restaurantID,
             "mealID" to mealID,
@@ -101,10 +102,13 @@ constructor(private val firestore: FirebaseFirestore){
     }
 
     suspend fun checkRestaurantOrderExists(orderID:String, restaurantID: String): Boolean = withContext(Dispatchers.IO) {
+        if (orderID.length != 4) {
+            return@withContext false
+        }
         try{
             val querySnapshot = firestore.collection("Orders")
                 .whereEqualTo("restaurantID", restaurantID)
-                .whereEqualTo("orderID", orderID)
+                .whereEqualTo("orderIDFingerprint", orderID)
                 .get().await()
             return@withContext !querySnapshot.isEmpty
         } catch(e: FirebaseFirestoreException){
