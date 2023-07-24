@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -121,7 +122,7 @@ fun MealCard(storageServices: StorageServices,
         shape = MaterialTheme.shapes.large)
     {
         if(imageID != null){
-            AsyncImage(model = imageID, contentDescription = null)
+            AsyncImage(model = imageID, contentDescription = null, modifier = Modifier.fillMaxSize())
         }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
