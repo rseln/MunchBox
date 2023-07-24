@@ -256,11 +256,8 @@ fun MunchBoxApp(
                     orderUiState = muncherUiState.orderUiState,
                     storageServices = storageServices,
                     onConfirmButtonClicked = {
-                        //update meals
-                        //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
-                        //TODO: all we do here is delete order and meal from database
                         coroutineScope.launch {
-                            muncherViewModel.updateConfirmedOrders(muncherUiState.orderUiState.orders, muncherUiState.orderUiState.orderToPickupDay)
+                            muncherViewModel.updateConfirmedOrders(muncherUiState.orderUiState.orders)
                         }
 
                         //refresh page

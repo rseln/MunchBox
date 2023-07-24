@@ -1,6 +1,5 @@
 package com.example.munchbox.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import com.example.munchbox.ui.components.OrderSummaries
 import com.example.munchbox.ui.components.OrderSummaryCard
 import com.example.munchbox.ui.components.SelectCard
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
@@ -48,7 +48,9 @@ fun MealOrderSummaryScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
 //      TODO: change logic to be the date instead of day of week
-        if (orderUiState.orders.any { order: Order -> order.pickUpDate == Date() }) {
+        val fmt = SimpleDateFormat("yyyyMMdd")
+        if (orderUiState.orders.any { order: Order -> fmt.format(order.pickUpDate).equals(fmt.format(Date())) &&
+                    !order.orderPickedUp }) {
             OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.orders.isNotEmpty()) {
@@ -65,14 +67,14 @@ fun MealOrderSummaryScreen(
 fun OrdersAvailable(orderUiState: OrderUiState,
                     storageService: StorageServices,
                     onConfirmButtonClicked: () -> Unit = {},
-                    modifier: Modifier = Modifier){
-    Row{
+                    modifier: Modifier = Modifier) {
+    Row {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
         ){
             Text(
-                text = "Orders Available for Pickup",
+                text = "Available for Pickup Today",
                 style = MaterialTheme.typography.headlineMedium,
             )
         }
@@ -80,12 +82,17 @@ fun OrdersAvailable(orderUiState: OrderUiState,
 
     //TODO: this is more technically correct but need to adjust when we do db integration
     Column(modifier = modifier) {
-        val ordersToday = orderUiState.orders.filter { order: Order -> order.pickUpDate == Date() }
+
+        val fmt = SimpleDateFormat("yyyyMMdd")
+        val ordersToday = orderUiState.orders.filter {
+                order: Order -> fmt.format(order.pickUpDate).equals(fmt.format(Date())) &&
+                !order.orderPickedUp
+        }
 
         for(order in ordersToday) {
             val meal = orderUiState.orderToMeal[order]
 
-            if (meal != null && !order.orderPickedUp) {
+            if (meal != null) {
                 OrderSummaryCard(meal = meal,
                     order = order,
                     storageService,
