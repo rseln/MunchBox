@@ -27,7 +27,7 @@ constructor(private val firestore: FirebaseFirestore){
     val storageServices = StorageServices(FirebaseFirestore.getInstance())
 
     // Stores the Restaurant in the DB, and returns the Restaurant object (no meals initialized)
-    suspend fun createDBRestaurant(name : String, imageID: Int? = null): Restaurant? = withContext(Dispatchers.IO) {
+    suspend fun createDBRestaurant(name : String, imageID: String? = null): Restaurant? = withContext(Dispatchers.IO) {
         val restaurantID:String = "restaurant_" + UUID.randomUUID().toString()
         val data = hashMapOf(
             "restaurantID" to restaurantID,
@@ -78,7 +78,7 @@ constructor(private val firestore: FirebaseFirestore){
                         meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0)))
                     }
                 }
-                val imageID = data?.get("imageID") as? Int
+                val imageID = data?.get("imageID") as? String
 
                 return@withContext Restaurant(id,name, meals.toSet(), imageID)
             }
@@ -101,7 +101,7 @@ constructor(private val firestore: FirebaseFirestore){
                     val id = data?.get("restaurantID") as? String ?: ""
                     val name = data?.get("name") as? String ?: ""
 
-                    val imageID = data?.get("imageID") as? Int
+                    val imageID = data?.get("imageID") as? String
 
                     // Create the list of meals from the subcollection
                     var meals:MutableList<Meal> = mutableListOf()

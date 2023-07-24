@@ -113,9 +113,9 @@ fun RestaurantCreationScreen(
 
         val sendRequestRestaurant: () -> Unit = {
             coroutineScope.launch {
-                val restID: Restaurant? = storageServices.restaurantService().createDBRestaurant(
+                val rest: Restaurant? = storageServices.restaurantService().createDBRestaurant(
                     restaurantName.value.text,
-                    //imageURL
+                    imageURL.value
                 )
             }
         }

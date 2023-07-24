@@ -202,7 +202,6 @@ fun MealSelectionScreen(
                 onConfirmButtonClick = {},
                 modifier = Modifier
                     .fillMaxWidth()
-//                imageID = it.imageID
             )
             Spacer(modifier = Modifier.height(13.dp))
         }

@@ -55,14 +55,14 @@ fun OrderSummaryCard(meal: Meal,
 @Preview
 @Composable
 fun PreviewOrderSummaryCard(){
-    val lazeez = Restaurant("1", "Lazeez", setOf(), R.drawable.lazeez)
+//    val lazeez = Restaurant("1", "Lazeez", setOf(), R.drawable.lazeez)
 //    lazeez.addMeals(setOf(Meal("lazeez_meal", "lazeez_id", "lazeez", setOf(DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY))))
 
     val storageService = StorageServices(FirebaseFirestore.getInstance())
     val order = Order("-1", "-1", "-1", "-1", Date(), false)
-    for (meal in lazeez.meals) {
-        OrderSummaryCard(meal, order, storageService,false, {}, Modifier.fillMaxWidth())
-    }
+//    for (meal in lazeez.meals) {
+//        OrderSummaryCard(meal, order, storageService,false, {}, Modifier.fillMaxWidth())
+//    }
 }
 
 
