@@ -27,13 +27,13 @@ import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
 import com.example.munchbox.ui.components.RestaurantDisplayMealCard
 import com.example.munchbox.ui.components.SelectCard
-import kotlinx.coroutines.launch
-import java.util.Date
 
 @Composable
 fun RestaurantHubScreen(
     storageServices: StorageServices,
     updateViewModel: () -> Unit,
+    createNewMeal: (Set<DayOfWeek>, Set<DietaryOption>) -> Unit,
+    cancelMeal: (meal : Meal) -> Unit,
     restaurant : Restaurant,
     modifier: Modifier = Modifier,
 ) {
@@ -44,35 +44,15 @@ fun RestaurantHubScreen(
     val scrollState = rememberScrollState()
 
     val coroutineScope = rememberCoroutineScope()
-    val createNewMeal: () -> Unit = {
-        coroutineScope.launch {
-            val meal = storageServices.restaurantService().addMealToRestaurant(restaurant.restaurantID, selectedOptions.value, selectedDays.value)
-            availableMeals.value = availableMeals.value.plus(meal!!)
-            selectedDays.value = setOf<DayOfWeek>()
-            selectedOptions.value = setOf<DietaryOption>()
-        }
-        updateViewModel()
 
-    }
     val cancelMealCOROUTINE: (meal : Meal) -> Unit = {
-        coroutineScope.launch {
-            val mealCancelReturn = storageServices.restaurantService().updateMeal(restaurant.restaurantID, it.mealID, null, null, Date())
-        }
+
     }
 
-    // TODO: do we even need these params anymore? everything exists in mutableStates as far as i can tell
     fun addNewMeal(newDietaryOptions : Set<DietaryOption>, newDays : Set<DayOfWeek>) {
-        createNewMeal()
-    }
-
-    fun cancelMeal(meal : Meal) {
-        meal.cancelledOnDate = Date()
-
-        // update in DB
-        cancelMealCOROUTINE(meal)
-
-        availableMeals.value = availableMeals.value.minus(meal)
-        updateViewModel()
+        createNewMeal(newDays, newDietaryOptions)
+        selectedDays.value = setOf<DayOfWeek>()
+        selectedOptions.value = setOf<DietaryOption>()
     }
 
     fun cancelAdd() {
