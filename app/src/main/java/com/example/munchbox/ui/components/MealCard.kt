@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
@@ -120,17 +121,7 @@ fun MealCard(storageServices: StorageServices,
         shape = MaterialTheme.shapes.large)
     {
         if(imageID != null){
-            painterResource(id = imageID)?.let {
-                Image(
-                    painter = it,
-                    contentDescription = "Contact profile picture",
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.large)
-                        .fillMaxWidth()
-                        .aspectRatio(3f / 2f),
-                    contentScale = ContentScale.FillBounds
-                )
-            }
+            AsyncImage(model = imageID, contentDescription = null)
         }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
