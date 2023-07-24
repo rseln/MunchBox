@@ -22,6 +22,7 @@ import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.DataSource.currentDay
+import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSearchCard
 import com.example.munchbox.ui.components.RestaurantAddMealCard
@@ -35,6 +36,7 @@ fun RestaurantHubScreen(
     createNewMeal: (Set<DayOfWeek>, Set<DietaryOption>) -> Unit,
     cancelMeal: (meal : Meal) -> Unit,
     restaurant : Restaurant,
+    orderUiState: OrderUiState,
     modifier: Modifier = Modifier,
 ) {
     val expanded = remember { mutableStateOf(false) }
@@ -103,7 +105,7 @@ fun RestaurantHubScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
 
-        OrderSearchCard(storageServices,restaurant, availableMeals.value)
+        OrderSearchCard(storageServices,restaurant, orderUiState)
 
         Spacer(modifier = Modifier.height(32.dp))
         //TODO:have db retrieve this

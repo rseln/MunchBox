@@ -387,6 +387,7 @@ fun MunchBoxApp(
                             restaurantViewModel.updateRestaurantState(userID)
                         }
                     },
+                    orderUiState = muncherViewModel.uiState.value.orderUiState,
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()
