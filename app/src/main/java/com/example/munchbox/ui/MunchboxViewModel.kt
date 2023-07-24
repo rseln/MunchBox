@@ -21,7 +21,6 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
-import com.example.munchbox.data.DataSource.currentDay
 import com.example.munchbox.data.MuncherUiState
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.RestaurantUiState
@@ -29,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
@@ -115,13 +115,12 @@ class MuncherViewModel : ViewModel() {
         return ret
     }
 
-    suspend fun updateConfirmedOrders(orders: Set<Order>, pickupOptions: Map<Order, DayOfWeek>){
+    suspend fun updateConfirmedOrders(orders: Set<Order>){
+        val fmt = SimpleDateFormat("yyyyMMdd")
         _uiState.update { currentState ->
             currentState.copy(
                 orderUiState = currentState.orderUiState.copy(
-                    // TODO:replace current day with actual current day
-                    //TODO: potential bug with meals since we aren't updating the list here
-                    orders = orders.filter{order -> pickupOptions[order]!=currentDay}.toSet()
+                    orders = orders.filter{order: Order -> fmt.format(order.pickUpDate) != fmt.format(Date())}.toSet()
                 )
             )
         }
