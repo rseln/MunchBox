@@ -105,7 +105,7 @@ class MuncherViewModel : ViewModel() {
         val orders : Set<Order> = getOrders(userId)
         // Append all meals to the order ui state
         for (order in orders) {
-             ret.addOrderedMeal(_uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
+             ret.addOrderedMeal(order, _uiState.value.storageServices.restaurantService().getMeal(order.restaurantID, order.mealID),
                  getDayOfWeekFromDate(order.pickUpDate))
             Log.d("Hello2", "I got order:" + order.orderID)
             Log.d("Hello2", "I got date:" +  getDayOfWeekFromDate(order.pickUpDate).str)

@@ -3,6 +3,7 @@ package com.example.munchbox.data
 import android.util.Log
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Order
 
 /**
  * Data class that represents the current UI state in terms of [currentOrderQuantity], [flavor],
@@ -25,13 +26,16 @@ data class OrderUiState(
     var selectedToPickUpDay: Map<Meal, DayOfWeek> = mutableMapOf(), //TODO: rename to orderedSelectedPickupDay
 
     var unorderedMeals : List<Meal> = listOf(),
-    var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf()
+    var unorderedSelectedPickupDay : MutableMap<Meal, DayOfWeek> = mutableMapOf(),
+    var orders: Set<Order> = setOf(),
+    var orderToMeal: Map<Order, Meal> = mutableMapOf()
 )
 {
-    fun addOrderedMeal(newMeal: Meal?, day : DayOfWeek) {
+    fun addOrderedMeal(order: Order, newMeal: Meal?, day : DayOfWeek) {
         if (newMeal != null) {
             meals = meals.plus(newMeal)
             selectedToPickUpDay = selectedToPickUpDay.plus(Pair(newMeal, day))
+            orderToMeal = orderToMeal.plus(Pair(order, newMeal))
             Log.d("HELLO ORDERUISTATE", newMeal.mealID)
         }
     }

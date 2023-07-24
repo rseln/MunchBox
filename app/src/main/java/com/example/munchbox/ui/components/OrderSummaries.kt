@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.OrderViewModel
@@ -62,7 +61,7 @@ fun OrderSummaries(orderUiState: OrderUiState,
             )
             Spacer(modifier = Modifier.height(13.dp))
             Log.d("HELLO FROM ORDER SUMMARY3", meal.mealID)
-            OrderSummaryCard(meal = meal, storageServices, true)
+            OrderSummaryCard(meal = meal, storageServices = storageServices, confirmDisabled = true)
             Spacer(modifier = Modifier.height(13.dp))
         }
     }

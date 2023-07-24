@@ -30,10 +30,12 @@ import androidx.compose.ui.unit.dp
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
+import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.theme.Typography
 import kotlinx.coroutines.launch
+import java.util.Date
 
 
 @Preview(
@@ -55,6 +57,7 @@ fun MealCardContainer() {
 fun MealCard(storageServices: StorageServices,
              restaurantName: String,
              allMeals: Set<Meal>,
+             order: Order = Order("-1", "-1", "-1", "-1", Date(), false),
              onAdd: (Meal) -> Unit,
              onSelectOption: (DietaryOption) -> Unit,
              selectedOptions : Set<DietaryOption>,
@@ -94,8 +97,8 @@ fun MealCard(storageServices: StorageServices,
     val coroutineScope = rememberCoroutineScope()
     val updateOrderPickedUpOnClick: () -> Unit = {
         coroutineScope.launch {
-            //TODO: CHANGE FROM HARDCODED ORDER ID ONCE WE HAVE PROPER DATA INFRA SET UP
-            orderService.updateOrderPickedUpByOrderID("test_2", true)
+            val orderId = order.orderID
+            orderService.updateOrderPickedUpByOrderID(orderId, true)
         }
     }
 
