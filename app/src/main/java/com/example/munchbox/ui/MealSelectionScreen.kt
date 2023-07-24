@@ -175,6 +175,7 @@ fun MealSelectionScreen(
             MealCard (
                 storageServices = storageServices,
                 restaurantName = it.name, // TODO: replace this with the actual restaurant name
+                imageID = it.imageID,
                 allMeals = allMeals,
                 onAdd = { meal ->
                     recordMealAddition(meal)

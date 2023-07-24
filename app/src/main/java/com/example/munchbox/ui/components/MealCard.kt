@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.munchbox.controller.DayOfWeek
@@ -56,6 +61,7 @@ fun MealCardContainer() {
 @Composable
 fun MealCard(storageServices: StorageServices,
              restaurantName: String,
+             imageID: String?,
              allMeals: Set<Meal>,
              order: Order = Order("-1", "-1", "-1", "-1", Date(), false),
              onAdd: (Meal) -> Unit,
@@ -113,20 +119,19 @@ fun MealCard(storageServices: StorageServices,
         modifier = modifier,
         shape = MaterialTheme.shapes.large)
     {
-// TODO: Need to find a replacement for this using the Restaurant.imageID
-//        if(imageID != null){
-//            painterResource(id = imageID)?.let {
-//                Image(
-//                    painter = it,
-//                    contentDescription = "Contact profile picture",
-//                    modifier = Modifier
-//                        .clip(MaterialTheme.shapes.large)
-//                        .fillMaxWidth()
-//                        .aspectRatio(3f / 2f),
-//                    contentScale = ContentScale.FillBounds
-//                )
-//            }
-//        }
+        if(imageID != null){
+            painterResource(id = imageID)?.let {
+                Image(
+                    painter = it,
+                    contentDescription = "Contact profile picture",
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.large)
+                        .fillMaxWidth()
+                        .aspectRatio(3f / 2f),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+        }
         Column( modifier = modifier.padding(24.dp)) {
             Text(
                 text = restaurantName,

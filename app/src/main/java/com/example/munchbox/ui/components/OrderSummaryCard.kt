@@ -28,14 +28,18 @@ fun OrderSummaryCard(meal: Meal,
                      modifier: Modifier = Modifier.fillMaxWidth()){
     // TODO: Replace restaurant name with the actual restaurant name from DB
     var restaurantName by remember { mutableStateOf<String>("") }
+    var restaurantImage by remember { mutableStateOf<String>("") }
 
     LaunchedEffect(Unit){
-        restaurantName = storageServices.restaurantService().getRestaurantByID(meal.restaurantID)?.name ?: ""
+        val rest = storageServices.restaurantService().getRestaurantByID(meal.restaurantID)
+        restaurantName = rest?.name ?: ""
+        restaurantImage = rest?.imageID.toString()
     }
     if(restaurantName != ""){
         MealCard(
             storageServices = storageServices,
             restaurantName = restaurantName, // TODO: replace this with the actual restaurant name
+            imageID = restaurantImage,
             allMeals = setOf(meal),
             order = order,
             onAdd = { null },
