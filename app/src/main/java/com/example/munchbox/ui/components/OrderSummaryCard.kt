@@ -28,14 +28,18 @@ fun OrderSummaryCard(meal: Meal,
                      modifier: Modifier = Modifier.fillMaxWidth()){
     // TODO: Replace restaurant name with the actual restaurant name from DB
     var restaurantName by remember { mutableStateOf<String>("") }
+    var restaurantImage by remember { mutableStateOf<String>("") }
 
     LaunchedEffect(Unit){
-        restaurantName = storageServices.restaurantService().getRestaurantByID(meal.restaurantID)?.name ?: ""
+        val rest = storageServices.restaurantService().getRestaurantByID(meal.restaurantID)
+        restaurantName = rest?.name ?: ""
+        restaurantImage = rest?.imageID.toString()
     }
     if(restaurantName != ""){
         MealCard(
             storageServices = storageServices,
             restaurantName = restaurantName, // TODO: replace this with the actual restaurant name
+            imageID = restaurantImage,
             allMeals = setOf(meal),
             order = order,
             onAdd = { null },
@@ -55,14 +59,14 @@ fun OrderSummaryCard(meal: Meal,
 @Preview
 @Composable
 fun PreviewOrderSummaryCard(){
-    val lazeez = Restaurant("1", "Lazeez", setOf(), R.drawable.lazeez)
+//    val lazeez = Restaurant("1", "Lazeez", setOf(), R.drawable.lazeez)
 //    lazeez.addMeals(setOf(Meal("lazeez_meal", "lazeez_id", "lazeez", setOf(DietaryOption.HALAL), setOf(DayOfWeek.SUNDAY))))
 
     val storageService = StorageServices(FirebaseFirestore.getInstance())
     val order = Order("-1", "-1", "-1", "-1", Date(), false)
-    for (meal in lazeez.meals) {
-        OrderSummaryCard(meal, order, storageService,false, {}, Modifier.fillMaxWidth())
-    }
+//    for (meal in lazeez.meals) {
+//        OrderSummaryCard(meal, order, storageService,false, {}, Modifier.fillMaxWidth())
+//    }
 }
 
 

@@ -5,7 +5,7 @@ data class Restaurant(
     val restaurantID : String = "0",
     val name : String = "0",
     var meals : Set<Meal> = setOf(),
-    val imageID: Int? = null
+    val imageID: String? = null
 ) {
     fun addMeal(meal : Meal) {
         meals = meals.plus(meal)
