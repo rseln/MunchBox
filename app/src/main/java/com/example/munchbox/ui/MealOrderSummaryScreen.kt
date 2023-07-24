@@ -52,15 +52,10 @@ fun MealOrderSummaryScreen(
             OrdersAvailable(orderUiState, storageServices, onConfirmButtonClicked, Modifier)
         }
         if (orderUiState.orders.isNotEmpty()) {
-            Log.d("HELLO IN ORDER SUMMARY", orderUiState.meals[0].mealID)
-            for ((meal, day) in orderUiState.selectedToPickUpDay) {
-                Log.d("HELLO IN ORDER SUMMARY2", meal.mealID)
-            }
             OrderSummaries(
                 orderUiState = orderUiState,
                 storageServices = storageServices,
                 modifier = Modifier,
-                isHub = true,
             )
         }
     }

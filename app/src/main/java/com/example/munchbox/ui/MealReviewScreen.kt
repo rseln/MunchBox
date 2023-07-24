@@ -23,6 +23,7 @@ import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import com.example.munchbox.ui.components.OrderSummaries
+import com.example.munchbox.ui.components.ReviewSummaries
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
@@ -38,15 +39,13 @@ fun MealReviewScreen(
         modifier = modifier
             .verticalScroll(scrollState),
     ){
-        OrderSummaries(
+        ReviewSummaries(
             orderUiState = orderUiState,
             storageServices = storageServices,
-            modifier = Modifier,
-            isReview = true,
         )
+
         Row(
             modifier = Modifier
-                .padding(dimensionResource(R.dimen.padding_medium))
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))

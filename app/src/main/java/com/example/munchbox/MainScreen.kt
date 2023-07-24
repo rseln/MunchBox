@@ -3,6 +3,7 @@ package com.example.munchbox
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,13 +47,11 @@ import com.example.munchbox.ui.AfterPaymentScreen
 import com.example.munchbox.ui.ChooseFighterScreen
 import com.example.munchbox.login.LoginScreen
 import com.example.munchbox.signup.SignUpScreen
-import com.example.munchbox.signup.SignUpViewModel
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
 import com.example.munchbox.ui.MuncherViewModel
 import com.example.munchbox.ui.NumberOfMealsScreen
-import com.example.munchbox.ui.OrderViewModel
 import com.example.munchbox.ui.RestaurantCreationScreen
 import com.example.munchbox.ui.RestaurantHubScreen
 import com.example.munchbox.ui.RestaurantViewModel
@@ -143,8 +141,6 @@ fun MunchBoxApp(
     val coroutineScope = rememberCoroutineScope()
 
     //TODO: we need to pop the prev stack when we get here since we don't want to be able to backtrack on this page
-    LaunchedEffect(Unit){muncherViewModel.updateMuncherState("temp_user_id")}
-
     /**
      * Logic to navigate to and from payment activity
      */
@@ -156,24 +152,20 @@ fun MunchBoxApp(
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             navController.navigate(OrderScreen.AfterPayment.name)
-            val user = Firebase.auth.currentUser?.uid
+            val userID = Firebase.auth.currentUser?.uid ?: ""
             for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
-                    if (user != null) {
-                        storageServices.orderService().createDBOrder(
-                            userID = user,
-                            mealID = meal.mealID,
-                            restaurantID = meal.restaurantID,
-                            pickUpDate =  muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
-                            orderPickedUp = false,
-                        )
-                    }
+                    storageServices.orderService().createDBOrder(
+                        userID = userID,
+                        mealID = meal.mealID,
+                        restaurantID = meal.restaurantID,
+                        pickUpDate =  muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
+                        orderPickedUp = false,
+                    )
                 }
             }
             coroutineScope.launch{
-                if (user != null) {
-                    muncherViewModel.updateMuncherState(user)
-                }
+                muncherViewModel.updateMuncherState(userID)
             }
         }
         if (result.resultCode == Activity.RESULT_CANCELED) {
@@ -254,7 +246,11 @@ fun MunchBoxApp(
                  * the view models meals can be set in meal selection for now it is pointing to a fake dataset
                  * same with the pickup options
                  * **/
-
+                val userID = Firebase.auth.currentUser?.uid ?: ""
+                LaunchedEffect(Unit){
+                    muncherViewModel.updateMuncherState(userID)
+                    Log.d("HELLO CURRENT USER", userID)
+                }
 
                 MealOrderSummaryScreen(
                     orderUiState = muncherUiState.orderUiState,
@@ -264,7 +260,7 @@ fun MunchBoxApp(
                         //TODO: we need to change the filter since meals.days is the days the meal is available. need to check db for field that reps the meal pickup date
                         //TODO: all we do here is delete order and meal from database
                         coroutineScope.launch {
-                            muncherViewModel.updateConfirmedMeals(muncherUiState.orderUiState.meals, muncherUiState.orderUiState.selectedToPickUpDay)
+                            muncherViewModel.updateConfirmedOrders(muncherUiState.orderUiState.orders, muncherUiState.orderUiState.orderToPickupDay)
                         }
 
                         //refresh page

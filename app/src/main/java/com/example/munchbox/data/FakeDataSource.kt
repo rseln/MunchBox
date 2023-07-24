@@ -18,6 +18,4 @@ object DataSource {
     /** Fake Restaurants to use for now.**/
     //TODO: delete this once we cana create a restaurant.
     var lazeez = Restaurant("lazeez_123", name ="Lazeez", setOf(), imageID = R.drawable.lazeez )
-
-
 }
