@@ -8,29 +8,22 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
+\import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -45,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Calendar
@@ -55,11 +47,8 @@ import androidx.navigation.NavController
 import com.example.munchbox.OrderScreen
 import com.example.munchbox.R
 import com.example.munchbox.controller.Restaurant
-import com.example.munchbox.data.RestaurantStorageService
 import com.example.munchbox.data.StorageServices
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
@@ -68,16 +57,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 import java.util.regex.Pattern
-
-val dietaryOptions = setOf(
-    Pair(0, "Halal"),
-    Pair(1, "Vegetarian"),
-    Pair(2, "Kosher"),
-    Pair(3, "Vegan"),
-    Pair(4, "Gluten Free"),
-    Pair(5, "Peanut Free"),
-    Pair(6, "Meat")
-)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -88,11 +67,9 @@ fun RestaurantCreationScreen(
 
     // VALUES TO SEND
     val restaurantName = remember { mutableStateOf(TextFieldValue()) }
-    val restaurantAddress = remember { mutableStateOf(TextFieldValue()) }
     val mTimeStart = remember { mutableStateOf("") }
     val mTimeEnd = remember { mutableStateOf("") }
     val restaurantCuisine = remember { mutableStateOf(TextFieldValue()) }
-    var selectedOptions by remember { mutableStateOf(setOf<Pair<Int, String>>()) }
     val restaurantPhoneNumber = remember {mutableStateOf(TextFieldValue())}
     val restaurantEmail = remember {mutableStateOf(TextFieldValue())}
     val imageURL = remember {mutableStateOf("")}
@@ -121,6 +98,7 @@ fun RestaurantCreationScreen(
         }
 
         Button(
+            enabled = (!emailError && !phoneError && restaurantName.value.text != ""),
             onClick = {
                 sendRequestRestaurant()
                 navController.navigate(OrderScreen.RestaurantHub.name)
@@ -256,66 +234,60 @@ fun RestaurantCreationScreen(
 
 
         // RESTAURANT NAME
-        Text(stringResource(R.string.signup_restaurant_name),
+        Text(
+            stringResource(R.string.signup_restaurant_name),
             //modifier = Modifier.align(Alignment.Start)
         )
-        TextField(value = restaurantName.value, onValueChange = {restaurantName.value = it}, modifier = Modifier.fillMaxWidth())
+        TextField(
+            value = restaurantName.value,
+            onValueChange = { restaurantName.value = it },
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.padding(20.dp))
 
-        // RESTAURANT ADDRESS
-        Text(stringResource(R.string.signup_restaurant_address))
-        TextField(value = restaurantAddress.value, onValueChange = {restaurantAddress.value = it}, Modifier.fillMaxWidth(),)
-        Spacer(modifier = Modifier.padding(20.dp))
 
         // RESTAURANT HOURS
         Text(stringResource(R.string.signup_restaurant_hours))
-        Button(onClick = { mTimePickerDialogStart.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0XFF0F9D58))) {
-            Text(text = stringResource(R.string.signup_restaurant_hours_start), color = Color.White)
-        }
-        Text(text = "Selected Start Time: ${mTimeStartFORMATTED.value}")
+        Spacer(modifier = Modifier.padding(10.dp))
 
-        Button(onClick = { mTimePickerDialogEnd.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)) {
-            Text(text = stringResource(R.string.signup_restaurant_hours_end), color = Color.White)
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = { mTimePickerDialogStart.show() },
+                //modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.signup_restaurant_hours_start),
+                    color = Color.White
+                )
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+            Button(
+                onClick = { mTimePickerDialogEnd.show() },
+                //modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = stringResource(R.string.signup_restaurant_hours_end), color = Color.White)
+            }
         }
-        Text(text = "Selected End Time: ${mTimeEndFORMATTED.value}")
-        Spacer(modifier = Modifier.padding(20.dp))
+
+        if (mTimeStart.value != "") {
+            Spacer(modifier = Modifier.padding(10.dp))
+            Text(text = "Selected Start Time: ${mTimeStartFORMATTED.value}")
+        }
+
+        if (mTimeEnd.value != "") {
+            Text(text = "Selected End Time: ${mTimeEndFORMATTED.value}")
+        }
+        Spacer(modifier = Modifier.padding(10.dp))
+
 
         // CUISINE
         Text(text = stringResource(R.string.signup_restaurant_cuisine))
         TextField(value = restaurantCuisine.value, onValueChange = {restaurantCuisine.value = it}, Modifier.fillMaxWidth(),)
         Spacer(modifier = Modifier.padding(20.dp))
 
-        // DIETARY OPTIONS
-        Text(text = stringResource(R.string.signup_restaurant_dietary_options))
-        FlowRow(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            for (option in dietaryOptions) {
-                FilterChip(
-                    selected = selectedOptions.contains(option),
-                    label = {Text(option.second)},
-                    onClick = {
-                        if (selectedOptions.contains(option)) {
-                            selectedOptions = selectedOptions.minus(option)
-                        }
-                        else {
-                            selectedOptions = selectedOptions.plus(option)
-                        }
-                    },
-                    leadingIcon = {
-                        if (selectedOptions.contains(option)) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "Localized Description",
-                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                            )
-                        }
-                    }
-                )
-                Spacer(modifier = Modifier.size(4.dp, 4.dp))
-            }
-        }
-        Spacer(modifier = Modifier.padding(20.dp))
 
         // PHONE NUMBER
         Text(text = stringResource(R.string.signup_restaurant_phone))
@@ -356,7 +328,7 @@ fun RestaurantCreationScreen(
 
         // GO BACK
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate(OrderScreen.ChooseFighter.name) },
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(text = stringResource(R.string.back_button))
@@ -382,3 +354,5 @@ fun convertTo12Hours(militaryTime: String): String{
     val date = inputFormat.parse(militaryTime)
     return outputFormat.format(date)
 }
+
+
