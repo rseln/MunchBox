@@ -37,16 +37,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.munchbox.controller.DayOfWeek
+import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.data.DataSource
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
+import com.example.munchbox.login.LoginScreen
 import com.example.munchbox.payment.MealPaymentScreen
 import com.example.munchbox.payment.PaymentActivity
+import com.example.munchbox.signup.SignUpScreen
 import com.example.munchbox.ui.AfterPaymentScreen
 import com.example.munchbox.ui.ChooseFighterScreen
-import com.example.munchbox.login.LoginScreen
-import com.example.munchbox.signup.SignUpScreen
 import com.example.munchbox.ui.MealOrderSummaryScreen
 import com.example.munchbox.ui.MealReviewScreen
 import com.example.munchbox.ui.MealSelectionScreen
@@ -59,6 +60,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import java.util.Date
 
 
 /**
@@ -368,13 +370,25 @@ fun MunchBoxApp(
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {
-                // TODO Replace with restaurant
-                LaunchedEffect(Unit){restaurantViewModel.updateRestaurantState("lazeez_123")}
+                val userID = Firebase.auth.currentUser?.uid ?: ""
+                LaunchedEffect(Unit){restaurantViewModel.updateRestaurantState(userID)}
                 RestaurantHubScreen(
                     storageServices = storageServices,
-                    restaurant = restaurantViewModel.uiState.value.restaurant,
+                    restaurant = restaurantUiState.restaurant,
                     updateViewModel = {
-                        coroutineScope.launch{restaurantViewModel.updateRestaurantState("lazeez_123")}
+                        coroutineScope.launch{restaurantViewModel.updateRestaurantState(userID)}
+                    },
+                    createNewMeal = { selectedDays : Set<DayOfWeek>, selectedOptions : Set<DietaryOption> ->
+                        coroutineScope.launch {
+                            storageServices.restaurantService().addMealToRestaurant(restaurantUiState.restaurant.restaurantID, selectedOptions, selectedDays)
+                            restaurantViewModel.updateRestaurantState(userID)
+                        }
+                    },
+                    cancelMeal = { meal : Meal ->
+                        coroutineScope.launch {
+                            storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, Date())
+                            restaurantViewModel.updateRestaurantState(userID)
+                        }
                     },
                     modifier = Modifier
                         .fillMaxSize()
