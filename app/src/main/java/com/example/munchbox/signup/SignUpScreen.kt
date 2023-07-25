@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.munchbox.OrderScreen
 import com.example.munchbox.R
 import com.example.munchbox.data.ClientID
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.login.LoginScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -49,6 +50,7 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -62,6 +64,7 @@ fun SignUpScreen (
 ) {
 
     val googleSignInState = viewModel.googleState.value
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
 
     val launchergoogle =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -84,16 +87,17 @@ fun SignUpScreen (
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 30.dp, end = 30.dp),
-        verticalArrangement = Arrangement.Center,
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(120.dp))
         Text(
             modifier = Modifier.padding(bottom = 10.dp),
             text = "Create Account",
             style = TextStyle(fontSize = 50.sp, fontFamily = FontFamily.SansSerif)
         )
+        Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "Enter your credential's to register",
             fontWeight = FontWeight.Medium,
@@ -101,7 +105,6 @@ fun SignUpScreen (
             fontFamily = FontFamily.SansSerif,
         )
         TextField(
-            modifier = Modifier.fillMaxWidth(),
             value = email,
             onValueChange = {email = it },
             singleLine = true,
@@ -111,9 +114,8 @@ fun SignUpScreen (
             }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            modifier = Modifier.fillMaxWidth(),
             value = password,
             onValueChange = {password = it },
             singleLine = true,
@@ -136,27 +138,26 @@ fun SignUpScreen (
                 }
             }
         )
-        Button(
-            onClick = {
-                scope.launch {
-                    viewModel.registerUser(email, password)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp, start = 30.dp, end = 30.dp),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.Black
-            ),
-            shape = RoundedCornerShape(15.dp)
-        ) {
-            Text(
-                text = "Sign Up",
-                color = Color.White,
+        Spacer(modifier = Modifier.height(20.dp))
+        Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+            Button(
+                onClick = {
+                    scope.launch {
+                        viewModel.registerUser(email, password)
+                    }
+                },
                 modifier = Modifier
-                    .padding(7.dp)
-            )
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(50.dp)
+            ) {
+                Text(
+                    text = "Sign Up",
+                    color = Color.White,
+                )
+            }
         }
+
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             if (state.value?.isLoading == true) {
                 CircularProgressIndicator()
@@ -164,18 +165,8 @@ fun SignUpScreen (
         }
         Text(
             modifier = Modifier
-                .padding(15.dp)
-                .clickable {
-                    navController.navigate(OrderScreen.Login.name)
-                },
-            text = "Already have an account? Sign In",
-            //fontWeight = FontWeight.Bold,
-            color = Color.Blue, fontFamily = FontFamily.SansSerif
-        )
-        Text(
-            modifier = Modifier
                 .padding(
-                    top = 40.dp,
+                    top = 80.dp,
                 ),
             text = "Or connect with",
             fontWeight = FontWeight.Medium, color = Color.Gray
@@ -208,8 +199,10 @@ fun SignUpScreen (
         scope.launch {
             if (state.value?.isSuccess?.isNotEmpty() == true) {
                 val success = state.value?.isSuccess
-                Toast.makeText(context, "$success", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
+                //navController.popBackStack()
                 navController.navigate(OrderScreen.ChooseFighter.name)
+
             }
         }
     }
@@ -217,15 +210,29 @@ fun SignUpScreen (
         scope.launch {
             if (state.value?.isError?.isNotBlank() == true) {
                 val error = state.value?.isError
-                Toast.makeText(context, "$error", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
             }
         }
     }
     LaunchedEffect(key1 = googleSignInState.success) {
         scope.launch {
             if(googleSignInState.success != null) {
-                Toast.makeText(context, "Sign In Success", Toast.LENGTH_LONG).show()
-                navController.navigate(OrderScreen.ChooseFighter.name)
+                Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
+                val IDuser = Firebase.auth.currentUser?.uid
+                val userType: String? = IDuser?.let {
+                    storageServices.userService().getTypeByUserID(
+                        it
+                    )
+                }
+                if (userType == "Muncher") {
+                    navController.navigate(OrderScreen.MealOrderSummary.name)
+                }
+                else if (userType == "Restaurant") {
+                    navController.navigate(OrderScreen.RestaurantHub.name)
+                }
+                else {
+                    navController.navigate(OrderScreen.ChooseFighter.name)
+                }
             }
         }
     }
@@ -233,7 +240,7 @@ fun SignUpScreen (
         scope.launch {
             if(googleSignInState.error != null) {
                 val error = googleSignInState.error
-                Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
             }
         }
     }
