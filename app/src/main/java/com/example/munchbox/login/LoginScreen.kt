@@ -247,7 +247,7 @@ fun LoginScreen(
             scope.launch {
                 if (state.value?.isSuccess?.isNotEmpty() == true) {
                     val success = state.value?.isSuccess
-                    Toast.makeText(context, "${success}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
                     val IDuser = Firebase.auth.currentUser?.uid
                     val userType: String? = IDuser?.let {
                         storageServices.userService().getTypeByUserID(
@@ -261,7 +261,7 @@ fun LoginScreen(
                         navController.navigate(OrderScreen.RestaurantHub.name)
                     }
                     else {
-
+                        navController.navigate(OrderScreen.ChooseFighter.name)
                     }
 
                 }
@@ -271,7 +271,7 @@ fun LoginScreen(
             scope.launch {
                 if (state.value?.isError?.isNotEmpty() == true) {
                     val error = state.value?.isError
-                    Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -279,7 +279,7 @@ fun LoginScreen(
         LaunchedEffect(key1 = googleSignInState.success) {
             scope.launch {
                 if(googleSignInState.success != null) {
-                    Toast.makeText(context, "Sign In Success", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Sign In Success", Toast.LENGTH_SHORT).show()
                     val IDuser = Firebase.auth.currentUser?.uid
                     val userType: String? = IDuser?.let {
                         storageServices.userService().getTypeByUserID(
@@ -305,7 +305,7 @@ fun LoginScreen(
             scope.launch {
                 if(googleSignInState.error != null) {
                     val error = googleSignInState.error
-                    Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -313,15 +313,3 @@ fun LoginScreen(
     }
 }
 
-fun loginVerification(
-    username: MutableState<TextFieldValue>,
-    password:  MutableState<TextFieldValue>,
-    context: Context): Boolean {
-
-    return if(username.value.text.isNotEmpty() and password.value.text.isNotEmpty()) {
-        true
-    } else {
-        Toast.makeText(context, "Please enter valid credentials.", Toast.LENGTH_SHORT).show()
-        false
-    }
-}

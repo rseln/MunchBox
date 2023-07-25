@@ -182,7 +182,14 @@ fun MunchBoxApp(
         topBar = {
             MunchBoxAppBar(
                 currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
+                canNavigateBack = if ((currentScreen == OrderScreen.ChooseFighter) ||
+                                    (currentScreen == OrderScreen.RestaurantHub) ||
+                                    (currentScreen == OrderScreen.MealOrderSummary)) {
+                    false
+                }
+                else {
+                    navController.previousBackStackEntry != null
+                },
                 navigateUp = { navController.navigateUp() }
             )
         }
@@ -273,7 +280,7 @@ fun MunchBoxApp(
                     onSignOutButtonClicked = {
                         val mAuth = FirebaseAuth.getInstance()
                         mAuth.signOut()
-                        Toast.makeText(context, "Sign Out Successful", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Sign Out Successful", Toast.LENGTH_SHORT).show()
                         navController.navigate(OrderScreen.Login.name) {
                             popUpTo(OrderScreen.Login.name) {
                                 inclusive = true
@@ -397,7 +404,7 @@ fun MunchBoxApp(
                     onSignOutButtonClicked = {
                         val mAuth = FirebaseAuth.getInstance()
                         mAuth.signOut()
-                        Toast.makeText(context, "Sign Out Successful", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Sign Out Successful", Toast.LENGTH_SHORT).show()
                         navController.navigate(OrderScreen.Login.name) {
                             popUpTo(OrderScreen.Login.name) {
                                 inclusive = true

@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.munchbox.OrderScreen
 import com.example.munchbox.R
 import com.example.munchbox.data.ClientID
+import com.example.munchbox.data.StorageServices
 import com.example.munchbox.login.LoginScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -49,6 +50,7 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -62,6 +64,7 @@ fun SignUpScreen (
 ) {
 
     val googleSignInState = viewModel.googleState.value
+    val storageServices = StorageServices(FirebaseFirestore.getInstance())
 
     val launchergoogle =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -196,7 +199,7 @@ fun SignUpScreen (
         scope.launch {
             if (state.value?.isSuccess?.isNotEmpty() == true) {
                 val success = state.value?.isSuccess
-                Toast.makeText(context, "$success", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
                 //navController.popBackStack()
                 navController.navigate(OrderScreen.ChooseFighter.name)
 
@@ -207,15 +210,29 @@ fun SignUpScreen (
         scope.launch {
             if (state.value?.isError?.isNotBlank() == true) {
                 val error = state.value?.isError
-                Toast.makeText(context, "$error", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
             }
         }
     }
     LaunchedEffect(key1 = googleSignInState.success) {
         scope.launch {
             if(googleSignInState.success != null) {
-                Toast.makeText(context, "Sign In Success", Toast.LENGTH_LONG).show()
-                navController.navigate(OrderScreen.ChooseFighter.name)
+                Toast.makeText(context, "Sign In Successful", Toast.LENGTH_SHORT).show()
+                val IDuser = Firebase.auth.currentUser?.uid
+                val userType: String? = IDuser?.let {
+                    storageServices.userService().getTypeByUserID(
+                        it
+                    )
+                }
+                if (userType == "Muncher") {
+                    navController.navigate(OrderScreen.MealOrderSummary.name)
+                }
+                else if (userType == "Restaurant") {
+                    navController.navigate(OrderScreen.RestaurantHub.name)
+                }
+                else {
+                    navController.navigate(OrderScreen.ChooseFighter.name)
+                }
             }
         }
     }
@@ -223,7 +240,7 @@ fun SignUpScreen (
         scope.launch {
             if(googleSignInState.error != null) {
                 val error = googleSignInState.error
-                Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
             }
         }
     }
