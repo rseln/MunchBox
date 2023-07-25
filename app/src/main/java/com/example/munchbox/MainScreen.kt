@@ -156,12 +156,21 @@ fun MunchBoxApp(
             val userID = Firebase.auth.currentUser?.uid ?: ""
             for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
+                    val orderPickupDate = muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]
+                    val newAmountOrdered = meal.amountOrdered[orderPickupDate]!!.plus(1)
+                    val newTotalOrders = meal.totalOrders.plus(1)
                     storageServices.orderService().createDBOrder(
                         userID = userID,
                         mealID = meal.mealID,
                         restaurantID = meal.restaurantID,
-                        pickUpDate =  muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
+                        pickUpDate =  orderPickupDate!!.date,
                         orderPickedUp = false,
+                    )
+                    storageServices.restaurantService().updateMeal(
+                        mealID = meal.mealID,
+                        restaurantID = meal.restaurantID,
+                        amountOrdered = mapOf(orderPickupDate to newAmountOrdered),
+                        orderCount = newTotalOrders
                     )
                 }
             }
