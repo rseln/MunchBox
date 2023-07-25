@@ -3,6 +3,7 @@ package com.example.munchbox
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.icu.util.Calendar
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -383,7 +384,17 @@ fun MunchBoxApp(
                     },
                     cancelMeal = { meal : Meal ->
                         coroutineScope.launch {
-                            storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, Date())
+                            val latestOrder = storageServices.orderService().getRestaurantsLatestOrder(meal.restaurantID)
+                            if (latestOrder!=null){
+                                val calendar = Calendar.getInstance()
+                                calendar.time = latestOrder.pickUpDate
+                                calendar.add(Calendar.DAY_OF_MONTH, 1)
+                                storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, calendar.time)
+                            }
+                            else{
+                                storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, Date())
+                            }
+
                             restaurantViewModel.updateRestaurantState(userID)
                         }
                     },

@@ -55,13 +55,6 @@ fun MealSelectionScreen(
         var availableRestaurants : Set<Restaurant> = setOf()
 
         for (restaurant in restaurants) {
-            for(meal in restaurant.meals){
-                Log.d("HELLO_" + restaurant.restaurantID, meal.mealID)
-                for(day in meal.days){
-                    Log.d("HELLO_ON", day.str)
-                }
-                Log.d("HELLO_DAYS_DONE","")
-            }
             if (restaurant.meals.filter { meal: Meal -> meal.days.contains(selectedDay) }.isNotEmpty()) {
                 availableRestaurants = availableRestaurants.plus(restaurant)
             }
@@ -73,7 +66,7 @@ fun MealSelectionScreen(
     fun getAvailableMeals(meals: Set<Meal>, selectedOptions: Set<DietaryOption>): Set<Meal> {
         var availableMeals = setOf<Meal>()
         for (meal in meals.asIterable()) {
-            if (meal.options.containsAll(selectedOptions) && meal.cancelledOnDate == Date(0)) {
+            if (meal.options.containsAll(selectedOptions)) {
                 availableMeals = availableMeals.plus(meal)
             }
         }
@@ -161,13 +154,14 @@ fun MealSelectionScreen(
         }
 
         availableRestaurants.forEach {
+            val filteredMeals = it.meals.filter{meal: Meal -> meal.cancelledOnDate == Date(0)}
             var initSelect : Set<DietaryOption> = setOf()
-            if (it.meals.contains(orderedMeals[selectedDay.id])) {
+            if (filteredMeals.contains(orderedMeals[selectedDay.id])) {
                 initSelect = initSelect.plus(orderedMeals[selectedDay.id]!!.options)
             }
 
-            var added by remember(selectedDay) { mutableStateOf(it.meals.contains(orderedMeals[selectedDay.id])) }
-            var allMeals by remember(selectedDay) { mutableStateOf(it.meals.filter { meal : Meal -> meal.days.contains(selectedDay) }.toSet()) }
+            var added by remember(selectedDay) { mutableStateOf(filteredMeals.contains(orderedMeals[selectedDay.id])) }
+            var allMeals by remember(selectedDay) { mutableStateOf(filteredMeals.filter { meal : Meal -> meal.days.contains(selectedDay) }.toSet()) }
             var selectedOptions by remember(selectedDay) { mutableStateOf(initSelect) }
             var availableOptions by remember(selectedDay) { mutableStateOf(getAvailableOptions(allMeals, selectedOptions))}
 
