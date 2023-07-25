@@ -26,7 +26,6 @@ fun OrderSummaryCard(meal: Meal,
                      confirmDisabled: Boolean,
                      onConfirmButtonClick: () -> Unit = {},
                      modifier: Modifier = Modifier.fillMaxWidth()){
-    // TODO: Replace restaurant name with the actual restaurant name from DB
     var restaurantName by remember { mutableStateOf<String>("") }
     var restaurantImage by remember { mutableStateOf<String>("") }
 

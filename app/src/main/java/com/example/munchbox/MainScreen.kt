@@ -132,7 +132,6 @@ fun MunchBoxApp(
 
     val muncherUiState by muncherViewModel.uiState.collectAsState()
     val restaurantUiState by restaurantViewModel.uiState.collectAsState()
-    // TODO setup another uistate for restaruant
 
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -161,12 +160,21 @@ fun MunchBoxApp(
             val userID = Firebase.auth.currentUser?.uid ?: ""
             for(meal in muncherViewModel.uiState.value.orderUiState.unorderedMeals){
                 coroutineScope.launch {
+                    val orderPickupDate = muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]
+                    val newAmountOrdered = meal.amountOrdered[orderPickupDate]!!.plus(1)
+                    val newTotalOrders = meal.totalOrders.plus(1)
                     storageServices.orderService().createDBOrder(
                         userID = userID,
                         mealID = meal.mealID,
                         restaurantID = meal.restaurantID,
-                        pickUpDate =  muncherUiState.orderUiState.unorderedSelectedPickupDay[meal]!!.date,
+                        pickUpDate =  orderPickupDate!!.date,
                         orderPickedUp = false,
+                    )
+                    storageServices.restaurantService().updateMeal(
+                        mealID = meal.mealID,
+                        restaurantID = meal.restaurantID,
+                        amountOrdered = mapOf(orderPickupDate to newAmountOrdered),
+                        orderCount = newTotalOrders
                     )
                 }
             }
@@ -332,10 +340,6 @@ fun MunchBoxApp(
                         stripeLauncher.launch(intent)
                     },
                     onCancelButtonClicked = {
-                        /**
-                         * TODO: BUG - previous orders will be deleted on cancel need to adjust this logic everywhere this is used.
-                         * Might need to be fixed once we have a database and store data properly
-                        **/
                         muncherViewModel.clearUnorderedMeals()
                         cancelOrderAndNavigateToStart(navController)
                     },
@@ -368,8 +372,6 @@ fun MunchBoxApp(
                         .fillMaxSize()
                         .fillMaxWidth()
                         .padding(25.dp)
-                    // TODO: Set this function to go to the Hub (and later, add some kind of actual confirmation)
-                    //TODO: orderedMeals create an order document for each of the orders to be accessed in the DB when payment is confirmed
                 )
             }
             composable(route = OrderScreen.RestaurantHub.name) {
