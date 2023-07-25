@@ -21,6 +21,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -134,9 +135,6 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(120.dp))
 
-        //val username = remember { mutableStateOf(TextFieldValue()) }
-        //val password = remember { mutableStateOf(TextFieldValue()) }
-
         Text(text = "Login", style = TextStyle(fontSize = 50.sp, fontFamily = FontFamily.SansSerif))
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -191,7 +189,7 @@ fun LoginScreen(
             }
 
         }
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(100.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             OutlinedButton(
                 onClick = {
@@ -207,12 +205,12 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .padding(start = 40.dp, end = 40.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(1.dp, Color.Blue),
+                    .padding(start = 55.dp, end = 55.dp),
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.5.dp, Color.DarkGray),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = Color.White,
-                    contentColor = Color.Blue
+                    contentColor = Color.DarkGray
                 )
             ) {
             Row (
@@ -228,17 +226,28 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Sign in with Google",
-                    style = TextStyle(fontSize = 18.sp, fontFamily = FontFamily.SansSerif),
+                    style = TextStyle(fontSize = 15.sp, fontFamily = FontFamily.SansSerif),
                     modifier = Modifier.fillMaxWidth()
                 )
             } }
         }
+        Spacer(modifier = Modifier.height(160.dp))
+        Text(
+            modifier = Modifier
+                .padding(15.dp)
+                .clickable {
+                    navController.navigate(OrderScreen.Signup.name)
+                },
+            text = "Don't have an account? Sign Up",
+            //fontWeight = FontWeight.Bold,
+            color = Color.Blue, fontFamily = FontFamily.SansSerif
+        )
 
         LaunchedEffect(key1 = state.value?.isSuccess) {
             scope.launch {
                 if (state.value?.isSuccess?.isNotEmpty() == true) {
                     val success = state.value?.isSuccess
-                    Toast.makeText(context, "${success}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
                     val IDuser = Firebase.auth.currentUser?.uid
                     val userType: String? = IDuser?.let {
                         storageServices.userService().getTypeByUserID(
@@ -251,6 +260,9 @@ fun LoginScreen(
                     else if (userType == "Restaurant") {
                         navController.navigate(OrderScreen.RestaurantHub.name)
                     }
+                    else {
+                        navController.navigate(OrderScreen.ChooseFighter.name)
+                    }
 
                 }
             }
@@ -259,7 +271,7 @@ fun LoginScreen(
             scope.launch {
                 if (state.value?.isError?.isNotEmpty() == true) {
                     val error = state.value?.isError
-                    Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -267,8 +279,24 @@ fun LoginScreen(
         LaunchedEffect(key1 = googleSignInState.success) {
             scope.launch {
                 if(googleSignInState.success != null) {
-                    Toast.makeText(context, "Sign In Success", Toast.LENGTH_LONG).show()
-                    navController.navigate(OrderScreen.MealOrderSummary.name)
+                    Toast.makeText(context, "Sign In Success", Toast.LENGTH_SHORT).show()
+                    val IDuser = Firebase.auth.currentUser?.uid
+                    val userType: String? = IDuser?.let {
+                        storageServices.userService().getTypeByUserID(
+                            it
+                        )
+                    }
+                    if (userType == "Muncher") {
+                        navController.navigate(OrderScreen.MealOrderSummary.name)
+                    }
+                    else if (userType == "Restaurant") {
+                        navController.navigate(OrderScreen.RestaurantHub.name)
+                    }
+                    else {
+                        navController.navigate(OrderScreen.ChooseFighter.name)
+                    }
+
+
                 }
             }
         }
@@ -277,7 +305,7 @@ fun LoginScreen(
             scope.launch {
                 if(googleSignInState.error != null) {
                     val error = googleSignInState.error
-                    Toast.makeText(context, "${error}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -285,15 +313,3 @@ fun LoginScreen(
     }
 }
 
-fun loginVerification(
-    username: MutableState<TextFieldValue>,
-    password:  MutableState<TextFieldValue>,
-    context: Context): Boolean {
-
-    return if(username.value.text.isNotEmpty() and password.value.text.isNotEmpty()) {
-        true
-    } else {
-        Toast.makeText(context, "Please enter valid credentials.", Toast.LENGTH_SHORT).show()
-        false
-    }
-}
