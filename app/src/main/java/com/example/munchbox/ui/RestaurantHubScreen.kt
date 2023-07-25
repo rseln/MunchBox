@@ -108,7 +108,6 @@ fun RestaurantHubScreen(
         OrderSearchCard(storageServices,restaurant, orderUiState)
 
         Spacer(modifier = Modifier.height(32.dp))
-        //TODO:have db retrieve this
         MealSummary(
             meals = availableMeals.value,
             onCancelCallback = {meal : Meal -> cancelMeal(meal)},

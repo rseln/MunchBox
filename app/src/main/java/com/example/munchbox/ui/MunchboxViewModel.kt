@@ -100,7 +100,7 @@ class MuncherViewModel : ViewModel() {
     /**
      * Update the order UI state from DB
      */
-    suspend fun getOrderUiState(userId : String): OrderUiState{ //TODO: when implemented pass in a user object for consistency
+    suspend fun getOrderUiState(userId : String): OrderUiState{
         var ret : OrderUiState = OrderUiState()
         val orders : Set<Order> = getOrders(userId)
         // Append all meals to the order ui state
@@ -170,15 +170,6 @@ class RestaurantViewModel : ViewModel() {
     val uiState: StateFlow<RestaurantUiState> = _uiState.asStateFlow()
 
     /**
-     * Grab all available restaurants from DB
-     */
-    fun updateMeals(userId : String) : Set<Meal> { //TODO: Maybe pass in a User object when it is created so we can have access to the restaurantID
-        //TODO: Wait until User API is complete
-        // User db should contain a restaurantID field and will be non-empty if the user is a restaurant
-
-        return setOf<Meal>()
-    }
-    /**
      * Grab all the ordered orders for a user
      */
     suspend fun updateRestaurantState (userId : String) {
@@ -236,18 +227,6 @@ class OrderViewModel : ViewModel() {
             )
         }
     }
-
-    /**
-     * Set the [pickupDate] for this order's state and update the price
-     */
-    // TODO: OrderUIState no longer uses date, it is stored in the Order Collection in DB (can we delete this?)
-//    fun setDate(pickupDate: String) {
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                date = pickupDate,
-//            )
-//        }
-//    }
 
     /**
      * Reset the order state
