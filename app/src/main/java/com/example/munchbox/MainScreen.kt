@@ -25,7 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -250,9 +253,10 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
                 val userID = Firebase.auth.currentUser?.uid ?: ""
+                var displayButton by remember {mutableStateOf(false)}
                 LaunchedEffect(Unit){
                     muncherViewModel.updateMuncherState(userID)
-                    Log.d("HELLO CURRENT USER", userID)
+                    displayButton = true
                 }
 
                 MealOrderSummaryScreen(
@@ -270,6 +274,7 @@ fun MunchBoxApp(
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.NumberOfMeals.name)
                     },
+                    displayButton = displayButton,
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()

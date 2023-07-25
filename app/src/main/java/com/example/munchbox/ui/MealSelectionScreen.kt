@@ -154,14 +154,13 @@ fun MealSelectionScreen(
         }
 
         availableRestaurants.forEach {
-            val filteredMeals = it.meals.filter{meal: Meal -> meal.cancelledOnDate == Date(0)}
             var initSelect : Set<DietaryOption> = setOf()
-            if (filteredMeals.contains(orderedMeals[selectedDay.id])) {
+            if (it.meals.contains(orderedMeals[selectedDay.id])) {
                 initSelect = initSelect.plus(orderedMeals[selectedDay.id]!!.options)
             }
 
-            var added by remember(selectedDay) { mutableStateOf(filteredMeals.contains(orderedMeals[selectedDay.id])) }
-            var allMeals by remember(selectedDay) { mutableStateOf(filteredMeals.filter { meal : Meal -> meal.days.contains(selectedDay) }.toSet()) }
+            var added by remember(selectedDay) { mutableStateOf(it.meals.contains(orderedMeals[selectedDay.id])) }
+            var allMeals by remember(selectedDay) { mutableStateOf(it.meals.filter { meal : Meal -> meal.days.contains(selectedDay) }.toSet()) }
             var selectedOptions by remember(selectedDay) { mutableStateOf(initSelect) }
             var availableOptions by remember(selectedDay) { mutableStateOf(getAvailableOptions(allMeals, selectedOptions))}
 

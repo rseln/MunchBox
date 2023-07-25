@@ -35,16 +35,19 @@ fun MealOrderSummaryScreen(
     modifier: Modifier = Modifier,
     onConfirmButtonClicked: () -> Unit = {},
     onNextButtonClicked: () -> Unit = {},
+    displayButton: Boolean,
 ) {
     val scrollState = rememberScrollState()
     Column(
         modifier = modifier
             .verticalScroll(scrollState),
     ){
-        Row(modifier = Modifier.align( Alignment.CenterHorizontally)){
-            SelectCard(headerText = "Let's munch.",
-                buttonText = "Order Lunch",
-                onClick = { onNextButtonClicked() })
+        if(displayButton){
+            Row(modifier = Modifier.align( Alignment.CenterHorizontally)){
+                SelectCard(headerText = "Let's munch.",
+                    buttonText = "Order Lunch",
+                    onClick = { onNextButtonClicked() })
+            }
         }
         Spacer(modifier = Modifier.height(32.dp))
 //      TODO: change logic to be the date instead of day of week
@@ -115,5 +118,5 @@ fun PreviewMealsAvailableScreen(){
 
 //    viewModel.setMeals(meals = allMeals.toList())
 //    viewModel.setPickupOptions(pickupOptions = pickUpOptions)
-    MealOrderSummaryScreen(orderUiState = uiState, storageService)
+//    MealOrderSummaryScreen(orderUiState = uiState, storageService)
 }

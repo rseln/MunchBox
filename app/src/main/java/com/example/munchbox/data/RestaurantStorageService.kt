@@ -60,7 +60,10 @@ constructor(private val firestore: FirebaseFirestore){
                 val name = data?.get("name") as? String ?: ""
 
                 var meals:MutableList<Meal> = mutableListOf()
-                val mealsSnapshot = firestore.collection("Restaurants").document(id).collection("Meals").get().await()
+                val querySnapshot = firestore.collection("Restaurants").document(id).collection("Meals")
+                    .whereLessThan("cancelledOnDate", Date())
+                    .get().await()
+                val mealsSnapshot = querySnapshot.documents
                 for(mealSnapshot in mealsSnapshot){
                     if(mealSnapshot.exists()){
                         val mealData = mealSnapshot.data
@@ -108,7 +111,10 @@ constructor(private val firestore: FirebaseFirestore){
 
                     // Create the list of meals from the subcollection
                     var meals:MutableList<Meal> = mutableListOf()
-                    val mealsSnapshot = firestore.collection("Restaurants").document(id).collection("Meals").get().await()
+                    val querySnapshot = firestore.collection("Restaurants").document(id).collection("Meals")
+                        .whereEqualTo("cancelledOnDate", Date(0))
+                        .get().await()
+                    val mealsSnapshot = querySnapshot.documents
                     for(mealSnapshot in mealsSnapshot){
                         if(mealSnapshot.exists()){
                             val mealData = mealSnapshot.data
