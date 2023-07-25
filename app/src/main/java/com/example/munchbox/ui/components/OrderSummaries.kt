@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.munchbox.controller.DayOfWeek
-import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Order
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
@@ -66,7 +65,12 @@ fun OrderSummaries(
                     if(meal!=null){
                         Spacer(modifier = Modifier.height(13.dp))
                         Log.d("HELLO FROM ORDER SUMMARY3", meal.mealID)
-                        OrderSummaryCard(meal = meal, storageServices = storageServices, confirmDisabled = true)
+                        OrderSummaryCard(
+                            meal = meal,
+                            order = order,
+                            storageServices = storageServices,
+                            confirmDisabled = true
+                        )
                         Spacer(modifier = Modifier.height(13.dp))
                     }
                 }

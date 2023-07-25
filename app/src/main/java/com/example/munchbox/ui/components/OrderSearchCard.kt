@@ -8,18 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults.elevation
-import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,13 +28,11 @@ import androidx.compose.ui.unit.dp
 import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
-import com.example.munchbox.controller.Order
 import com.example.munchbox.controller.Restaurant
 import com.example.munchbox.data.OrderUiState
 import com.example.munchbox.data.StorageServices
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,11 +50,11 @@ fun OrderSearchCard(
     val coroutineScope = rememberCoroutineScope()
     val fmt = SimpleDateFormat("yyyyMMdd")
     // only display if there are meals to fulfill today from the restaurant
-    if (orderUiState.orders.any { order: Order -> fmt.format(order.pickUpDate).equals(fmt.format(Date())) && order.restaurantID == restaurant.restaurantID}) {
+    //if (orderUiState.orders.any { order: Order -> fmt.format(order.pickUpDate).equals(fmt.format(Date())) && order.restaurantID == restaurant.restaurantID}) {
         ElevatedCard(
             modifier = Modifier.height(IntrinsicSize.Max),
             shape = MaterialTheme.shapes.large
-        )
+        )//FCA9
         {
             Column(
                 modifier = Modifier
@@ -87,7 +80,7 @@ fun OrderSearchCard(
                         value = search,
                         onValueChange = {
                             search = it
-                            isButtonDisabled = search.text == ""
+                            isButtonDisabled = search.text == "" || search.text.length != 4
                             isOrderIdValid = -1 // idk to keep or not to keep for ui sake
                         }
                     )
@@ -126,17 +119,9 @@ fun OrderSearchCard(
                 }
             }
         }
-    }
-}
+    //}
 
-//TODO: EDIT THIS FUNCTION DURING INTEGRATION TO MATCH THE ACTUAL DATA STRUCTURE
-//private fun checkOrderExists(id: TextFieldValue, meals: Set<Meal>, today : DayOfWeek, restaurant: Restaurant): Int {
-//    // Edit this logic later
-//    if (meals.any { meal: Meal -> meal.days.contains(today) && meal.restaurantID == restaurant.restaurantID}) {
-//        return 1
-//    }
-//    return 0
-//}
+}
 
 @Preview
 @Composable

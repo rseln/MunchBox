@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,10 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -129,6 +124,19 @@ fun MealCard(storageServices: StorageServices,
                 text = restaurantName,
                 style = Typography.headlineMedium,
             )
+
+            if (order.orderID.length > 4) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Order Confirmation Number",
+                    style = Typography.labelSmall,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text (
+                    text = order.orderID.slice(IntRange(6,9)).uppercase(),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Dietary Options",
@@ -190,7 +198,6 @@ fun MealCard(storageServices: StorageServices,
                 ElevatedButton(
                     enabled = isConfirmEnabled.value,
                     onClick = {
-                        //TODO: call endpoint delete from database
                         if (isConfirmEnabled.value) isConfirmEnabled.value = false
                         isConfirmed.value = true
 
