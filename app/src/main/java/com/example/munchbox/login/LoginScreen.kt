@@ -135,7 +135,7 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(120.dp))
 
-        Text(text = "Login", style = TextStyle(fontSize = 50.sp, fontFamily = FontFamily.SansSerif))
+        Text(text = "MunchBox", style = TextStyle(fontSize = 50.sp, fontFamily = FontFamily.SansSerif))
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
