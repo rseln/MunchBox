@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.ui.theme.Typography
+import java.util.Date
 
 @Preview(
     showBackground = true,
@@ -89,6 +91,13 @@ fun RestaurantDisplayMealCard(meal : Meal,
                         contentDescription = stringResource(R.string.back_button)
                     )
                 }
+            }
+            if(meal.cancelledOnDate > Date(0)){
+                Text(
+                    text = "This meal has been cancelled.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.Red
+                )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -150,14 +159,15 @@ fun RestaurantDisplayMealCard(meal : Meal,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-
-                Button(
-                    onClick = {
-                        onCancelCallback(meal)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Cancel Meal")
+                if(meal.cancelledOnDate == Date(0)){
+                    Button(
+                        onClick = {
+                            onCancelCallback(meal)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Cancel Meal")
+                    }
                 }
             }
 

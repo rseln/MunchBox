@@ -5,6 +5,7 @@ import com.example.munchbox.controller.DayOfWeek
 import com.example.munchbox.controller.DietaryOption
 import com.example.munchbox.controller.Meal
 import com.example.munchbox.controller.Restaurant
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -59,7 +60,10 @@ constructor(private val firestore: FirebaseFirestore){
                 val name = data?.get("name") as? String ?: ""
 
                 var meals:MutableList<Meal> = mutableListOf()
-                val mealsSnapshot = firestore.collection("Restaurants").document(id).collection("Meals").get().await()
+                val querySnapshot = firestore.collection("Restaurants").document(id).collection("Meals")
+                    .whereLessThan("cancelledOnDate", Date())
+                    .get().await()
+                val mealsSnapshot = querySnapshot.documents
                 for(mealSnapshot in mealsSnapshot){
                     if(mealSnapshot.exists()){
                         val mealData = mealSnapshot.data
@@ -76,7 +80,9 @@ constructor(private val firestore: FirebaseFirestore){
                         val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it.replace(" ", "_").uppercase()) }.toSet()
                         val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it.uppercase()) }.toSet()
                         val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
-                        meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0)))
+                        val fetchedCancelledOnDate = mealData?.get("cancelledOnDate") as? Timestamp ?: Timestamp(Date(0))
+                        val cancelledOnDate = fetchedCancelledOnDate.toDate()
+                        meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, cancelledOnDate))
                     }
                 }
                 val imageID = data?.get("imageID") as? String
@@ -106,7 +112,10 @@ constructor(private val firestore: FirebaseFirestore){
 
                     // Create the list of meals from the subcollection
                     var meals:MutableList<Meal> = mutableListOf()
-                    val mealsSnapshot = firestore.collection("Restaurants").document(id).collection("Meals").get().await()
+                    val querySnapshot = firestore.collection("Restaurants").document(id).collection("Meals")
+                        .whereEqualTo("cancelledOnDate", Date(0))
+                        .get().await()
+                    val mealsSnapshot = querySnapshot.documents
                     for(mealSnapshot in mealsSnapshot){
                         if(mealSnapshot.exists()){
                             val mealData = mealSnapshot.data
@@ -124,11 +133,11 @@ constructor(private val firestore: FirebaseFirestore){
 
                             val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it.replace(" ", "_").uppercase()) }.toSet()
                             val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it.uppercase()) }.toSet()
-                            for(days in daysOffered){
-                                Log.d("HELLO IN GET MEAL2", days.str)
-                            }
+
+                            val fetchedCancelledOnDate = mealData?.get("cancelledOnDate") as? Timestamp ?: Timestamp(Date(0))
+                            val cancelledOnDate = fetchedCancelledOnDate.toDate()
                             val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
-                            meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0)))
+                            meals.add(Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders,cancelledOnDate))
                         }
                     }
                     restaurants.add(Restaurant(id,name, meals.toSet(), imageID))
@@ -232,14 +241,12 @@ constructor(private val firestore: FirebaseFirestore){
                 val totalOrders = fetchedTotalOrders.toInt()
                 val dietaryOptions = fetchedDietaryOptions.map { DietaryOption.valueOf(it) }.toSet()
                 val daysOffered = fetchedDaysOffered.map { DayOfWeek.valueOf(it) }.toSet()
-                Log.d("HELLO IN GET MEAL", fetchedDaysOffered[0])
 
-                for(days in daysOffered){
-                    Log.d("HELLO IN GET MEAL2", days.str)
-                }
+                val fetchedCancelledOnDate = mealData?.get("cancelledOnDate") as? Timestamp ?: Timestamp(Date(0))
+                val cancelledOnDate = fetchedCancelledOnDate.toDate()
                 val amountOrdered = fetchedAmountOrdered.mapKeys { DayOfWeek.valueOf(it.key.uppercase()) }
 
-                return@withContext Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, Date(0))
+                return@withContext Meal(mealID, restaurantID, dietaryOptions, daysOffered, amountOrdered, totalOrders, cancelledOnDate)
             }
         } catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())

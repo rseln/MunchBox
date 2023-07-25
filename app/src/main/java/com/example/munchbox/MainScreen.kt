@@ -3,6 +3,7 @@ package com.example.munchbox
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.icu.util.Calendar
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -25,7 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -266,9 +270,10 @@ fun MunchBoxApp(
                  * same with the pickup options
                  * **/
                 val userID = Firebase.auth.currentUser?.uid ?: ""
+                var displayButton by remember {mutableStateOf(false)}
                 LaunchedEffect(Unit){
                     muncherViewModel.updateMuncherState(userID)
-                    Log.d("HELLO CURRENT USER", userID)
+                    displayButton = true
                 }
 
                 MealOrderSummaryScreen(
@@ -286,6 +291,7 @@ fun MunchBoxApp(
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.NumberOfMeals.name)
                     },
+                    displayButton = displayButton,
                     onSignOutButtonClicked = {
                         val mAuth = FirebaseAuth.getInstance()
                         mAuth.signOut()
@@ -404,8 +410,17 @@ fun MunchBoxApp(
                     },
                     cancelMeal = { meal : Meal ->
                         coroutineScope.launch {
-                            // TODO -> Set cancelled on date to the latest date we have an order for
-                            storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, Date())
+                            val latestOrder = storageServices.orderService().getRestaurantsLatestOrder(meal.restaurantID)
+                            if (latestOrder!=null){
+                                val calendar = Calendar.getInstance()
+                                calendar.time = latestOrder.pickUpDate
+                                calendar.add(Calendar.DAY_OF_MONTH, 1)
+                                storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, calendar.time)
+                            }
+                            else{
+                                storageServices.restaurantService().updateMeal(restaurantUiState.restaurant.restaurantID, meal.mealID, null, null, Date())
+                            }
+
                             restaurantViewModel.updateRestaurantState(userID)
                         }
                     },

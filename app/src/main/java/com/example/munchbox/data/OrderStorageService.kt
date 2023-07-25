@@ -94,10 +94,29 @@ constructor(private val firestore: FirebaseFirestore){
             for(orderSnapshot in querySnapshot.documents){
                 orders.add( createOrderObject(orderSnapshot))
             }
+            return@withContext orders
         }catch(e: FirebaseFirestoreException){
             Log.e("FIRESTORE ERROR", e.message.toString())
         }
 
+        return@withContext null
+    }
+
+    suspend fun getRestaurantsLatestOrder(restaurantID: String): Order? = withContext(Dispatchers.IO) {
+        try {
+            val querySnapshot = firestore.collection("Orders")
+                .whereEqualTo("restaruantID", restaurantID)
+                .orderBy("pickUpDate")
+                .limit(1)
+                .get().await()
+            val orderSnapshot = querySnapshot.documents[0]
+            if(orderSnapshot.exists()){
+                return@withContext createOrderObject(orderSnapshot)
+            }
+            return@withContext null
+        }catch(e: FirebaseFirestoreException){
+            Log.e("FIRESTORE ERROR", e.message.toString())
+        }
         return@withContext null
     }
 
