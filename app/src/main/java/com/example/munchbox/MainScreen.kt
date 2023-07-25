@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,6 +57,7 @@ import com.example.munchbox.ui.NumberOfMealsScreen
 import com.example.munchbox.ui.RestaurantCreationScreen
 import com.example.munchbox.ui.RestaurantHubScreen
 import com.example.munchbox.ui.RestaurantViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -188,7 +190,7 @@ fun MunchBoxApp(
         //val uiState by viewModel.uiState.collectAsState()
         NavHost(
             navController = navController,
-            startDestination = OrderScreen.Signup.name,
+            startDestination = OrderScreen.Login.name,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = OrderScreen.Signup.name) {
@@ -267,6 +269,16 @@ fun MunchBoxApp(
                     },
                     onNextButtonClicked = {
                         navController.navigate(OrderScreen.NumberOfMeals.name)
+                    },
+                    onSignOutButtonClicked = {
+                        val mAuth = FirebaseAuth.getInstance()
+                        mAuth.signOut()
+                        Toast.makeText(context, "Sign Out Successful", Toast.LENGTH_LONG).show()
+                        navController.navigate(OrderScreen.Login.name) {
+                            popUpTo(OrderScreen.Login.name) {
+                                inclusive = true
+                            }
+                        }
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -382,6 +394,16 @@ fun MunchBoxApp(
                         }
                     },
                     orderUiState = muncherViewModel.uiState.value.orderUiState,
+                    onSignOutButtonClicked = {
+                        val mAuth = FirebaseAuth.getInstance()
+                        mAuth.signOut()
+                        Toast.makeText(context, "Sign Out Successful", Toast.LENGTH_LONG).show()
+                        navController.navigate(OrderScreen.Login.name) {
+                            popUpTo(OrderScreen.Login.name) {
+                                inclusive = true
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .fillMaxWidth()
