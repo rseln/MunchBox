@@ -84,7 +84,6 @@ class MuncherViewModel : ViewModel() {
             return setOf<Order>()
         }
         else {
-            Log.d("HELLO3",orders.get(0).mealID)
             return orders.toSet()
         }
     }
