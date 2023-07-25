@@ -99,7 +99,7 @@ fun SignUpScreen (
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Enter your credential's to register",
+            text = "Enter your credentials to register.",
             fontWeight = FontWeight.Medium,
             fontSize = 15.sp, color = Color.Gray,
             fontFamily = FontFamily.SansSerif,

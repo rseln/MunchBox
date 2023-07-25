@@ -238,7 +238,7 @@ fun LoginScreen(
                 .clickable {
                     navController.navigate(OrderScreen.Signup.name)
                 },
-            text = "Don't have an account? Sign Up",
+            text = "Don't have an account? Sign Up!",
             //fontWeight = FontWeight.Bold,
             color = Color.Blue, fontFamily = FontFamily.SansSerif
         )
