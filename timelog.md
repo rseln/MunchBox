@@ -34,6 +34,7 @@ Contributions:
 - UI Theming PR: 4 hours - https://github.com/rseln/MunchBox/pull/27
 - UI State Integration with database: 8 hours - https://github.com/rseln/MunchBox/pull/33
 - Integrating Order ID: 4 hours - https://github.com/rseln/MunchBox/pull/42
+
 Total hours committed: 89 hours
 
 
