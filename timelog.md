@@ -3,10 +3,6 @@
 **This file tracks the development and software design contributions of each team member to the project (does not include meetings and report writing).**
 
 ## Anees
-| Contributions | Hours | Related Commits |
-| ----------- | ----------- | ----------- |
-| Header      | Title       |             |
-| Paragraph   | Text        |             |
 
 Contributions:
 - Pricing Options Page: 6 hours
