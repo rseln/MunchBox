@@ -17,22 +17,24 @@ Contributions:
 
 Total hours committed: 65 hours
 
+
 ## Karim
 
 Contributions:
 - Frontend Figma Design and Wireframes: 5 hours
-- Initial UI Structure: 6 hours
-- Meal Selection Page: 25 hours
-- Syncing Order Summary and Meal Selection Pages (collaborative): 3 hours
-- Restuarant Hub Page: 8 hours
-- Menu Creation Feature: 6 hours
-- Choose Your Fighter Page: 3 hours
-- UI Improvements: 3 hours
-- API and Database design (collaborative): 5 hours
-- Bug Squashing (collaborative): 10 hours
-- UI Theming PR: 4 hours
-
-Total hours committed: 74 hours
+- Initial UI Structure: 6 hours - https://github.com/rseln/MunchBox/pull/1
+- Meal Selection Page: 25 hours - https://github.com/rseln/MunchBox/pull/4 
+- Syncing Order Summary and Meal Selection Pages (collaborative): 3 hours - https://github.com/rseln/MunchBox/pull/10
+- Restuarant Hub Page: 8 hours - https://github.com/rseln/MunchBox/pull/16
+- Menu Creation Feature: 6 hours - https://github.com/rseln/MunchBox/pull/16
+- Choose Your Fighter Page: 3 hours - https://github.com/rseln/MunchBox/pull/16
+- UI Improvements: 6 hours - https://github.com/rseln/MunchBox/pull/12 https://github.com/rseln/MunchBox/pull/28
+- API and Database design meeting (collaborative): 5 hours
+- Bug Squashing (collaborative): 14 hours - https://github.com/rseln/MunchBox/pull/11 https://github.com/rseln/MunchBox/pull/38 
+- UI Theming PR: 4 hours - https://github.com/rseln/MunchBox/pull/27
+- UI State Integration with database: 8 hours - https://github.com/rseln/MunchBox/pull/33
+- Integrating Order ID: 4 hours - https://github.com/rseln/MunchBox/pull/42
+Total hours committed: 89 hours
 
 
 ## Rose
