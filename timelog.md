@@ -59,7 +59,7 @@ Contributions:
 - Restaurant-side Order Verification UI: 3 hours - https://github.com/rseln/MunchBox/pull/22
 - Order Verification API Integration: 7 hours -  https://github.com/rseln/MunchBox/pull/25  https://github.com/rseln/MunchBox/pull/31
 - Restaurant Order Count API Integration: 4 hours - https://github.com/rseln/MunchBox/pull/43
-- Bug Squashing (Everyone): 13 hours - https://github.com/rseln/MunchBox/pull/9 https://github.com/rseln/MunchBox/pull/37 https://github.com/rseln/MunchBox/pull/39 Some commits merged directly to main, some bug fixes were done in bug squashing meetings)
+- Bug Squashing (Everyone): 13 hours - https://github.com/rseln/MunchBox/pull/9 https://github.com/rseln/MunchBox/pull/37 https://github.com/rseln/MunchBox/pull/39 (Some commits merged directly to main, some bug fixes were done in bug squashing meetings)
 
 Hours:
 - Hours committed (development and design): 87 hours
@@ -78,7 +78,7 @@ Contributions:
 - Cancel Order Integration: 5 hours - https://github.com/rseln/MunchBox/pull/34
 - Restaurant Creation Screen Cleanup: 3 hours - https://github.com/rseln/MunchBox/pull/41
 - Image Upload Cleanup: 3 hours - https://github.com/rseln/MunchBox/pull/18
-- Bug Squashing (Everyone): 15 hours Some commits merged directly to main, some bug fixes were done in bug squashing meetings)
+- Bug Squashing (Everyone): 15 hours (Some commits merged directly to main, some bug fixes were done in bug squashing meetings)
   
 Hours:
 - Hours committed (development and design): 87 hours
